@@ -63,9 +63,14 @@
       margin-bottom: 8px;
       color: var(--primary);
     }
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
     input[type="text"] {
       width: 100%;
-      padding: 13px 14px;
+      padding: 13px 40px 13px 14px;
       font-size: 1rem;
       border: 1.5px solid var(--border);
       border-radius: 6px;
@@ -75,6 +80,29 @@
     input[type="text"]:focus {
       border-color: var(--accent);
       box-shadow: 0 0 0 3px rgba(243, 112, 33, 0.15);
+    }
+    .clear-btn {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 22px;
+      height: 22px;
+      background-color: #cbd5e1;
+      color: #475569;
+      border-radius: 50%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+      user-select: none;
+      transition: background-color 0.2s, color 0.2s;
+    }
+    .clear-btn:hover {
+      background-color: #94a3b8;
+      color: #ffffff;
     }
     .autocomplete-items {
       position: absolute;
@@ -197,7 +225,10 @@
 
   <div class="form-group">
     <label for="productInput">Select / Enter Product Name:</label>
-    <input type="text" id="productInput" placeholder="Start typing product name (e.g. FLEET, MOTOCARE, HYPERDRIVE)..." autocomplete="off">
+    <div class="input-wrapper">
+      <input type="text" id="productInput" placeholder="Start typing product name (e.g. FLEET, MOTOCARE, HYPERDRIVE)..." autocomplete="off">
+      <span class="clear-btn" id="clearInputBtn" title="Clear input">&times;</span>
+    </div>
     <div id="autocompleteList" class="autocomplete-items"></div>
   </div>
 
@@ -798,10 +829,37 @@
 
   const input = document.getElementById("productInput");
   const list = document.getElementById("autocompleteList");
+  const clearBtn = document.getElementById("clearInputBtn");
+  const outputCard = document.getElementById("outputCard");
+  const plantBox = document.getElementById("plantLandingBox");
+  const schemeBox = document.getElementById("schemeBox");
+
+  function resetCalculator() {
+    input.value = "";
+    clearBtn.style.display = "none";
+    list.innerHTML = "";
+    outputCard.style.display = "none";
+    plantBox.style.display = "none";
+    schemeBox.style.display = "none";
+    input.focus();
+  }
+
+  clearBtn.addEventListener("click", resetCalculator);
 
   input.addEventListener("input", function() {
     const val = this.value.trim().toUpperCase();
     list.innerHTML = "";
+    
+    if (this.value.length > 0) {
+      clearBtn.style.display = "flex";
+    } else {
+      clearBtn.style.display = "none";
+      outputCard.style.display = "none";
+      plantBox.style.display = "none";
+      schemeBox.style.display = "none";
+      return;
+    }
+
     if (!val) return;
 
     const matches = products.filter(p => p.name.toUpperCase().includes(val));
@@ -815,6 +873,7 @@
       row.innerHTML = highlighted;
       row.addEventListener("click", () => {
         input.value = item.name;
+        clearBtn.style.display = "flex";
         list.innerHTML = "";
         calculateAndRender(item);
       });
@@ -823,7 +882,7 @@
   });
 
   document.addEventListener("click", function(e) {
-    if (e.target !== input) {
+    if (e.target !== input && e.target !== clearBtn) {
       list.innerHTML = "";
     }
   });
@@ -848,7 +907,7 @@
     // Net Landing = (RSP - HO discount - Stockist commission - CD - EB) * 1.18
     const netLanding = (rsp - hoDiscPerPack - stockistComm - cd - eb) * 1.18;
 
-    // Populate user-facing values (Stockist Commission Rate, EB, CD, and Rs/pack for HO Disc are hidden)
+    // Populate user-facing values
     document.getElementById("resName").textContent = item.name;
     document.getElementById("resCategory").textContent = item.category;
     document.getElementById("resMRP").textContent = `₹${item.mrp.toFixed(2)}`;
@@ -860,7 +919,6 @@
     document.getElementById("resNetLanding").textContent = `₹${netLanding.toFixed(2)}`;
 
     // Mass category: Direct Upliftment from Plant calculation (3.5% commission of DLP)
-    const plantBox = document.getElementById("plantLandingBox");
     if (item.category === "Mass") {
       const plantStockistComm = dlp * 0.035;
       const plantCD = 0.02 * (rsp - hoDiscPerPack - plantStockistComm - eb);
@@ -872,7 +930,6 @@
     }
 
     // Active Scheme Check
-    const schemeBox = document.getElementById("schemeBox");
     if (item.scheme) {
       document.getElementById("schemeTitle").textContent = `🎁 ${item.scheme.title}`;
       document.getElementById("schemeApplicable").textContent = item.scheme.applicable;
@@ -890,7 +947,7 @@
       schemeBox.style.display = "none";
     }
 
-    document.getElementById("outputCard").style.display = "block";
+    outputCard.style.display = "block";
   }
 </script>
 
