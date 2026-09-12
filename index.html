@@ -233,20 +233,8 @@
           <td id="resEffDLP">-</td>
         </tr>
         <tr>
-          <th>Stockist Commission Rate</th>
-          <td id="resCommRate">-</td>
-        </tr>
-        <tr>
           <th>Stockist Commission (Without GST)</th>
           <td id="resStockistComm">-</td>
-        </tr>
-        <tr>
-          <th>Early Bird Discount (EB)</th>
-          <td id="resEB">-</td>
-        </tr>
-        <tr>
-          <th>Cash Discount (CD 2% - Without GST)</th>
-          <td id="resCD">-</td>
         </tr>
         <tr class="highlight-row">
           <th>Net Landing</th>
@@ -860,18 +848,15 @@
     // Net Landing = (RSP - HO discount - Stockist commission - CD - EB) * 1.18
     const netLanding = (rsp - hoDiscPerPack - stockistComm - cd - eb) * 1.18;
 
-    // Render Table Output (Values only, no formulas shown)
+    // Populate user-facing values (Stockist Commission Rate, EB, CD, and Rs/pack for HO Disc are hidden)
     document.getElementById("resName").textContent = item.name;
-    document.getElementById("resCategory").textContent = `${item.category} (${(rate * 100).toFixed(1)}%)`;
+    document.getElementById("resCategory").textContent = item.category;
     document.getElementById("resMRP").textContent = `₹${item.mrp.toFixed(2)}`;
     document.getElementById("resDLP").textContent = `₹${dlp.toFixed(2)}`;
     document.getElementById("resRSP").textContent = `₹${rsp.toFixed(2)}`;
-    document.getElementById("resHODisc").textContent = `₹${item.hoDisc.toFixed(2)} / Litre (₹${hoDiscPerPack.toFixed(2)} / pack)`;
+    document.getElementById("resHODisc").textContent = `₹${item.hoDisc.toFixed(2)} / Litre`;
     document.getElementById("resEffDLP").textContent = `₹${effDLP.toFixed(2)}`;
-    document.getElementById("resCommRate").textContent = `${(rate * 100).toFixed(1)}%`;
     document.getElementById("resStockistComm").textContent = `₹${stockistComm.toFixed(2)}`;
-    document.getElementById("resEB").textContent = `₹${eb.toFixed(2)}`;
-    document.getElementById("resCD").textContent = `₹${cd.toFixed(2)}`;
     document.getElementById("resNetLanding").textContent = `₹${netLanding.toFixed(2)}`;
 
     // Mass category: Direct Upliftment from Plant calculation (3.5% commission of DLP)
