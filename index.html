@@ -37,7 +37,7 @@
 
     .container {
       width: 100%;
-      max-width: 720px;
+      max-width: 740px;
       display: flex;
       flex-direction: column;
       gap: 16px;
@@ -94,7 +94,7 @@
       border-radius: 6px;
     }
 
-    /* Search Card */
+    /* Search & Admin Controls */
     .card {
       background: var(--card-bg);
       border-radius: 14px;
@@ -171,7 +171,6 @@
       color: #1a202c;
     }
 
-    /* Suggestions Dropdown */
     .suggestions {
       position: absolute;
       top: 100%;
@@ -200,7 +199,35 @@
       color: var(--primary);
     }
 
-    /* Results Card */
+    /* Admin Action Links */
+    .admin-actions {
+      margin-top: 14px;
+      padding-top: 10px;
+      border-top: 1px dashed var(--border);
+      font-size: 0.8rem;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 14px;
+      color: var(--text-muted);
+      flex-wrap: wrap;
+    }
+
+    .admin-btn {
+      background: none;
+      border: none;
+      color: var(--primary-light);
+      text-decoration: underline;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .admin-btn:hover {
+      color: var(--primary);
+    }
+
+    /* Results Table */
     .results-card {
       display: none;
     }
@@ -257,7 +284,7 @@
       color: var(--success);
     }
 
-    /* Schemes Section Below Net Landing */
+    /* Scheme Details Section */
     .scheme-container {
       margin-top: 18px;
       padding-top: 16px;
@@ -271,7 +298,7 @@
       margin-bottom: 10px;
       display: flex;
       align-items: center;
-      gap: 6px;
+      justify-content: space-between;
     }
 
     .scheme-badge-group {
@@ -306,27 +333,45 @@
       color: #c05621;
     }
 
-    /* Passcode-Protected Circular Update */
-    .file-input-wrapper {
-      margin-top: 14px;
-      font-size: 0.8rem;
+    /* Circular Document Viewer */
+    .view-circular-box {
+      margin-top: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      background: #fafafa;
       display: flex;
-      justify-content: flex-end;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .view-circular-header {
+      display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap: 6px;
-      color: var(--text-muted);
-    }
-
-    .file-upload-btn {
-      background: none;
-      border: none;
-      color: var(--primary-light);
-      text-decoration: underline;
-      cursor: pointer;
-      font-size: 0.8rem;
+      font-size: 0.82rem;
       font-weight: 600;
+      color: var(--primary);
     }
 
+    .circular-frame-wrapper {
+      display: none;
+      width: 100%;
+      height: 480px;
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid #cbd5e0;
+      margin-top: 8px;
+    }
+
+    .circular-frame-wrapper iframe, .circular-frame-wrapper img {
+      width: 100%;
+      height: 100%;
+      border: none;
+      object-fit: contain;
+    }
+
+    /* Footer Note */
     .footer-note {
       text-align: center;
       font-size: 0.85rem;
@@ -358,7 +403,7 @@
     </div>
   </div>
 
-  <!-- Search Card -->
+  <!-- Search Card & Admin Section -->
   <div class="card">
     <div class="search-group">
       <div class="search-header">
@@ -372,15 +417,19 @@
       <div class="suggestions" id="suggestionsBox"></div>
     </div>
 
-    <!-- Passcode-Protected Circular Update Link -->
-    <div class="file-input-wrapper">
-      <span>🔒 Admin:</span>
-      <button type="button" class="file-upload-btn" id="authUploadBtn">Update Circular (.xlsx)</button>
+    <!-- Admin Section with Protected Uploads -->
+    <div class="admin-actions">
+      <span>🔒 Admin Panel:</span>
+      <button type="button" class="admin-btn" id="authPriceUploadBtn">Update Price Circular (.xlsx)</button>
+      <button type="button" class="admin-btn" id="authSchemeUploadBtn">Update Scheme Circular (PDF/IMG)</button>
+
+      <!-- Hidden File Inputs -->
       <input type="file" id="excelFileInput" accept=".xlsx, .xls" style="display: none;">
+      <input type="file" id="schemeFileInput" accept=".pdf, .png, .jpg, .jpeg" style="display: none;">
     </div>
   </div>
 
-  <!-- Results Card with Schemes Below Net Landing -->
+  <!-- Pricing Details Card -->
   <div class="card results-card" id="resultsCard">
     <div class="product-title" id="outProductName">Product Name</div>
     
@@ -413,8 +462,23 @@
 
     <!-- Applicable Scheme Details Section Below Net Landing -->
     <div class="scheme-container" id="schemeContainer">
-      <div class="scheme-header">🎁 Applicable Q3 Schemes & Direct Incentives (Oct - Dec 2026):</div>
+      <div class="scheme-header">
+        <span>🎁 Applicable Scheme Details & Direct Incentives:</span>
+      </div>
+      
       <div class="scheme-badge-group" id="schemeBadges"></div>
+
+      <!-- Scheme Document Attachment Box -->
+      <div class="view-circular-box" id="circularBox" style="display: none;">
+        <div class="view-circular-header">
+          <span id="circularFileName">📄 Current Scheme Circular</span>
+          <button type="button" class="admin-btn" id="toggleCircularViewBtn">Show Document Preview</button>
+        </div>
+        <div class="circular-frame-wrapper" id="circularFrameWrapper">
+          <iframe id="circularIframe" src="" style="display: none;"></iframe>
+          <img id="circularImg" src="" style="display: none;" alt="Scheme Circular Preview">
+        </div>
+      </div>
     </div>
   </div>
 
@@ -425,11 +489,10 @@
 
 </div>
 
-<!-- SheetJS for processing spreadsheet uploads -->
+<!-- SheetJS for processing spreadsheet circular uploads -->
 <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
 <script>
-  // Complete 350-product list with Category tag:
-  // Format: [Name, Pack Size, DLP, MRP, HO Disc, Eff DLP, SC, CD, Category, ProdCode]
+  // Complete 350-item database
   let lubeData = [
     ["SERVO FLEET 40 - 1 HDPE", 1.0, 296.54, 418.0, 15.0, 278.84, 0.025, 0.02, "MASS", 21404],
     ["SERVO FLEET 40 - 5 HDPE", 5.0, 1466.39, 2064.0, 75.0, 1377.89, 0.025, 0.02, "MASS", 21404],
@@ -570,7 +633,7 @@
     ["SERVO LONG LIFE GREASE- 20 KG", 20.0, 9086.29, 12841.0, 1200.0, 7670.29, 0.06, 0.02, "ASPIRATIONAL", 7849]
   ];
 
-  // Try dynamic load from current directory if served via local web server
+  // Try dynamic fetch of sheet if hosted on a local webserver
   function tryFetchSheet(filename) {
     fetch(filename)
       .then(res => { if (!res.ok) throw new Error(); return res.arrayBuffer(); })
@@ -612,22 +675,32 @@
     }
   }
 
-  // --- Security Passcode Protected Upload ---
-  const REQUIRED_CODE = "011100";
-  const authUploadBtn = document.getElementById('authUploadBtn');
+  // --- Password Protection (011100) ---
+  const AUTH_KEY = "011100";
+  const authPriceUploadBtn = document.getElementById('authPriceUploadBtn');
+  const authSchemeUploadBtn = document.getElementById('authSchemeUploadBtn');
   const excelFileInput = document.getElementById('excelFileInput');
+  const schemeFileInput = document.getElementById('schemeFileInput');
 
-  authUploadBtn.addEventListener('click', function() {
-    const userCode = prompt("Enter 6-digit authorization code to upload circular:");
-    if (userCode === null) return;
-
-    if (userCode.trim() === REQUIRED_CODE) {
-      excelFileInput.click();
+  function requestAuthorization(callback) {
+    const entered = prompt("Enter Administrator Access Code:");
+    if (entered === null) return; // User pressed Cancel
+    if (entered.trim() === AUTH_KEY) {
+      callback();
     } else {
-      alert("Access Denied: Incorrect authorization code.");
+      alert("Access Denied: Invalid Access Code.");
     }
+  }
+
+  authPriceUploadBtn.addEventListener('click', () => {
+    requestAuthorization(() => excelFileInput.click());
   });
 
+  authSchemeUploadBtn.addEventListener('click', () => {
+    requestAuthorization(() => schemeFileInput.click());
+  });
+
+  // Handle Price Circular Upload
   excelFileInput.addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (!file) return;
@@ -635,12 +708,70 @@
     const reader = new FileReader();
     reader.onload = function(evt) {
       parseExcelBuffer(evt.target.result);
-      alert(`Verification Successful: Loaded ${lubeData.length} products.`);
+      alert(`Verification Successful: Price circular updated with ${lubeData.length} items.`);
       document.getElementById('productInput').value = '';
       document.getElementById('resultsCard').style.display = 'none';
     };
     reader.readAsArrayBuffer(file);
     excelFileInput.value = '';
+  });
+
+  // Handle Scheme Circular Upload (PDF / Image)
+  let activeSchemeFileUrl = null;
+  let activeSchemeFileName = null;
+
+  schemeFileInput.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (activeSchemeFileUrl) {
+      URL.revokeObjectURL(activeSchemeFileUrl);
+    }
+
+    activeSchemeFileUrl = URL.createObjectURL(file);
+    activeSchemeFileName = file.name;
+
+    alert(`Scheme Circular "${file.name}" uploaded successfully!`);
+    updateCircularViewer();
+    schemeFileInput.value = '';
+  });
+
+  function updateCircularViewer() {
+    const box = document.getElementById('circularBox');
+    const nameLabel = document.getElementById('circularFileName');
+    const iframe = document.getElementById('circularIframe');
+    const img = document.getElementById('circularImg');
+
+    if (!activeSchemeFileUrl) {
+      box.style.display = 'none';
+      return;
+    }
+
+    box.style.display = 'flex';
+    nameLabel.textContent = `📄 ${activeSchemeFileName}`;
+
+    if (activeSchemeFileName.toLowerCase().endsWith('.pdf')) {
+      iframe.src = activeSchemeFileUrl;
+      iframe.style.display = 'block';
+      img.style.display = 'none';
+    } else {
+      img.src = activeSchemeFileUrl;
+      img.style.display = 'block';
+      iframe.style.display = 'none';
+    }
+  }
+
+  // Toggle Circular Preview Frame
+  const toggleCircularViewBtn = document.getElementById('toggleCircularViewBtn');
+  const circularFrameWrapper = document.getElementById('circularFrameWrapper');
+  toggleCircularViewBtn.addEventListener('click', function() {
+    if (circularFrameWrapper.style.display === 'block') {
+      circularFrameWrapper.style.display = 'none';
+      this.textContent = 'Show Document Preview';
+    } else {
+      circularFrameWrapper.style.display = 'block';
+      this.textContent = 'Hide Document Preview';
+    }
   });
 
   // --- Date & EB Slab Computation ---
@@ -720,7 +851,7 @@
     }
   });
 
-  // --- Calculation & Scheme Engine ---
+  // --- Calculations & Scheme Rendering ---
   function displayCalculation(item) {
     const [name, packSize, dlp, mrp, hoDiscPack, effDlp, sc, cd, category, prodCode] = item;
 
@@ -747,7 +878,6 @@
     const cat = (category || '').toUpperCase();
 
     // 1. FREE SKU SCHEMES
-    // MCO Flagship Hypersport Free Scheme
     const mcoCodes = [62123, 62124, 62144, 62135, 62224, 62225, 62235];
     if (mcoCodes.includes(prodCode) || (upperName.includes('HYPERSPORT') && !upperName.includes('SCOOTER'))) {
       schemeBox.innerHTML += `
@@ -762,7 +892,6 @@
         </div>`;
     }
 
-    // PCMO Hypersport Free Scheme (3L and above)
     const pcmoCodes = [65113, 65201, 65202, 66201, 66224, 66204];
     if ((pcmoCodes.includes(prodCode) || upperName.includes('HYPERDRIVE')) && packSize >= 3.0) {
       schemeBox.innerHTML += `
@@ -777,7 +906,6 @@
         </div>`;
     }
 
-    // CVO Hypertorq Free Scheme
     if (upperName.includes('HYPERTORQ')) {
       let offerText = "";
       if (packSize >= 5.0 && packSize < 7.5) {
@@ -857,6 +985,7 @@
         </div>
       </div>`;
 
+    updateCircularViewer();
     resultsCard.style.display = 'block';
   }
 </script>
