@@ -3,951 +3,861 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Servo Lubricant Price & Net Landing Calculator</title>
+  <title>SERVO Lube Costing & Net Landing Calculator</title>
   <style>
     :root {
       --primary: #003366;
-      --accent: #f37021;
+      --primary-light: #00509e;
+      --accent: #ff6600;
       --bg: #f4f6f9;
       --card-bg: #ffffff;
-      --border: #dcdfe6;
-      --text: #2c3e50;
-      --plant-green: #15803d;
-      --scheme-bg: #ecfdf5;
-      --scheme-border: #a7f3d0;
+      --text: #2d3748;
+      --text-muted: #718096;
+      --border: #e2e8f0;
+      --success: #166534;
+      --scheme-bg: #fffbf0;
+      --scheme-border: #fbd38d;
     }
+
     * {
       box-sizing: border-box;
-      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     }
+
     body {
       background-color: var(--bg);
       color: var(--text);
-      margin: 0;
-      padding: 24px 16px;
       display: flex;
       justify-content: center;
+      padding: 24px 16px;
+      min-height: 100vh;
     }
+
     .container {
-      background-color: var(--card-bg);
-      max-width: 780px;
       width: 100%;
-      padding: 28px;
-      border-radius: 10px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      max-width: 720px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
     }
-    h2 {
-      margin-top: 0;
-      color: var(--primary);
-      text-align: center;
-      border-bottom: 2px solid var(--accent);
-      padding-bottom: 12px;
+
+    /* Top EB Banner */
+    .header-card {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: #fff;
+      padding: 20px 24px;
+      border-radius: 14px;
+      box-shadow: 0 4px 14px rgba(0, 51, 102, 0.18);
     }
-    .date-badge {
-      text-align: center;
-      margin-bottom: 20px;
-      font-size: 0.95rem;
-      color: #555;
+
+    .header-card h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      letter-spacing: 0.3px;
     }
-    .date-badge span {
-      font-weight: bold;
-      color: var(--primary);
+
+    .status-row {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
     }
-    .form-group {
+
+    .status-badge {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .status-badge .label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      opacity: 0.85;
+    }
+
+    .status-badge .value {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .eb-highlight {
+      background: rgba(255, 102, 0, 0.25);
+      border: 1px solid rgba(255, 102, 0, 0.6);
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+
+    /* Search Card */
+    .card {
+      background: var(--card-bg);
+      border-radius: 14px;
+      padding: 22px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      border: 1px solid var(--border);
+    }
+
+    .search-group {
       position: relative;
-      margin-bottom: 20px;
     }
-    label {
-      display: block;
-      font-weight: 600;
+
+    .search-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       margin-bottom: 8px;
-      color: var(--primary);
     }
+
+    .search-label {
+      font-weight: 600;
+      font-size: 0.88rem;
+      color: var(--text);
+    }
+
+    .item-count-badge {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      background: #edf2f7;
+      padding: 2px 8px;
+      border-radius: 12px;
+    }
+
     .input-wrapper {
       position: relative;
       display: flex;
       align-items: center;
     }
-    input[type="text"] {
+
+    .input-wrapper input {
       width: 100%;
-      padding: 13px 40px 13px 14px;
-      font-size: 1rem;
+      padding: 12px 42px 12px 14px;
+      font-size: 0.95rem;
       border: 1.5px solid var(--border);
-      border-radius: 6px;
+      border-radius: 8px;
       outline: none;
       transition: border-color 0.2s, box-shadow 0.2s;
     }
-    input[type="text"]:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(243, 112, 33, 0.15);
+
+    .input-wrapper input:focus {
+      border-color: var(--primary-light);
+      box-shadow: 0 0 0 3px rgba(0, 80, 158, 0.12);
     }
+
     .clear-btn {
       position: absolute;
       right: 12px;
-      top: 50%;
-      transform: translateY(-50%);
+      background: #e2e8f0;
+      color: #4a5568;
+      border: none;
+      border-radius: 50%;
       width: 22px;
       height: 22px;
-      background-color: #cbd5e1;
-      color: #475569;
-      border-radius: 50%;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
       display: none;
       align-items: center;
       justify-content: center;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: bold;
-      user-select: none;
-      transition: background-color 0.2s, color 0.2s;
     }
+
     .clear-btn:hover {
-      background-color: #94a3b8;
-      color: #ffffff;
+      background: #cbd5e0;
+      color: #1a202c;
     }
-    .autocomplete-items {
+
+    /* Suggestions Dropdown */
+    .suggestions {
       position: absolute;
-      border: 1px solid var(--border);
-      border-top: none;
-      z-index: 999;
       top: 100%;
       left: 0;
       right: 0;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 8px 8px;
       max-height: 240px;
       overflow-y: auto;
-      background-color: #fff;
-      border-radius: 0 0 6px 6px;
-      box-shadow: 0 6px 12px rgba(0,0,0,0.12);
-    }
-    .autocomplete-items div {
-      padding: 11px 14px;
-      cursor: pointer;
-      border-bottom: 1px solid #f2f2f2;
-      font-size: 0.92rem;
-    }
-    .autocomplete-items div:hover {
-      background-color: #fff7ed;
-      color: var(--accent);
-      font-weight: 600;
-    }
-    .card-results {
-      margin-top: 24px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      overflow: hidden;
+      z-index: 50;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.12);
       display: none;
     }
-    .card-results table {
-      width: 100%;
-      border-collapse: collapse;
+
+    .suggestion-item {
+      padding: 10px 14px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      border-bottom: 1px solid #f7fafc;
     }
-    .card-results th, .card-results td {
-      padding: 11px 16px;
-      border-bottom: 1px solid var(--border);
-      font-size: 0.95rem;
-    }
-    .card-results th {
-      width: 44%;
-      background-color: #f8fafc;
-      text-align: left;
-      color: #475569;
-    }
-    .card-results td {
-      font-weight: bold;
+
+    .suggestion-item:hover {
+      background-color: #ebf8ff;
       color: var(--primary);
     }
-    .highlight-row {
-      background-color: #eff6ff;
-    }
-    .highlight-row td {
-      color: var(--accent);
-      font-size: 1.18rem;
-    }
-    .plant-upliftment-box {
+
+    /* Results Card */
+    .results-card {
       display: none;
-      margin-top: 35px;
-      margin-bottom: 15px;
-      padding: 16px;
-      background-color: #f0fdf4;
+    }
+
+    .product-title {
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1.5px solid var(--border);
+      line-height: 1.4;
+    }
+
+    .price-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .price-item {
+      background: #f8fafc;
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .price-item.full-width {
+      grid-column: span 2;
+    }
+
+    .price-item.highlight-landing {
+      background: #f0fdf4;
       border: 1.5px solid #86efac;
-      border-radius: 8px;
-      text-align: center;
-      color: var(--plant-green);
-      font-size: 1.25rem;
-      font-weight: 700;
     }
+
+    .price-item .item-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+
+    .price-item .item-val {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .highlight-landing .item-val {
+      font-size: 1.35rem;
+      color: var(--success);
+    }
+
+    /* Schemes Section Below Net Landing */
     .scheme-container {
-      display: none;
-      margin-top: 20px;
-      padding: 16px;
-      background-color: var(--scheme-bg);
-      border: 1.5px solid var(--scheme-border);
-      border-radius: 8px;
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1.5px dashed var(--border);
     }
-    .scheme-title {
-      font-size: 1rem;
+
+    .scheme-header {
+      font-size: 0.92rem;
       font-weight: 700;
-      color: var(--plant-green);
-      margin-bottom: 8px;
+      color: var(--primary);
+      margin-bottom: 10px;
       display: flex;
       align-items: center;
       gap: 6px;
     }
-    .scheme-detail {
-      font-size: 0.92rem;
-      margin-bottom: 6px;
-      color: #064e3b;
+
+    .scheme-badge-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
-    .scheme-detail span {
+
+    .scheme-card {
+      background: var(--scheme-bg);
+      border: 1px solid var(--scheme-border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 0.85rem;
+    }
+
+    .scheme-card-title {
       font-weight: 700;
-      color: #0f172a;
+      color: #9c4221;
+      margin-bottom: 4px;
+      display: flex;
+      justify-content: space-between;
     }
-    .disclaimer {
-      margin-top: 24px;
-      padding: 12px 16px;
-      background-color: #fffbeb;
-      border-left: 4px solid #f59e0b;
-      font-size: 0.88rem;
-      color: #92400e;
-      border-radius: 0 4px 4px 0;
-      text-align: center;
+
+    .scheme-card-body {
+      color: #4a5568;
+      line-height: 1.45;
+    }
+
+    .scheme-highlight {
+      font-weight: 700;
+      color: #c05621;
+    }
+
+    /* Passcode-Protected Circular Update */
+    .file-input-wrapper {
+      margin-top: 14px;
+      font-size: 0.8rem;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-muted);
+    }
+
+    .file-upload-btn {
+      background: none;
+      border: none;
+      color: var(--primary-light);
+      text-decoration: underline;
+      cursor: pointer;
+      font-size: 0.8rem;
       font-weight: 600;
+    }
+
+    .footer-note {
+      text-align: center;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #991b1b;
+      background-color: #fef2f2;
+      border: 1px dashed #f87171;
+      padding: 10px 14px;
+      border-radius: 8px;
     }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <h2>Servo Pricing & Net Landing Calculator</h2>
-  
-  <div class="date-badge">
-    Date: <span id="currentDateDisplay"></span> | EB Slab: <span id="ebDisplay"></span>
-  </div>
 
-  <div class="form-group">
-    <label for="productInput">Select / Enter Product Name:</label>
-    <div class="input-wrapper">
-      <input type="text" id="productInput" placeholder="Start typing product name (e.g. FLEET, MOTOCARE, HYPERDRIVE)..." autocomplete="off">
-      <span class="clear-btn" id="clearInputBtn" title="Clear input">&times;</span>
-    </div>
-    <div id="autocompleteList" class="autocomplete-items"></div>
-  </div>
-
-  <div class="card-results" id="outputCard">
-    <table>
-      <tbody>
-        <tr>
-          <th>Product Name</th>
-          <td id="resName">-</td>
-        </tr>
-        <tr>
-          <th>Product Category</th>
-          <td id="resCategory">-</td>
-        </tr>
-        <tr>
-          <th>MRP</th>
-          <td id="resMRP">-</td>
-        </tr>
-        <tr>
-          <th>DLP</th>
-          <td id="resDLP">-</td>
-        </tr>
-        <tr>
-          <th>RSP</th>
-          <td id="resRSP">-</td>
-        </tr>
-        <tr>
-          <th>HO Discount</th>
-          <td id="resHODisc">-</td>
-        </tr>
-        <tr>
-          <th>Effective DLP</th>
-          <td id="resEffDLP">-</td>
-        </tr>
-        <tr>
-          <th>Stockist Commission (Without GST)</th>
-          <td id="resStockistComm">-</td>
-        </tr>
-        <tr class="highlight-row">
-          <th>Net Landing</th>
-          <td id="resNetLanding">-</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <!-- Direct Upliftment from Plant for Mass Category -->
-    <div class="plant-upliftment-box" id="plantLandingBox">
-      Net Landing for direct upliftment from plant: <span id="resPlantLanding">₹0.00</span>
-    </div>
-
-    <!-- Active Scheme Banner -->
-    <div class="scheme-container" id="schemeBox">
-      <div class="scheme-title" id="schemeTitle">🎁 Active SDMS Scheme Offer</div>
-      <div class="scheme-detail"><span>Applicability:</span> <span id="schemeApplicable"></span></div>
-      <div class="scheme-detail"><span>Free Offer:</span> <span id="schemeOffer"></span></div>
-      <div class="scheme-detail" id="basketRow"><span>Free Basket Options:</span> <span id="schemeBasket"></span></div>
+  <!-- Top Banner: Date & Current EB Slab -->
+  <div class="header-card">
+    <h1>Lube Pricing & Net Landing Calculator</h1>
+    <div class="status-row">
+      <div class="status-badge">
+        <span class="label">Date</span>
+        <span class="value" id="currentDateDisplay">--</span>
+      </div>
+      <div class="status-badge eb-highlight">
+        <span class="label">Current EB Slab</span>
+        <span class="value" id="currentEbDisplay">--</span>
+      </div>
     </div>
   </div>
 
-  <div class="disclaimer">
-    ⚠️ Please note: User to verify the prices before using.
+  <!-- Search Card -->
+  <div class="card">
+    <div class="search-group">
+      <div class="search-header">
+        <label class="search-label" for="productInput">Enter Product Name:</label>
+        <span class="item-count-badge" id="productCountBadge">350 Products Loaded</span>
+      </div>
+      <div class="input-wrapper">
+        <input type="text" id="productInput" placeholder="Type SERVO product name..." autocomplete="off">
+        <button type="button" class="clear-btn" id="clearBtn" title="Clear input">✕</button>
+      </div>
+      <div class="suggestions" id="suggestionsBox"></div>
+    </div>
+
+    <!-- Passcode-Protected Circular Update Link -->
+    <div class="file-input-wrapper">
+      <span>🔒 Admin:</span>
+      <button type="button" class="file-upload-btn" id="authUploadBtn">Update Circular (.xlsx)</button>
+      <input type="file" id="excelFileInput" accept=".xlsx, .xls" style="display: none;">
+    </div>
   </div>
+
+  <!-- Results Card with Schemes Below Net Landing -->
+  <div class="card results-card" id="resultsCard">
+    <div class="product-title" id="outProductName">Product Name</div>
+    
+    <div class="price-grid">
+      <div class="price-item">
+        <div class="item-label">MRP (₹ / Pack)</div>
+        <div class="item-val" id="outMRP">₹ 0.00</div>
+      </div>
+      <div class="price-item">
+        <div class="item-label">DLP (₹ / Pack)</div>
+        <div class="item-val" id="outDLP">₹ 0.00</div>
+      </div>
+      <div class="price-item">
+        <div class="item-label">HO Discount (₹ / Pack)</div>
+        <div class="item-val" id="outHODisc">₹ 0.00</div>
+      </div>
+      <div class="price-item">
+        <div class="item-label">Eff DLP (₹ / Pack)</div>
+        <div class="item-val" id="outEffDLP">₹ 0.00</div>
+      </div>
+      <div class="price-item full-width">
+        <div class="item-label">Stockist Commission (SC)</div>
+        <div class="item-val" id="outSC">₹ 0.00</div>
+      </div>
+      <div class="price-item full-width highlight-landing">
+        <div class="item-label">Net Landing as on Current Date</div>
+        <div class="item-val" id="outNetLanding">₹ 0.00</div>
+      </div>
+    </div>
+
+    <!-- Applicable Scheme Details Section Below Net Landing -->
+    <div class="scheme-container" id="schemeContainer">
+      <div class="scheme-header">🎁 Applicable Q3 Schemes & Direct Incentives (Oct - Dec 2026):</div>
+      <div class="scheme-badge-group" id="schemeBadges"></div>
+    </div>
+  </div>
+
+  <!-- Footer Warning -->
+  <div class="footer-note">
+    User to verify the prices from circular.
+  </div>
+
 </div>
 
+<!-- SheetJS for processing spreadsheet uploads -->
+<script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
 <script>
-  const products = [
-    // Premium grades with Annexure B scheme
-    {
-      name: "SERVO HYPERDRIVE 5W-30-3 HDPE",
-      pack: 3, dlp: 1607.16, mrp: 2625.00, category: "Premium", hoDisc: 0,
-      scheme: {
-        title: "Annexure B: PREMIUM grades - FREE SKU",
-        applicable: "All Bazaar Resellers & RO dealers (SDMS billing)",
-        offer: "One can of 1/2 ltr (Kg) FREE against purchase of 1 can",
-        basket: "SERVO BRAKE FLUID SUPER HD (2909), SERVO BRAKE FLUID DOT 4 (2914), SERVO KOOL PLUS (7584), SERVO GREASE MP 3 (7705), SERVO GEM RR 3 (7727), SERVO LONG LIFE GREASE (7849)"
-      }
-    },
-    {
-      name: "SERVO HYPERDRIVE 5W-30-3.5 HDPE",
-      pack: 3.5, dlp: 1874.88, mrp: 3063.00, category: "Premium", hoDisc: 0,
-      scheme: {
-        title: "Annexure B: PREMIUM grades - FREE SKU",
-        applicable: "All Bazaar Resellers & RO dealers (SDMS billing)",
-        offer: "One can of 1/2 ltr (Kg) FREE against purchase of 1 can",
-        basket: "SERVO BRAKE FLUID SUPER HD (2909), SERVO BRAKE FLUID DOT 4 (2914), SERVO KOOL PLUS (7584), SERVO GREASE MP 3 (7705), SERVO GEM RR 3 (7727), SERVO LONG LIFE GREASE (7849)"
-      }
-    },
-    {
-      name: "SERVO HYPERDRIVE 5W-30-4 HDPE",
-      pack: 4, dlp: 2142.69, mrp: 3500.00, category: "Premium", hoDisc: 0,
-      scheme: {
-        title: "Annexure B: PREMIUM grades - FREE SKU",
-        applicable: "All Bazaar Resellers & RO dealers (SDMS billing)",
-        offer: "One can of 1/2 ltr (Kg) FREE against purchase of 1 can",
-        basket: "SERVO BRAKE FLUID SUPER HD (2909), SERVO BRAKE FLUID DOT 4 (2914), SERVO KOOL PLUS (7584), SERVO GREASE MP 3 (7705), SERVO GEM RR 3 (7727), SERVO LONG LIFE GREASE (7849)"
-      }
-    },
-    {
-      name: "SERVO HYPERDRIVE OW-16-3 HDPE",
-      pack: 3, dlp: 1640.22, mrp: 2664.00, category: "Premium", hoDisc: 0,
-      scheme: {
-        title: "Annexure B: PREMIUM grades - FREE SKU",
-        applicable: "All Bazaar Resellers & RO dealers (SDMS billing)",
-        offer: "One can of 1/2 ltr (Kg) FREE against purchase of 1 can",
-        basket: "SERVO BRAKE FLUID SUPER HD (2909), SERVO BRAKE FLUID DOT 4 (2914), SERVO KOOL PLUS (7584), SERVO GREASE MP 3 (7705), SERVO GEM RR 3 (7727), SERVO LONG LIFE GREASE (7849)"
-      }
-    },
-    {
-      name: "SERVO HYPERDRIVE OW-16-3.5 HDPE",
-      pack: 3.5, dlp: 1913.60, mrp: 3108.00, category: "Premium", hoDisc: 0,
-      scheme: {
-        title: "Annexure B: PREMIUM grades - FREE SKU",
-        applicable: "All Bazaar Resellers & RO dealers (SDMS billing)",
-        offer: "One can of 1/2 ltr (Kg) FREE against purchase of 1 can",
-        basket: "SERVO BRAKE FLUID SUPER HD (2909), SERVO BRAKE FLUID DOT 4 (2914), SERVO KOOL PLUS (7584), SERVO GREASE MP 3 (7705), SERVO GEM RR 3 (7727), SERVO LONG LIFE GREASE (7849)"
-      }
-    },
-    {
-      name: "SERVO HYPERDRIVE OW-16-4 HDPE",
-      pack: 4, dlp: 2186.97, mrp: 3552.00, category: "Premium", hoDisc: 0,
-      scheme: {
-        title: "Annexure B: PREMIUM grades - FREE SKU",
-        applicable: "All Bazaar Resellers & RO dealers (SDMS billing)",
-        offer: "One can of 1/2 ltr (Kg) FREE against purchase of 1 can",
-        basket: "SERVO BRAKE FLUID SUPER HD (2909), SERVO BRAKE FLUID DOT 4 (2914), SERVO KOOL PLUS (7584), SERVO GREASE MP 3 (7705), SERVO GEM RR 3 (7727), SERVO LONG LIFE GREASE (7849)"
-      }
-    },
-    {
-      name: "SERVO HYPERDRIVE NXT OW-16-3 HDPE",
-      pack: 3, dlp: 2150.87, mrp: 3186.00, category: "Premium", hoDisc: 0,
-      scheme: {
-        title: "Annexure B: PREMIUM grades - FREE SKU",
-        applicable: "All Bazaar Resellers & RO dealers (SDMS billing)",
-        offer: "One can of 1/2 ltr (Kg) FREE against purchase of 1 can",
-        basket: "SERVO BRAKE FLUID SUPER HD (2909), SERVO BRAKE FLUID DOT 4 (2914), SERVO KOOL PLUS (7584), SERVO GREASE MP 3 (7705), SERVO GEM RR 3 (7727), SERVO LONG LIFE GREASE (7849)"
-      }
-    },
-    {
-      name: "SERVO HYPERDRIVE NXT OW-16-3.5 HDPE",
-      pack: 3.5, dlp: 2509.35, mrp: 3717.00, category: "Premium", hoDisc: 0,
-      scheme: {
-        title: "Annexure B: PREMIUM grades - FREE SKU",
-        applicable: "All Bazaar Resellers & RO dealers (SDMS billing)",
-        offer: "One can of 1/2 ltr (Kg) FREE against purchase of 1 can",
-        basket: "SERVO BRAKE FLUID SUPER HD (2909), SERVO BRAKE FLUID DOT 4 (2914), SERVO KOOL PLUS (7584), SERVO GREASE MP 3 (7705), SERVO GEM RR 3 (7727), SERVO LONG LIFE GREASE (7849)"
-      }
-    },
-    {
-      name: "SERVO HYPERDRIVE NXT OW-16-4 HDPE",
-      pack: 4, dlp: 2867.82, mrp: 4248.00, category: "Premium", hoDisc: 0,
-      scheme: {
-        title: "Annexure B: PREMIUM grades - FREE SKU",
-        applicable: "All Bazaar Resellers & RO dealers (SDMS billing)",
-        offer: "One can of 1/2 ltr (Kg) FREE against purchase of 1 can",
-        basket: "SERVO BRAKE FLUID SUPER HD (2909), SERVO BRAKE FLUID DOT 4 (2914), SERVO KOOL PLUS (7584), SERVO GREASE MP 3 (7705), SERVO GEM RR 3 (7727), SERVO LONG LIFE GREASE (7849)"
-      }
-    },
-    {
-      name: "SERVO HYPERDRIVE NXT OW-16-5 HDPE",
-      pack: 5, dlp: 3584.78, mrp: 5310.00, category: "Premium", hoDisc: 0,
-      scheme: {
-        title: "Annexure B: PREMIUM grades - FREE SKU",
-        applicable: "All Bazaar Resellers & RO dealers (SDMS billing)",
-        offer: "One can of 1/2 ltr (Kg) FREE against purchase of 1 can",
-        basket: "SERVO BRAKE FLUID SUPER HD (2909), SERVO BRAKE FLUID DOT 4 (2914), SERVO KOOL PLUS (7584), SERVO GREASE MP 3 (7705), SERVO GEM RR 3 (7727), SERVO LONG LIFE GREASE (7849)"
-      }
-    },
-    {
-      name: "SERVO HYPERDRIVE NXT OW-40-3 HDPE",
-      pack: 3, dlp: 2340.00, mrp: 3480.00, category: "Premium", hoDisc: 0,
-      scheme: {
-        title: "Annexure B: PREMIUM grades - FREE SKU",
-        applicable: "All Bazaar Resellers & RO dealers (SDMS billing)",
-        offer: "One can of 1/2 ltr (Kg) FREE against purchase of 1 can",
-        basket: "SERVO BRAKE FLUID SUPER HD (2909), SERVO BRAKE FLUID DOT 4 (2914), SERVO KOOL PLUS (7584), SERVO GREASE MP 3 (7705), SERVO GEM RR 3 (7727), SERVO LONG LIFE GREASE (7849)"
-      }
-    },
-    {
-      name: "SERVO HYPERDRIVE NXT 0W-40-3.5 HDPE",
-      pack: 3.5, dlp: 2730.00, mrp: 4060.00, category: "Premium", hoDisc: 0,
-      scheme: {
-        title: "Annexure B: PREMIUM grades - FREE SKU",
-        applicable: "All Bazaar Resellers & RO dealers (SDMS billing)",
-        offer: "One can of 1/2 ltr (Kg) FREE against purchase of 1 can",
-        basket: "SERVO BRAKE FLUID SUPER HD (2909), SERVO BRAKE FLUID DOT 4 (2914), SERVO KOOL PLUS (7584), SERVO GREASE MP 3 (7705), SERVO GEM RR 3 (7727), SERVO LONG LIFE GREASE (7849)"
-      }
-    },
-    {
-      name: "SERVO HYPERDRIVE NXT 0W-40-4 HDPE",
-      pack: 4, dlp: 3120.00, mrp: 4640.00, category: "Premium", hoDisc: 0,
-      scheme: {
-        title: "Annexure B: PREMIUM grades - FREE SKU",
-        applicable: "All Bazaar Resellers & RO dealers (SDMS billing)",
-        offer: "One can of 1/2 ltr (Kg) FREE against purchase of 1 can",
-        basket: "SERVO BRAKE FLUID SUPER HD (2909), SERVO BRAKE FLUID DOT 4 (2914), SERVO KOOL PLUS (7584), SERVO GREASE MP 3 (7705), SERVO GEM RR 3 (7727), SERVO LONG LIFE GREASE (7849)"
-      }
-    },
-    {
-      name: "SERVO HYPERDRIVE NXT 0W-40-5 HDPE",
-      pack: 5, dlp: 3900.00, mrp: 5800.00, category: "Premium", hoDisc: 0,
-      scheme: {
-        title: "Annexure B: PREMIUM grades - FREE SKU",
-        applicable: "All Bazaar Resellers & RO dealers (SDMS billing)",
-        offer: "One can of 1/2 ltr (Kg) FREE against purchase of 1 can",
-        basket: "SERVO BRAKE FLUID SUPER HD (2909), SERVO BRAKE FLUID DOT 4 (2914), SERVO KOOL PLUS (7584), SERVO GREASE MP 3 (7705), SERVO GEM RR 3 (7727), SERVO LONG LIFE GREASE (7849)"
-      }
-    },
-    {
-      name: "SERVO HYPERDRIVE NXT 10W-40-3 HDPE",
-      pack: 3, dlp: 2312.67, mrp: 3409.00, category: "Premium", hoDisc: 0,
-      scheme: {
-        title: "Annexure B: PREMIUM grades - FREE SKU",
-        applicable: "All Bazaar Resellers & RO dealers (SDMS billing)",
-        offer: "One can of 1/2 ltr (Kg) FREE against purchase of 1 can",
-        basket: "SERVO BRAKE FLUID SUPER HD (2909), SERVO BRAKE FLUID DOT 4 (2914), SERVO KOOL PLUS (7584), SERVO GREASE MP 3 (7705), SERVO GEM RR 3 (7727), SERVO LONG LIFE GREASE (7849)"
-      }
-    },
-    {
-      name: "SERVO HYPERDRIVE NXT 10W-40-3.5 HDPE",
-      pack: 3.5, dlp: 2698.00, mrp: 3977.00, category: "Premium", hoDisc: 0,
-      scheme: {
-        title: "Annexure B: PREMIUM grades - FREE SKU",
-        applicable: "All Bazaar Resellers & RO dealers (SDMS billing)",
-        offer: "One can of 1/2 ltr (Kg) FREE against purchase of 1 can",
-        basket: "SERVO BRAKE FLUID SUPER HD (2909), SERVO BRAKE FLUID DOT 4 (2914), SERVO KOOL PLUS (7584), SERVO GREASE MP 3 (7705), SERVO GEM RR 3 (7727), SERVO LONG LIFE GREASE (7849)"
-      }
-    },
-    {
-      name: "SERVO HYPERDRIVE NXT 10W-40-4 HDPE",
-      pack: 4, dlp: 3083.33, mrp: 4545.00, category: "Premium", hoDisc: 0,
-      scheme: {
-        title: "Annexure B: PREMIUM grades - FREE SKU",
-        applicable: "All Bazaar Resellers & RO dealers (SDMS billing)",
-        offer: "One can of 1/2 ltr (Kg) FREE against purchase of 1 can",
-        basket: "SERVO BRAKE FLUID SUPER HD (2909), SERVO BRAKE FLUID DOT 4 (2914), SERVO KOOL PLUS (7584), SERVO GREASE MP 3 (7705), SERVO GEM RR 3 (7727), SERVO LONG LIFE GREASE (7849)"
-      }
-    },
-    {
-      name: "SERVO HYPERDRIVE NXT 10W-40-5 HDPE",
-      pack: 5, dlp: 3854.10, mrp: 5682.00, category: "Premium", hoDisc: 0,
-      scheme: {
-        title: "Annexure B: PREMIUM grades - FREE SKU",
-        applicable: "All Bazaar Resellers & RO dealers (SDMS billing)",
-        offer: "One can of 1/2 ltr (Kg) FREE against purchase of 1 can",
-        basket: "SERVO BRAKE FLUID SUPER HD (2909), SERVO BRAKE FLUID DOT 4 (2914), SERVO KOOL PLUS (7584), SERVO GREASE MP 3 (7705), SERVO GEM RR 3 (7727), SERVO LONG LIFE GREASE (7849)"
-      }
-    },
-
-    // Annexure C: Gear Oils Scheme Products
-    {
-      name: "SERVO GEAR HP 90-1L",
-      pack: 1, dlp: 285.00, mrp: 410.00, category: "Mass", hoDisc: 0,
-      scheme: {
-        title: "Annexure C: GEAR OILS FREE SCHEME",
-        applicable: "All Bazaar Resellers & RO dealers (SDMS billing on NEW MRP products)",
-        offer: "One can of same product FREE against billing of every 10 cans",
-        basket: "Same Product Free"
-      }
-    },
-    {
-      name: "SERVO GEAR HP 90-5L",
-      pack: 5, dlp: 1420.00, mrp: 2040.00, category: "Mass", hoDisc: 0,
-      scheme: {
-        title: "Annexure C: GEAR OILS FREE SCHEME",
-        applicable: "All Bazaar Resellers & RO dealers (SDMS billing on NEW MRP products)",
-        offer: "One can of same product FREE against billing of every 10 cans",
-        basket: "Same Product Free"
-      }
-    },
-    {
-      name: "SERVO GEAR HP 90-20L BUC",
-      pack: 20, dlp: 5600.00, mrp: 8100.00, category: "Mass", hoDisc: 0,
-      scheme: {
-        title: "Annexure C: GEAR OILS FREE SCHEME",
-        applicable: "All Bazaar Resellers & RO dealers (SDMS billing on NEW MRP products)",
-        offer: "One can 5L of same product FREE against billing of every 40L bucket",
-        basket: "5L Same Product Free"
-      }
-    },
-    {
-      name: "SERVO GEAR HP 140-1L",
-      pack: 1, dlp: 290.00, mrp: 420.00, category: "Mass", hoDisc: 0,
-      scheme: {
-        title: "Annexure C: GEAR OILS FREE SCHEME",
-        applicable: "All Bazaar Resellers & RO dealers (SDMS billing on NEW MRP products)",
-        offer: "One can of same product FREE against billing of every 10 cans",
-        basket: "Same Product Free"
-      }
-    },
-    {
-      name: "SERVO GEAR HP 140-5L",
-      pack: 5, dlp: 1445.00, mrp: 2085.00, category: "Mass", hoDisc: 0,
-      scheme: {
-        title: "Annexure C: GEAR OILS FREE SCHEME",
-        applicable: "All Bazaar Resellers & RO dealers (SDMS billing on NEW MRP products)",
-        offer: "One can of same product FREE against billing of every 10 cans",
-        basket: "Same Product Free"
-      }
-    },
-    {
-      name: "SERVO GEAR HP 140-20L BUC",
-      pack: 20, dlp: 5700.00, mrp: 8250.00, category: "Mass", hoDisc: 0,
-      scheme: {
-        title: "Annexure C: GEAR OILS FREE SCHEME",
-        applicable: "All Bazaar Resellers & RO dealers (SDMS billing on NEW MRP products)",
-        offer: "One can 5L of same product FREE against billing of every 40L bucket",
-        basket: "5L Same Product Free"
-      }
-    },
-    {
-      name: "SERVO TRANSFLUID A-1L",
-      pack: 1, dlp: 310.00, mrp: 450.00, category: "Mass", hoDisc: 0,
-      scheme: {
-        title: "Annexure C: GEAR OILS FREE SCHEME",
-        applicable: "All Bazaar Resellers & RO dealers (SDMS billing on NEW MRP products)",
-        offer: "One can of same product FREE against billing of every 10 cans",
-        basket: "Same Product Free"
-      }
-    },
-    {
-      name: "SERVO TRANSFLUID A-5L",
-      pack: 5, dlp: 1540.00, mrp: 2240.00, category: "Mass", hoDisc: 0,
-      scheme: {
-        title: "Annexure C: GEAR OILS FREE SCHEME",
-        applicable: "All Bazaar Resellers & RO dealers (SDMS billing on NEW MRP products)",
-        offer: "One can of same product FREE against billing of every 10 cans",
-        basket: "Same Product Free"
-      }
-    },
-    {
-      name: "SERVO TRANSFLUID A-10 L",
-      pack: 10, dlp: 3050.00, mrp: 4400.00, category: "Mass", hoDisc: 0,
-      scheme: {
-        title: "Annexure C: GEAR OILS FREE SCHEME",
-        applicable: "All Bazaar Resellers & RO dealers (SDMS billing on NEW MRP products)",
-        offer: "One can of 1L of same product FREE against billing of every 1 bucket of 10L",
-        basket: "1L Same Product Free"
-      }
-    },
-    {
-      name: "SERVO GEAR SUPER 80W-90-1 L",
-      pack: 1, dlp: 300.00, mrp: 435.00, category: "Aspirational", hoDisc: 0,
-      scheme: {
-        title: "Annexure C: GEAR OILS FREE SCHEME",
-        applicable: "All Bazaar Resellers & RO dealers (SDMS billing on NEW MRP products)",
-        offer: "One can of same product FREE against billing of every 10 cans",
-        basket: "Same Product Free"
-      }
-    },
-    {
-      name: "SERVO GEAR SUPER 80W-90-2.5L",
-      pack: 2.5, dlp: 740.00, mrp: 1070.00, category: "Aspirational", hoDisc: 0,
-      scheme: {
-        title: "Annexure C: GEAR OILS FREE SCHEME",
-        applicable: "All Bazaar Resellers & RO dealers (SDMS billing on NEW MRP products)",
-        offer: "One can of same product FREE against billing of every 10 cans",
-        basket: "Same Product Free"
-      }
-    },
-    {
-      name: "SERVO GEAR SUPER 80W-90-5L",
-      pack: 5, dlp: 1480.00, mrp: 2140.00, category: "Aspirational", hoDisc: 0,
-      scheme: {
-        title: "Annexure C: GEAR OILS FREE SCHEME",
-        applicable: "All Bazaar Resellers & RO dealers (SDMS billing on NEW MRP products)",
-        offer: "One can of same product FREE against billing of every 10 cans",
-        basket: "Same Product Free"
-      }
-    },
-    {
-      name: "SERVO GEAR SUPER 80W-90-7.5 L",
-      pack: 7.5, dlp: 2200.00, mrp: 3180.00, category: "Aspirational", hoDisc: 0,
-      scheme: {
-        title: "Annexure C: GEAR OILS FREE SCHEME",
-        applicable: "All Bazaar Resellers & RO dealers (SDMS billing on NEW MRP products)",
-        offer: "One can of 1L of same product FREE against billing of every 1 bucket of 7.5L/10L",
-        basket: "1L Same Product Free"
-      }
-    },
-    {
-      name: "SERVO GEAR SUPER 80W-90-20 L BUC",
-      pack: 20, dlp: 5850.00, mrp: 8450.00, category: "Aspirational", hoDisc: 0,
-      scheme: {
-        title: "Annexure C: GEAR OILS FREE SCHEME",
-        applicable: "All Bazaar Resellers & RO dealers (SDMS billing on NEW MRP products)",
-        offer: "One can 5L of same product FREE against billing of every 40L bucket",
-        basket: "5L Same Product Free"
-      }
-    },
-    {
-      name: "SERVO GEAR SUPER 85W-140-1 L",
-      pack: 1, dlp: 305.00, mrp: 440.00, category: "Aspirational", hoDisc: 0,
-      scheme: {
-        title: "Annexure C: GEAR OILS FREE SCHEME",
-        applicable: "All Bazaar Resellers & RO dealers (SDMS billing on NEW MRP products)",
-        offer: "One can of same product FREE against billing of every 10 cans",
-        basket: "Same Product Free"
-      }
-    },
-    {
-      name: "SERVO GEAR SUPER 85W-140-5L",
-      pack: 5, dlp: 1510.00, mrp: 2190.00, category: "Aspirational", hoDisc: 0,
-      scheme: {
-        title: "Annexure C: GEAR OILS FREE SCHEME",
-        applicable: "All Bazaar Resellers & RO dealers (SDMS billing on NEW MRP products)",
-        offer: "One can of same product FREE against billing of every 10 cans",
-        basket: "Same Product Free"
-      }
-    },
-    {
-      name: "SERVO GEAR SUPER 85W-140-7.5 L",
-      pack: 7.5, dlp: 2250.00, mrp: 3250.00, category: "Aspirational", hoDisc: 0,
-      scheme: {
-        title: "Annexure C: GEAR OILS FREE SCHEME",
-        applicable: "All Bazaar Resellers & RO dealers (SDMS billing on NEW MRP products)",
-        offer: "One can of 1L of same product FREE against billing of every 1 bucket of 7.5L/10L",
-        basket: "1L Same Product Free"
-      }
-    },
-    {
-      name: "SERVO GEAR SUPER 85W-140-12 L",
-      pack: 12, dlp: 3600.00, mrp: 5200.00, category: "Aspirational", hoDisc: 0,
-      scheme: {
-        title: "Annexure C: GEAR OILS FREE SCHEME",
-        applicable: "All Bazaar Resellers & RO dealers (SDMS billing on NEW MRP products)",
-        offer: "One can of 1L of same product FREE against billing of every 1 bucket of 7.5L/10L/12L",
-        basket: "1L Same Product Free"
-      }
-    },
-    {
-      name: "SERVO GEAR SUPER 85W-140-20 L BUC",
-      pack: 20, dlp: 5980.00, mrp: 8650.00, category: "Aspirational", hoDisc: 0,
-      scheme: {
-        title: "Annexure C: GEAR OILS FREE SCHEME",
-        applicable: "All Bazaar Resellers & RO dealers (SDMS billing on NEW MRP products)",
-        offer: "One can 5L of same product FREE against billing of every 40L bucket",
-        basket: "5L Same Product Free"
-      }
-    },
-
-    // Standard Circular Products
-    { name: "SERVO FLEET 40-1 HDPE", pack: 1, dlp: 296.54, mrp: 418.00, category: "Mass", hoDisc: 0 },
-    { name: "SERVO FLEET 40-5 HDPE", pack: 5, dlp: 1466.39, mrp: 2064.00, category: "Mass", hoDisc: 0 },
-    { name: "SERVO FLEET 40-10 HDPE", pack: 10, dlp: 2932.31, mrp: 4128.00, category: "Mass", hoDisc: 0 },
-    { name: "SERVO FLEET 40-20 HDPE", pack: 20, dlp: 5698.28, mrp: 7824.00, category: "Mass", hoDisc: 0 },
-    { name: "SERVO MOTOCARE 4T-0.9 HDPE", pack: 0.9, dlp: 260.00, mrp: 399.00, category: "Mass", hoDisc: 30 },
-    { name: "SERVO MOTOCARE 4T-1 HDPE", pack: 1, dlp: 279.00, mrp: 438.00, category: "Mass", hoDisc: 23 },
-    { name: "SERVO MOTOCARE 4T 20W-50-0.9 HDPE", pack: 0.9, dlp: 270.00, mrp: 435.00, category: "Mass", hoDisc: 0 },
-    { name: "SERVO MOTOCARE 4T 20W-50-1 HDPE", pack: 1, dlp: 295.00, mrp: 477.00, category: "Mass", hoDisc: 0 },
-    { name: "SERVO MOTOCARE 4T 20W-50-1.2 HDPE", pack: 1.2, dlp: 364.00, mrp: 559.00, category: "Mass", hoDisc: 0 },
-    { name: "SERVO MOTOCARE SCOOTER 10W-30-0.8 HDPE", pack: 0.8, dlp: 260.00, mrp: 389.00, category: "Mass", hoDisc: 0 },
-    { name: "SERVO SUPERMILE 5W-30-1 HDPE", pack: 1, dlp: 323.25, mrp: 530.00, category: "Aspirational", hoDisc: 16 },
-    { name: "SERVO SUPERMILE 5W-30-3 HDPE", pack: 3, dlp: 958.59, mrp: 1535.00, category: "Aspirational", hoDisc: 17 },
-    { name: "SERVO SUPERMILE 5W-30-3.5 HDPE", pack: 3.5, dlp: 1118.93, mrp: 1749.00, category: "Aspirational", hoDisc: 11 },
-    { name: "SERVO SUPERMILE 5W-30-5 HDPE", pack: 5, dlp: 1587.97, mrp: 2549.00, category: "Aspirational", hoDisc: 16 },
-    { name: "SERVO KISANPOWER SPSO-3.5 HDPE", pack: 3.5, dlp: 925.00, mrp: 1446.00, category: "Mass", hoDisc: 21 },
-    { name: "SERVO KISANPOWER OIB-1 HDPE", pack: 1, dlp: 288.08, mrp: 436.00, category: "Mass", hoDisc: 18 },
-    { name: "SERVO KISANPOWER OIB-5 HDPE", pack: 5, dlp: 1423.84, mrp: 2009.00, category: "Mass", hoDisc: 18 },
-    { name: "SERVO KISANPOWER OIB-20 HDPE", pack: 20, dlp: 5552.60, mrp: 8083.00, category: "Mass", hoDisc: 18 },
-    { name: "SERVO SUPERMILE GEO 20W-50-0.5 HDPE", pack: 0.5, dlp: 146.91, mrp: 205.00, category: "Aspirational", hoDisc: 0 },
-    { name: "SERVO SUPERMILE GEO 20W-50-1 HDPE", pack: 1, dlp: 267.91, mrp: 368.00, category: "Aspirational", hoDisc: 12 },
-    { name: "SERVO SUPERMILE GEO 20W-50-2.1 HDPE", pack: 2.1, dlp: 558.76, mrp: 772.80, category: "Aspirational", hoDisc: 9 },
-    { name: "SERVO SUPERMILE GEO 20W-50-3 HDPE", pack: 3, dlp: 800.00, mrp: 1104.00, category: "Aspirational", hoDisc: 9 },
-    { name: "SERVO SUPERMILE GEO 20W-50-20 HDPE", pack: 20, dlp: 5243.73, mrp: 7323.00, category: "Aspirational", hoDisc: 12 },
-    { name: "SERVO FLEET 15W-40-1 HDPE", pack: 1, dlp: 287.69, mrp: 399.00, category: "Mass", hoDisc: 20 },
-    { name: "SERVO FLEET 15W-40-3 HDPE", pack: 3, dlp: 855.38, mrp: 1159.00, category: "Mass", hoDisc: 18 },
-    { name: "SERVO FLEET 15W-40-5 HDPE", pack: 5, dlp: 1421.80, mrp: 1930.00, category: "Mass", hoDisc: 18 },
-    { name: "SERVO FLEET 15W-40-7.5 HDPE", pack: 7.5, dlp: 2140.00, mrp: 2899.00, category: "Mass", hoDisc: 19 },
-    { name: "SERVO FLEET 15W-40-10 HDPE", pack: 10, dlp: 2843.60, mrp: 3860.00, category: "Mass", hoDisc: 18 },
-    { name: "SERVO FLEET 15W-40-15 HDPE", pack: 15, dlp: 4234.35, mrp: 5784.00, category: "Mass", hoDisc: 18 },
-    { name: "SERVO FLEET 15W-40-20 HDPE", pack: 20, dlp: 5639.50, mrp: 7710.00, category: "Mass", hoDisc: 18 },
-    { name: "SERVO FLEET XL 15W-40-1 HDPE", pack: 1, dlp: 305.00, mrp: 420.00, category: "Mass", hoDisc: 28 },
-    { name: "SERVO FLEET XL 15W-40-3 HDPE", pack: 3, dlp: 885.00, mrp: 1225.00, category: "Mass", hoDisc: 22 },
-    { name: "SERVO FLEET XL 15W-40-5 HDPE", pack: 5, dlp: 1486.24, mrp: 2072.00, category: "Mass", hoDisc: 24 },
-    { name: "SERVO FLEET XL 15W-40-7.5 HDPE", pack: 7.5, dlp: 2250.00, mrp: 3099.00, category: "Mass", hoDisc: 25 },
-    { name: "SERVO FLEET XL 15W-40-10 HDPE", pack: 10, dlp: 2999.00, mrp: 4143.00, category: "Mass", hoDisc: 26 },
-    { name: "SERVO FLEET XL 15W-40-15 HDPE", pack: 15, dlp: 4370.00, mrp: 6190.00, category: "Mass", hoDisc: 25 },
-    { name: "SERVO FLEET XL 15W-40-20 HDPE", pack: 20, dlp: 5778.88, mrp: 8253.00, category: "Mass", hoDisc: 23 },
-    { name: "SERVO KISANPOWER TRACTOR OIL-1 HDPE", pack: 1, dlp: 278.06, mrp: 410.00, category: "Mass", hoDisc: 8 },
-    { name: "SERVO KISANPOWER TRACTOR OIL-6 HDPE", pack: 6, dlp: 1658.58, mrp: 2460.00, category: "Mass", hoDisc: 19 },
-    { name: "SERVO KISANPOWER TRACTOR OIL-7.5 HDPE", pack: 7.5, dlp: 2073.56, mrp: 3075.00, category: "Mass", hoDisc: 19 },
-    { name: "SERVO KISANPOWER TRACTOR OIL-8.5 HDPE", pack: 8.5, dlp: 2345.83, mrp: 3485.00, category: "Mass", hoDisc: 19 },
-    { name: "SERVO FLEET 20W-40-0.5 HDPE", pack: 0.5, dlp: 153.58, mrp: 199.00, category: "Mass", hoDisc: 0 },
-    { name: "SERVO FLEET 20W-40-1 HDPE", pack: 1, dlp: 285.34, mrp: 385.00, category: "Mass", hoDisc: 18 },
-    { name: "SERVO FLEET 20W-40-1.2 HDPE", pack: 1.2, dlp: 350.00, mrp: 465.00, category: "Mass", hoDisc: 16 },
-    { name: "SERVO FLEET 20W-40-3 HDPE", pack: 3, dlp: 830.64, mrp: 1125.00, category: "Mass", hoDisc: 17 },
-    { name: "SERVO FLEET 20W-40-5 HDPE", pack: 5, dlp: 1381.03, mrp: 1854.00, category: "Mass", hoDisc: 17 },
-    { name: "SERVO FLEET 20W-40-6 HDPE", pack: 6, dlp: 1675.00, mrp: 2234.00, category: "Mass", hoDisc: 17 },
-    { name: "SERVO FLEET 20W-40-7.5 HDPE", pack: 7.5, dlp: 2100.00, mrp: 2795.00, category: "Mass", hoDisc: 20 },
-    { name: "SERVO FLEET 20W-40-10 HDPE", pack: 10, dlp: 2741.35, mrp: 3704.00, category: "Mass", hoDisc: 17 },
-    { name: "SERVO FLEET 20W-40-15 HDPE", pack: 15, dlp: 4080.98, mrp: 5548.00, category: "Mass", hoDisc: 16 },
-    { name: "SERVO FLEET 20W-40-20 HDPE", pack: 20, dlp: 5434.10, mrp: 7395.00, category: "Mass", hoDisc: 16 },
-    { name: "SERVO ZOOM SCOOTER 10W-30-0.8 HDPE", pack: 0.8, dlp: 325.00, mrp: 489.00, category: "Aspirational", hoDisc: 33 },
-    { name: "SERVO ZOOM 2T SUPREME -0.02 POUCH", pack: 0.02, dlp: 8.84, mrp: 14.00, category: "Aspirational", hoDisc: 0 },
-    { name: "SERVO ZOOM 2T SUPREME -0.04 POUCH", pack: 0.04, dlp: 16.13, mrp: 23.00, category: "Aspirational", hoDisc: 0 },
-    { name: "SERVO ZOOM 2T SUPREME -0.06 POUCH", pack: 0.06, dlp: 24.06, mrp: 36.00, category: "Aspirational", hoDisc: 0 },
-    { name: "SERVO ZOOM 2T SUPREME-0.25 HDPE", pack: 0.25, dlp: 104.00, mrp: 155.00, category: "Aspirational", hoDisc: 0 },
-    { name: "SERVO ZOOM 2T SUPREME -0.5 HDPE", pack: 0.5, dlp: 201.53, mrp: 295.00, category: "Aspirational", hoDisc: 0 },
-    { name: "SERVO ZOOM 2T SUPREME-1 HDPE", pack: 1, dlp: 370.00, mrp: 490.00, category: "Aspirational", hoDisc: 0 },
-    { name: "SERVO ZOOM 2T SUPREME-5 HDPE", pack: 5, dlp: 1855.60, mrp: 2413.00, category: "Aspirational", hoDisc: 0 },
-    { name: "SERVO ZOOM 4T-0.9 HDPE", pack: 0.9, dlp: 294.31, mrp: 474.00, category: "Aspirational", hoDisc: 18 },
-    { name: "SERVO ZOOM 4T-1 HDPE", pack: 1, dlp: 319.36, mrp: 514.00, category: "Aspirational", hoDisc: 12 },
-    { name: "SERVO ZOOM 4T 20W-50-1 HDPE", pack: 1, dlp: 318.23, mrp: 512.00, category: "Aspirational", hoDisc: 8 },
-    { name: "SERVO ZOOM 4T 20W-50-1.2 HDPE", pack: 1.2, dlp: 400.00, mrp: 656.00, category: "Aspirational", hoDisc: 18 },
-    { name: "SERVO ZOOM 4T 10W-30-0.9 HDPE", pack: 0.9, dlp: 299.62, mrp: 482.00, category: "Aspirational", hoDisc: 0 },
-    { name: "SERVO ZOOM 4T 10W-30-1 HDPE", pack: 1, dlp: 319.42, mrp: 514.00, category: "Aspirational", hoDisc: 8 },
-    { name: "SERVO KISANPRO OIB - 1 HDPE", pack: 1, dlp: 334.94, mrp: 508.00, category: "Aspirational", hoDisc: 41 },
-    { name: "SERVO KISANPRO OIB - 5 HDPE", pack: 5, dlp: 1651.81, mrp: 2477.00, category: "Aspirational", hoDisc: 25 },
-    { name: "SERVO KISANPRO OIB-20 HDPE", pack: 20, dlp: 6558.26, mrp: 9830.00, category: "Aspirational", hoDisc: 30 },
-    { name: "SERVO PRIDE XL PLUS 15W-40.-1 HDPE", pack: 1, dlp: 329.69, mrp: 475.00, category: "Aspirational", hoDisc: 16 },
-    { name: "SERVO PRIDE XL PLUS 15W-40.- 3 HDPE", pack: 3, dlp: 982.47, mrp: 1410.00, category: "Aspirational", hoDisc: 15 },
-    { name: "SERVO PRIDE XL PLUS 15W-40.-5 HDPE", pack: 5, dlp: 1630.85, mrp: 2350.00, category: "Aspirational", hoDisc: 15 },
-    { name: "SERVO PRIDE XL PLUS 15W-40.-6 HDPE", pack: 6, dlp: 1957.02, mrp: 2820.00, category: "Aspirational", hoDisc: 15 },
-    { name: "SERVO PRIDE XL PLUS 15W-40-7.5 HDPE", pack: 7.5, dlp: 2445.86, mrp: 3525.00, category: "Aspirational", hoDisc: 15 },
-    { name: "SERVO PRIDE XL PLUS 15W-40.-10 HDPE", pack: 10, dlp: 3238.60, mrp: 4700.00, category: "Aspirational", hoDisc: 15 },
-    { name: "SERVO PRIDE XL PLUS 15W-40.- 15 HDPE", pack: 15, dlp: 4822.43, mrp: 7050.00, category: "Aspirational", hoDisc: 15 },
-    { name: "SERVO PRIDE XL PLUS 15W-40,- 18 HDPE", pack: 18, dlp: 5732.46, mrp: 8460.00, category: "Aspirational", hoDisc: 14 },
-    { name: "SERVO PRIDE XL PLUS 15W-40-20 HDPE", pack: 20, dlp: 6366.10, mrp: 9400.00, category: "Aspirational", hoDisc: 14 },
-    { name: "SERVO FUTURA 5W-30-1 HDPE", pack: 1, dlp: 394.77, mrp: 640.00, category: "Premium", hoDisc: 30 },
-    { name: "SERVO FUTURA 5W-30-3 HDPE", pack: 3, dlp: 1187.41, mrp: 1923.00, category: "Premium", hoDisc: 30 },
-    { name: "SERVO FUTURA 5W-30-3.5 HDPE", pack: 3.5, dlp: 1381.61, mrp: 2238.00, category: "Premium", hoDisc: 30 },
-    { name: "SERVO FUTURA 5W-30-5 HDPE", pack: 5, dlp: 1975.12, mrp: 3199.00, category: "Premium", hoDisc: 30 },
-    { name: "SERVO PRIDE XL PLUS 10W-30-1 HDPE", pack: 1, dlp: 328.38, mrp: 475.00, category: "Aspirational", hoDisc: 15 },
-    { name: "SERVO PRIDE XL PLUS 10W-30-5 HDPE", pack: 5, dlp: 1637.12, mrp: 2350.00, category: "Aspirational", hoDisc: 15 },
-    { name: "SERVO PRIDE XL PLUS 10W-30-7.5 HDPE", pack: 7.5, dlp: 2459.46, mrp: 3525.00, category: "Aspirational", hoDisc: 15 },
-    { name: "SERVO PRIDE XL PLUS 10W-30-15 HDPE", pack: 15, dlp: 4915.56, mrp: 7050.00, category: "Aspirational", hoDisc: 15 },
-    { name: "SERVO PRIDE XL PLUS 10W-30-20 HDPE", pack: 20, dlp: 6547.36, mrp: 9400.00, category: "Aspirational", hoDisc: 15 },
-    { name: "SERVO PRIDE 15W-40-1 HDPE", pack: 1, dlp: 304.78, mrp: 425.00, category: "Aspirational", hoDisc: 8 },
-    { name: "SERVO PRIDE 15W-40-3 HDPE", pack: 3, dlp: 913.88, mrp: 1260.00, category: "Aspirational", hoDisc: 9 },
-    { name: "SERVO PRIDE 15W-40-5 HDPE", pack: 5, dlp: 1519.52, mrp: 2100.00, category: "Aspirational", hoDisc: 9 },
-    { name: "SERVO PRIDE 15W-40-7.5 HDPE", pack: 7.5, dlp: 2283.20, mrp: 3150.00, category: "Aspirational", hoDisc: 9 },
-    { name: "SERVO PRIDE 15W-40-10 HDPE", pack: 10, dlp: 3043.60, mrp: 4200.00, category: "Aspirational", hoDisc: 9 },
-    { name: "SERVO PRIDE 15W-40-15 HDPE", pack: 15, dlp: 4562.43, mrp: 6300.00, category: "Aspirational", hoDisc: 9 },
-    { name: "SERVO PRIDE 15W-40-20 HDPE", pack: 20, dlp: 6099.72, mrp: 8400.00, category: "Aspirational", hoDisc: 9 },
-    { name: "SERVO PRIDE 20W-40-0.5 HDPE", pack: 0.5, dlp: 169.35, mrp: 225.00, category: "Aspirational", hoDisc: 0 },
-    { name: "SERVO PRIDE 20W-40-1 HDPE", pack: 1, dlp: 307.66, mrp: 425.00, category: "Aspirational", hoDisc: 11 },
-    { name: "SERVO PRIDE 20W-40-5 HDPE", pack: 5, dlp: 1539.61, mrp: 2100.00, category: "Aspirational", hoDisc: 11 },
-    { name: "SERVO PRIDE 20W-40-7.5 HDPE", pack: 7.5, dlp: 2313.32, mrp: 3150.00, category: "Aspirational", hoDisc: 11 },
-    { name: "SERVO PRIDE 20W-40-10 HDPE", pack: 10, dlp: 3078.70, mrp: 4200.00, category: "Aspirational", hoDisc: 11 },
-    { name: "SERVO PRIDE 20W-40-15 HDPE", pack: 15, dlp: 4621.91, mrp: 6300.00, category: "Aspirational", hoDisc: 11 },
-    { name: "SERVO PRIDE 20W-40-20 HDPE", pack: 20, dlp: 6156.37, mrp: 8400.00, category: "Aspirational", hoDisc: 11 },
-    { name: "SERVO PRIDE TC 15W-40-1 HDPE", pack: 1, dlp: 314.35, mrp: 455.00, category: "Aspirational", hoDisc: 4 },
-    { name: "SERVO PRIDE TC 15W-40-2.5 HDPE", pack: 2.5, dlp: 799.92, mrp: 1125.00, category: "Aspirational", hoDisc: 8 },
-    { name: "SERVO PRIDE TC 15W-40-3 HDPE", pack: 3, dlp: 943.05, mrp: 1350.00, category: "Aspirational", hoDisc: 6 },
-    { name: "SERVO PRIDE TC 15W-40-5 HDPE", pack: 5, dlp: 1557.44, mrp: 2250.00, category: "Aspirational", hoDisc: 4 },
-    { name: "SERVO PRIDE TC 15W-40-6 HDPE", pack: 6, dlp: 1868.92, mrp: 2700.00, category: "Aspirational", hoDisc: 4 },
-    { name: "SERVO PRIDE TC 15W-40-7.5 HDPE", pack: 7.5, dlp: 2346.89, mrp: 3375.00, category: "Aspirational", hoDisc: 6 },
-    { name: "SERVO PRIDE TC 15W-40-10 HDPE", pack: 10, dlp: 3083.07, mrp: 4500.00, category: "Aspirational", hoDisc: 4 },
-    { name: "SERVO PRIDE TC 15W-40-15 HDPE", pack: 15, dlp: 4578.50, mrp: 6750.00, category: "Aspirational", hoDisc: 3 },
-    { name: "SERVO PRIDE TC 15W-40-20 HDPE", pack: 20, dlp: 6086.64, mrp: 9000.00, category: "Aspirational", hoDisc: 3 },
-    { name: "SERVO HYPERSPORT 4T 10W-30-0.9 HDPE", pack: 0.9, dlp: 474.38, mrp: 705.00, category: "Premium", hoDisc: 0 },
-    { name: "SERVO HYPERSPORT 4T 10W-30-1 HDPE", pack: 1, dlp: 516.10, mrp: 767.00, category: "Premium", hoDisc: 0 },
-    { name: "SERVO HYPERSPORT 4T-0.9 HDPE", pack: 0.9, dlp: 484.46, mrp: 725.00, category: "Premium", hoDisc: 0 },
-    { name: "SERVO HYPERSPORT 4T-1 HDPE", pack: 1, dlp: 521.40, mrp: 775.00, category: "Premium", hoDisc: 0 },
-    { name: "SERVO HYPERSPORT 4T 20W-50-0.9 HDPE", pack: 0.9, dlp: 481.07, mrp: 715.00, category: "Premium", hoDisc: 0 },
-    { name: "SERVO HYPERSPORT 4T 20W-50-1 HDPE", pack: 1, dlp: 521.11, mrp: 774.00, category: "Premium", hoDisc: 0 },
-    { name: "SERVO HYPERSPORT SCOOTER 10W-30-0.8 HDPE", pack: 0.8, dlp: 450.00, mrp: 651.00, category: "Premium", hoDisc: 0 },
-    { name: "SERVO HYPERDRIVE 5W-30-1 HDPE", pack: 1, dlp: 535.72, mrp: 875.00, category: "Premium", hoDisc: 0 },
-    { name: "SERVO HYPERTORQ 15W-40-1 HDPE", pack: 1, dlp: 430.00, mrp: 530.00, category: "Premium", hoDisc: 0 },
-    { name: "SERVO HYPERTORQ 15W-40-3 HDPE", pack: 3, dlp: 1260.00, mrp: 1575.00, category: "Premium", hoDisc: 0 },
-    { name: "SERVO HYPERTORQ 15W-40-5 HDPE", pack: 5, dlp: 2075.00, mrp: 2600.00, category: "Premium", hoDisc: 0 },
-    { name: "SERVO HYPERTORQ 15W-40-7.5 HDPE", pack: 7.5, dlp: 3037.50, mrp: 3788.00, category: "Premium", hoDisc: 0 },
-    { name: "SERVO HYPERTORQ 15W-40-10 HDPE", pack: 10, dlp: 4050.00, mrp: 5050.00, category: "Premium", hoDisc: 0 },
-    { name: "SERVO HYPERTORQ 15W-40-15 HDPE", pack: 15, dlp: 6075.00, mrp: 7575.00, category: "Premium", hoDisc: 0 },
-    { name: "SERVO HYPERTORQ 15W-40-20 HDPE", pack: 20, dlp: 8100.00, mrp: 10100.00, category: "Premium", hoDisc: 0 },
-    { name: "SERVO HYPERTORQ NXT 10W-30-1 HDPE", pack: 1, dlp: 470.00, mrp: 580.00, category: "Premium", hoDisc: 0 },
-    { name: "SERVO HYPERTORQ NXT 10W-30-15 HDPE", pack: 15, dlp: 6450.00, mrp: 8400.00, category: "Premium", hoDisc: 0 },
-    { name: "SERVO HYPERTORQ NXT 15W-40-1 HDPE", pack: 1, dlp: 460.00, mrp: 575.00, category: "Premium", hoDisc: 0 },
-    { name: "SERVO HYPERTORQ NXT 15W-40-3 HDPE", pack: 3, dlp: 1350.00, mrp: 1680.00, category: "Premium", hoDisc: 0 },
-    { name: "SERVO HYPERTORQ NXT 15W-40-5 HDPE", pack: 5, dlp: 2175.00, mrp: 2800.00, category: "Premium", hoDisc: 0 },
-    { name: "SERVO HYPERTORQ NXT 15W-40-7.5 HDPE", pack: 7.5, dlp: 3150.00, mrp: 4163.00, category: "Premium", hoDisc: 0 },
-    { name: "SERVO HYPERTORQ NXT 15W-40-15 HDPE", pack: 15, dlp: 6300.00, mrp: 8325.00, category: "Premium", hoDisc: 0 }
+  // Complete 350-product list with Category tag:
+  // Format: [Name, Pack Size, DLP, MRP, HO Disc, Eff DLP, SC, CD, Category, ProdCode]
+  let lubeData = [
+    ["SERVO FLEET 40 - 1 HDPE", 1.0, 296.54, 418.0, 15.0, 278.84, 0.025, 0.02, "MASS", 21404],
+    ["SERVO FLEET 40 - 5 HDPE", 5.0, 1466.39, 2064.0, 75.0, 1377.89, 0.025, 0.02, "MASS", 21404],
+    ["SERVO FLEET 40 - 10 HDPE", 10.0, 2932.31, 4128.0, 150.0, 2755.31, 0.025, 0.02, "MASS", 21404],
+    ["SERVO FLEET 40 - 20 HDPE", 20.0, 5698.28, 7824.0, 400.0, 5226.28, 0.025, 0.02, "MASS", 21404],
+    ["SERVO SUPERMILE SMG 20W-40 - 0.5 HDPE", 0.5, 165.38, 262.0, 5.0, 159.48, 0.025, 0.02, "MASS", 22040],
+    ["SERVO SUPERMILE SMG 20W-40 - 1 HDPE", 1.0, 303.02, 494.0, 20.0, 279.42, 0.025, 0.02, "MASS", 22040],
+    ["SERVO SUPERMILE SMG 20W-40 - 3.5 HDPE", 3.5, 1081.16, 1696.0, 70.0, 998.56, 0.025, 0.02, "MASS", 22040],
+    ["SERVO SUPERMILE SMG 20W-40 - 5 HDPE", 5.0, 1498.89, 2415.0, 100.0, 1380.89, 0.025, 0.02, "MASS", 22040],
+    ["SERVO MOTOCARE 4T - 0.9 HDPE", 0.9, 260.0, 399.0, 27.0, 228.14, 0.025, 0.02, "MASS", 22874],
+    ["SERVO MOTOCARE 4T - 1 HDPE", 1.0, 279.0, 438.0, 23.0, 251.86, 0.025, 0.02, "MASS", 22874],
+    ["SERVO MOTOCARE 4T 20W-50 - 0.9 HDPE", 0.9, 270.0, 435.0, 0.0, 270.0, 0.025, 0.02, "MASS", 22875],
+    ["SERVO MOTOCARE 4T 20W-50 - 1 HDPE", 1.0, 295.0, 477.0, 0.0, 295.0, 0.025, 0.02, "MASS", 22875],
+    ["SERVO MOTOCARE 4T 20W-50 - 1.2 HDPE", 1.2, 364.0, 559.0, 0.0, 364.0, 0.025, 0.02, "MASS", 22875],
+    ["SERVO MOTOCARE SCOOTER 10W-30 - 0.8 HDPE", 0.8, 260.0, 389.0, 0.0, 260.0, 0.025, 0.02, "MASS", 22876],
+    ["SERVO SUPERMILE 5W-30 - 1 HDPE", 1.0, 323.25, 530.0, 20.0, 299.65, 0.025, 0.02, "MASS", 22894],
+    ["SERVO SUPERMILE 5W-30 - 3 HDPE", 3.0, 958.59, 1535.0, 60.0, 887.79, 0.025, 0.02, "MASS", 22894],
+    ["SERVO SUPERMILE 5W-30 - 3.5 HDPE", 3.5, 1118.93, 1749.0, 70.0, 1036.33, 0.025, 0.02, "MASS", 22894],
+    ["SERVO SUPERMILE 5W-30 - 5 HDPE", 5.0, 1587.97, 2549.0, 100.0, 1469.97, 0.025, 0.02, "MASS", 22894],
+    ["SERVO KISANPOWER SPSO - 3.5 HDPE", 3.5, 925.0, 1446.0, 87.5, 821.75, 0.025, 0.02, "MASS", 22915],
+    ["SERVO KISANPOWER OIB - 1 HDPE", 1.0, 288.08, 436.0, 20.0, 264.48, 0.025, 0.02, "MASS", 22934],
+    ["SERVO KISANPOWER OIB - 5 HDPE", 5.0, 1423.84, 2009.0, 100.0, 1305.84, 0.025, 0.02, "MASS", 22934],
+    ["SERVO KISANPOWER OIB - 20 HDPE", 20.0, 5552.6, 8083.0, 400.0, 5080.6, 0.025, 0.02, "MASS", 22934],
+    ["SERVO SUPERMILE GEO 20W-50 - 0.5 HDPE", 0.5, 146.91, 205.0, 5.0, 141.01, 0.025, 0.02, "MASS", 22960],
+    ["SERVO SUPERMILE GEO 20W-50 - 1 HDPE", 1.0, 267.91, 368.0, 15.0, 250.21, 0.025, 0.02, "MASS", 22960],
+    ["SERVO SUPERMILE GEO 20W-50 - 2.1 HDPE", 2.1, 558.76, 772.8, 21.0, 533.98, 0.025, 0.02, "MASS", 22960],
+    ["SERVO SUPERMILE GEO 20W-50 - 3 HDPE", 3.0, 800.0, 1104.0, 30.0, 764.6, 0.025, 0.02, "MASS", 22960],
+    ["SERVO SUPERMILE GEO 20W-50 - 20 HDPE", 20.0, 5243.73, 7323.0, 300.0, 4889.73, 0.025, 0.02, "MASS", 22960],
+    ["SERVO FLEET 15W-40 - 1 HDPE", 1.0, 287.69, 399.0, 20.0, 264.09, 0.025, 0.02, "MASS", 24404],
+    ["SERVO FLEET 15W-40 - 3 HDPE", 3.0, 855.38, 1159.0, 60.0, 784.58, 0.025, 0.02, "MASS", 24404],
+    ["SERVO FLEET 15W-40 - 5 HDPE", 5.0, 1421.8, 1930.0, 100.0, 1303.8, 0.025, 0.02, "MASS", 24404],
+    ["SERVO FLEET 15W-40 - 7.5 HDPE", 7.5, 2140.0, 2899.0, 150.0, 1963.0, 0.025, 0.02, "MASS", 24404],
+    ["SERVO FLEET 15W-40 - 10 HDPE", 10.0, 2843.6, 3860.0, 200.0, 2607.6, 0.025, 0.02, "MASS", 24404],
+    ["SERVO FLEET 15W-40 - 15 HDPE", 15.0, 4234.35, 5784.0, 300.0, 3880.35, 0.025, 0.02, "MASS", 24404],
+    ["SERVO FLEET 15W-40 - 20 HDPE", 20.0, 5639.5, 7710.0, 400.0, 5167.5, 0.025, 0.02, "MASS", 24404],
+    ["SERVO FLEET 20W-40 - 0.5 HDPE", 0.5, 153.58, 199.0, 10.0, 141.78, 0.025, 0.02, "MASS", 24424],
+    ["SERVO FLEET 20W-40 - 1 HDPE", 1.0, 285.34, 385.0, 20.0, 261.74, 0.025, 0.02, "MASS", 24424],
+    ["SERVO FLEET 20W-40 - 1.2 HDPE", 1.2, 350.0, 465.0, 24.0, 321.68, 0.025, 0.02, "MASS", 24424],
+    ["SERVO FLEET 20W-40 - 3 HDPE", 3.0, 830.64, 1125.0, 60.0, 759.84, 0.025, 0.02, "MASS", 24424],
+    ["SERVO FLEET 20W-40 - 5 HDPE", 5.0, 1381.03, 1854.0, 100.0, 1263.03, 0.025, 0.02, "MASS", 24424],
+    ["SERVO FLEET 20W-40 - 6 HDPE", 6.0, 1675.0, 2234.0, 120.0, 1533.4, 0.025, 0.02, "MASS", 24424],
+    ["SERVO FLEET 20W-40 - 7.5 HDPE", 7.5, 2100.0, 2795.0, 150.0, 1923.0, 0.025, 0.02, "MASS", 24424],
+    ["SERVO FLEET 20W-40 - 10 HDPE", 10.0, 2741.35, 3704.0, 200.0, 2505.35, 0.025, 0.02, "MASS", 24424],
+    ["SERVO FLEET 20W-40 - 15 HDPE", 15.0, 4080.98, 5548.0, 300.0, 3726.98, 0.025, 0.02, "MASS", 24424],
+    ["SERVO FLEET 20W-40 - 20 HDPE", 20.0, 5434.1, 7395.0, 400.0, 4962.1, 0.025, 0.02, "MASS", 24424],
+    ["SERVO ZOOM 4T - 0.9 HDPE", 0.9, 294.31, 474.0, 18.0, 273.07, 0.06, 0.02, "ASPIRATIONAL", 22274],
+    ["SERVO ZOOM 4T - 1 HDPE", 1.0, 319.36, 514.0, 14.0, 302.84, 0.06, 0.02, "ASPIRATIONAL", 22274],
+    ["SERVO ZOOM 4T 10W-30 - 0.9 HDPE", 0.9, 299.62, 482.0, 13.5, 283.69, 0.06, 0.02, "ASPIRATIONAL", 22283],
+    ["SERVO ZOOM 4T 10W-30 - 1 HDPE", 1.0, 319.42, 514.0, 15.0, 301.72, 0.06, 0.02, "ASPIRATIONAL", 22283],
+    ["SERVO PRIDE XL PLUS 15W-40. - 1 HDPE", 1.0, 329.69, 475.0, 20.0, 306.09, 0.06, 0.02, "ASPIRATIONAL", 24104],
+    ["SERVO PRIDE XL PLUS 15W-40. - 5 HDPE", 5.0, 1630.85, 2350.0, 100.0, 1512.85, 0.06, 0.02, "ASPIRATIONAL", 24104],
+    ["SERVO PRIDE XL PLUS 15W-40. - 7.5 HDPE", 7.5, 2445.86, 3525.0, 150.0, 2268.86, 0.06, 0.02, "ASPIRATIONAL", 24104],
+    ["SERVO PRIDE XL PLUS 15W-40. - 15 HDPE", 15.0, 4822.43, 7050.0, 300.0, 4468.43, 0.06, 0.02, "ASPIRATIONAL", 24104],
+    ["SERVO PRIDE XL PLUS 15W-40. - 20 HDPE", 20.0, 6366.1, 9400.0, 400.0, 5894.1, 0.06, 0.02, "ASPIRATIONAL", 24104],
+    ["SERVO PRIDE 15W-40 - 1 HDPE", 1.0, 304.78, 425.0, 10.0, 292.98, 0.06, 0.02, "ASPIRATIONAL", 24304],
+    ["SERVO PRIDE 15W-40 - 5 HDPE", 5.0, 1519.52, 2100.0, 75.0, 1431.02, 0.06, 0.02, "ASPIRATIONAL", 24304],
+    ["SERVO PRIDE 15W-40 - 7.5 HDPE", 7.5, 2283.2, 3150.0, 112.5, 2150.45, 0.06, 0.02, "ASPIRATIONAL", 24304],
+    ["SERVO PRIDE 15W-40 - 10 HDPE", 10.0, 3039.05, 4200.0, 150.0, 2862.05, 0.06, 0.02, "ASPIRATIONAL", 24304],
+    ["SERVO PRIDE 15W-40 - 15 HDPE", 15.0, 4562.43, 6300.0, 225.0, 4296.93, 0.06, 0.02, "ASPIRATIONAL", 24304],
+    ["SERVO PRIDE 15W-40 - 20 HDPE", 20.0, 6099.72, 8400.0, 300.0, 5745.72, 0.06, 0.02, "ASPIRATIONAL", 24304],
+    ["SERVO PRIDE TC 15W-40 - 1 HDPE", 1.0, 362.88, 560.0, 30.0, 327.48, 0.055, 0.02, "SILVER", 24804],
+    ["SERVO PRIDE TC 15W-40 - 5 HDPE", 5.0, 1795.39, 2743.0, 150.0, 1618.39, 0.055, 0.02, "SILVER", 24804],
+    ["SERVO PRIDE TC 15W-40 - 7.5 HDPE", 7.5, 2693.09, 4115.0, 225.0, 2427.59, 0.055, 0.02, "SILVER", 24804],
+    ["SERVO PRIDE TC 15W-40 - 10 HDPE", 10.0, 3566.68, 5486.0, 300.0, 3212.68, 0.055, 0.02, "SILVER", 24804],
+    ["SERVO PRIDE TC 15W-40 - 15 BUCKET", 15.0, 5350.01, 8229.0, 450.0, 4819.01, 0.055, 0.02, "SILVER", 24804],
+    ["SERVO PRIDE TC 15W-40 - 20 HDPE", 20.0, 7066.23, 10862.0, 600.0, 6358.23, 0.055, 0.02, "SILVER", 24804],
+    ["SERVO HYPERSPORT 4T 10W-30 - 0.9 HDPE", 0.9, 474.38, 705.0, 0.0, 474.38, 0.075, 0.02, "PREMIUM", 62123],
+    ["SERVO HYPERSPORT 4T 10W-30 - 1 HDPE", 1.0, 516.1, 767.0, 0.0, 516.1, 0.075, 0.02, "PREMIUM", 62123],
+    ["SERVO HYPERSPORT 4T 10W-40 - 0.9 HDPE", 0.9, 474.38, 705.0, 0.0, 474.38, 0.075, 0.02, "PREMIUM", 62124],
+    ["SERVO HYPERSPORT 4T 10W-40 - 1 HDPE", 1.0, 516.1, 767.0, 0.0, 516.1, 0.075, 0.02, "PREMIUM", 62124],
+    ["SERVO HYPERSPORT 4T HD 15W-50 - 1.2 HDPE", 1.2, 646.12, 956.0, 0.0, 646.12, 0.075, 0.02, "PREMIUM", 62135],
+    ["SERVO HYPERSPORT 4T HD 15W-50 - 2.5 HDPE", 2.5, 1303.76, 1937.0, 0.0, 1303.76, 0.075, 0.02, "PREMIUM", 62135],
+    ["SERVO HYPERSPORT 4T - 0.9 HDPE", 0.9, 484.46, 725.0, 0.0, 484.46, 0.075, 0.02, "PREMIUM", 62144],
+    ["SERVO HYPERSPORT 4T - 1 HDPE", 1.0, 521.4, 775.0, 0.0, 521.4, 0.075, 0.02, "PREMIUM", 62144],
+    ["SERVO HYPERSPORT F5 10W-40 - 1 HDPE", 1.0, 621.75, 920.0, 0.0, 621.75, 0.075, 0.02, "PREMIUM", 62224],
+    ["SERVO HYPERSPORT F5 10W-40 - 1.2 HDPE", 1.2, 746.57, 1105.0, 0.0, 746.57, 0.075, 0.02, "PREMIUM", 62224],
+    ["SERVO HYPERSPORT F5 10W-40 - 2.5 HDPE", 2.5, 1551.26, 2301.0, 0.0, 1551.26, 0.075, 0.02, "PREMIUM", 62224],
+    ["SERVO HYPERSPORT F5 10W-50 - 1 HDPE", 1.0, 636.49, 936.0, 0.0, 636.49, 0.075, 0.02, "PREMIUM", 62225],
+    ["SERVO HYPERSPORT F5 10W-50 - 1.2 HDPE", 1.2, 763.06, 1122.0, 0.0, 763.06, 0.075, 0.02, "PREMIUM", 62225],
+    ["SERVO HYPERSPORT F5 10W-50 - 2.5 HDPE", 2.5, 1591.1, 2342.0, 0.0, 1591.1, 0.075, 0.02, "PREMIUM", 62225],
+    ["SERVO HYPERSPORT F5 HD 15W-50 - 1 HDPE", 1.0, 620.0, 905.0, 0.0, 620.0, 0.075, 0.02, "PREMIUM", 62235],
+    ["SERVO HYPERSPORT F5 HD 15W-50 - 1.2 HDPE", 1.2, 775.0, 1086.0, 0.0, 775.0, 0.075, 0.02, "PREMIUM", 62235],
+    ["SERVO HYPERSPORT F5 HD 15W-50 - 2.5 HDPE", 2.5, 1550.0, 2263.0, 0.0, 1550.0, 0.075, 0.02, "PREMIUM", 62235],
+    ["SERVO HYPERDRIVE 5W-30 - 1 HDPE", 1.0, 535.72, 875.0, 0.0, 535.72, 0.075, 0.02, "PREMIUM", 65113],
+    ["SERVO HYPERDRIVE 5W-30 - 3 HDPE", 3.0, 1607.16, 2625.0, 0.0, 1607.16, 0.075, 0.02, "PREMIUM", 65113],
+    ["SERVO HYPERDRIVE 5W-30 - 3.5 HDPE", 3.5, 1874.88, 3063.0, 0.0, 1874.88, 0.075, 0.02, "PREMIUM", 65113],
+    ["SERVO HYPERDRIVE 5W-30 - 4 HDPE", 4.0, 2142.69, 3500.0, 0.0, 2142.69, 0.075, 0.02, "PREMIUM", 65113],
+    ["SERVO HYPERDRIVE 0W-16 - 1 HDPE", 1.0, 546.74, 888.0, 0.0, 546.74, 0.075, 0.02, "PREMIUM", 65201],
+    ["SERVO HYPERDRIVE 0W-16 - 3 HDPE", 3.0, 1640.22, 2664.0, 0.0, 1640.22, 0.075, 0.02, "PREMIUM", 65201],
+    ["SERVO HYPERDRIVE 0W-16 - 3.5 HDPE", 3.5, 1913.6, 3108.0, 0.0, 1913.6, 0.075, 0.02, "PREMIUM", 65201],
+    ["SERVO HYPERDRIVE 0W-16 - 4 HDPE", 4.0, 2186.97, 3552.0, 0.0, 2186.97, 0.075, 0.02, "PREMIUM", 65201],
+    ["SERVO HYPERDRIVE 0W-20 - 1 HDPE", 1.0, 560.0, 957.0, 0.0, 560.0, 0.075, 0.02, "PREMIUM", 65202],
+    ["SERVO HYPERDRIVE 0W-20 - 3 HDPE", 3.0, 1680.0, 2871.0, 0.0, 1680.0, 0.075, 0.02, "PREMIUM", 65202],
+    ["SERVO HYPERDRIVE 0W-20 - 3.5 HDPE", 3.5, 1960.0, 3350.0, 0.0, 1960.0, 0.075, 0.02, "PREMIUM", 65202],
+    ["SERVO HYPERDRIVE 0W-20 - 4 HDPE", 4.0, 2240.0, 3828.0, 0.0, 2240.0, 0.075, 0.02, "PREMIUM", 65202],
+    ["SERVO HYPERDRIVE NXT 0W-16 - 1 HDPE", 1.0, 716.96, 1062.0, 0.0, 716.96, 0.075, 0.02, "PREMIUM", 66201],
+    ["SERVO HYPERDRIVE NXT 0W-16 - 3 HDPE", 3.0, 2150.87, 3186.0, 0.0, 2150.87, 0.075, 0.02, "PREMIUM", 66201],
+    ["SERVO HYPERDRIVE NXT 0W-16 - 3.5 HDPE", 3.5, 2509.35, 3717.0, 0.0, 2509.35, 0.075, 0.02, "PREMIUM", 66201],
+    ["SERVO HYPERDRIVE NXT 0W-16 - 4 HDPE", 4.0, 2867.82, 4248.0, 0.0, 2867.82, 0.075, 0.02, "PREMIUM", 66201],
+    ["SERVO HYPERDRIVE NXT 0W-16 - 5 HDPE", 5.0, 3584.78, 5310.0, 0.0, 3584.78, 0.075, 0.02, "PREMIUM", 66201],
+    ["SERVO HYPERDRIVE NXT 0W-40 - 1 HDPE", 1.0, 780.0, 1160.0, 0.0, 780.0, 0.075, 0.02, "PREMIUM", 66204],
+    ["SERVO HYPERDRIVE NXT 0W-40 - 3 HDPE", 3.0, 2340.0, 3480.0, 0.0, 2340.0, 0.075, 0.02, "PREMIUM", 66204],
+    ["SERVO HYPERDRIVE NXT 0W-40 - 3.5 HDPE", 3.5, 2730.0, 4060.0, 0.0, 2730.0, 0.075, 0.02, "PREMIUM", 66204],
+    ["SERVO HYPERDRIVE NXT 0W-40 - 4 HDPE", 4.0, 3120.0, 4640.0, 0.0, 3120.0, 0.075, 0.02, "PREMIUM", 66204],
+    ["SERVO HYPERDRIVE NXT 0W-40 - 5 HDPE", 5.0, 3900.0, 5800.0, 0.0, 3900.0, 0.075, 0.02, "PREMIUM", 66204],
+    ["SERVO HYPERDRIVE NXT 10W-40 - 1 HDPE", 1.0, 770.89, 1136.0, 0.0, 770.89, 0.075, 0.02, "PREMIUM", 66224],
+    ["SERVO HYPERDRIVE NXT 10W-40 - 3 HDPE", 3.0, 2312.67, 3409.0, 0.0, 2312.67, 0.075, 0.02, "PREMIUM", 66224],
+    ["SERVO HYPERDRIVE NXT 10W-40 - 3.5 HDPE", 3.5, 2698.0, 3977.0, 0.0, 2698.0, 0.075, 0.02, "PREMIUM", 66224],
+    ["SERVO HYPERDRIVE NXT 10W-40 - 4 HDPE", 4.0, 3083.33, 4545.0, 0.0, 3083.33, 0.075, 0.02, "PREMIUM", 66224],
+    ["SERVO HYPERDRIVE NXT 10W-40 - 5 HDPE", 5.0, 3854.1, 5682.0, 0.0, 3854.1, 0.075, 0.02, "PREMIUM", 66224],
+    ["SERVO HYPERTORQ 10W-30 - 1 HDPE", 1.0, 415.0, 530.0, 0.0, 415.0, 0.075, 0.02, "PREMIUM", 67103],
+    ["SERVO HYPERTORQ 10W-30 - 5 HDPE", 5.0, 2050.0, 2625.0, 0.0, 2050.0, 0.075, 0.02, "PREMIUM", 67103],
+    ["SERVO HYPERTORQ 10W-30 - 7.5 HDPE", 7.5, 3075.0, 3938.0, 0.0, 3075.0, 0.075, 0.02, "PREMIUM", 67103],
+    ["SERVO HYPERTORQ 10W-30 - 15 HDPE", 15.0, 6150.0, 7875.0, 0.0, 6150.0, 0.075, 0.02, "PREMIUM", 67103],
+    ["SERVO HYPERTORQ 10W-30 - 20 HDPE", 20.0, 8200.0, 10500.0, 0.0, 8200.0, 0.075, 0.02, "PREMIUM", 67103],
+    ["SERVO HYPERTORQ 15W-40 - 1 HDPE", 1.0, 430.0, 530.0, 0.0, 430.0, 0.075, 0.02, "PREMIUM", 67104],
+    ["SERVO HYPERTORQ 15W-40 - 3 HDPE", 3.0, 1260.0, 1575.0, 0.0, 1260.0, 0.075, 0.02, "PREMIUM", 67104],
+    ["SERVO HYPERTORQ 15W-40 - 5 HDPE", 5.0, 2075.0, 2600.0, 0.0, 2075.0, 0.075, 0.02, "PREMIUM", 67104],
+    ["SERVO HYPERTORQ 15W-40 - 7.5 HDPE", 7.5, 3037.5, 3788.0, 0.0, 3037.5, 0.075, 0.02, "PREMIUM", 67104],
+    ["SERVO HYPERTORQ 15W-40 - 10 HDPE", 10.0, 4050.0, 5050.0, 0.0, 4050.0, 0.075, 0.02, "PREMIUM", 67104],
+    ["SERVO HYPERTORQ 15W-40 - 15 HDPE", 15.0, 6075.0, 7575.0, 0.0, 6075.0, 0.075, 0.02, "PREMIUM", 67104],
+    ["SERVO HYPERTORQ 15W-40 - 18 HDPE", 18.0, 7290.0, 9090.0, 0.0, 7290.0, 0.075, 0.02, "PREMIUM", 67104],
+    ["SERVO HYPERTORQ 15W-40 - 20 HDPE", 20.0, 8100.0, 10100.0, 0.0, 8100.0, 0.075, 0.02, "PREMIUM", 67104],
+    ["SERVO HYPERTORQ NXT 15W-40 - 1 HDPE", 1.0, 460.0, 575.0, 0.0, 460.0, 0.075, 0.02, "PREMIUM", 67204],
+    ["SERVO HYPERTORQ NXT 15W-40 - 3 HDPE", 3.0, 1350.0, 1680.0, 0.0, 1350.0, 0.075, 0.02, "PREMIUM", 67204],
+    ["SERVO HYPERTORQ NXT 15W-40 - 5 HDPE", 5.0, 2175.0, 2800.0, 0.0, 2175.0, 0.075, 0.02, "PREMIUM", 67204],
+    ["SERVO HYPERTORQ NXT 15W-40 - 7.5 HDPE", 7.5, 3150.0, 4163.0, 0.0, 3150.0, 0.075, 0.02, "PREMIUM", 67204],
+    ["SERVO HYPERTORQ NXT 15W-40 - 10 HDPE", 10.0, 4200.0, 5550.0, 0.0, 4200.0, 0.075, 0.02, "PREMIUM", 67204],
+    ["SERVO HYPERTORQ NXT 15W-40 - 15 HDPE", 15.0, 6300.0, 8325.0, 0.0, 6300.0, 0.075, 0.02, "PREMIUM", 67204],
+    ["SERVO HYPERTORQ NXT 15W-40 - 18 HDPE", 18.0, 7560.0, 9900.0, 0.0, 7560.0, 0.075, 0.02, "PREMIUM", 67204],
+    ["SERVO HYPERTORQ NXT 15W-40 - 20 HDPE", 20.0, 8400.0, 11000.0, 0.0, 8400.0, 0.075, 0.02, "PREMIUM", 67204],
+    ["SERVOSYSTEM 68 - 20 HDPE", 20.0, 5240.0, 7300.0, 200.0, 5004.0, 0.06, 0.02, "INDUSTRIAL", 4124],
+    ["SERVO LONG LIFE GREASE- 1/2 KG", 0.5, 249.03, 366.0, 27.5, 216.58, 0.06, 0.02, "ASPIRATIONAL", 7849],
+    ["SERVO LONG LIFE GREASE- 1 KG TUB", 1.0, 486.58, 676.0, 55.0, 421.68, 0.06, 0.02, "ASPIRATIONAL", 7849],
+    ["SERVO LONG LIFE GREASE- 2 KG TUB", 2.0, 955.49, 1376.0, 110.0, 825.69, 0.06, 0.02, "ASPIRATIONAL", 7849],
+    ["SERVO LONG LIFE GREASE- 3 KG TUB", 3.0, 1419.78, 2030.0, 165.0, 1225.08, 0.06, 0.02, "ASPIRATIONAL", 7849],
+    ["SERVO LONG LIFE GREASE- 5 KG", 5.0, 2343.17, 3345.0, 275.0, 2018.67, 0.06, 0.02, "ASPIRATIONAL", 7849],
+    ["SERVO LONG LIFE GREASE- 20 KG", 20.0, 9086.29, 12841.0, 1200.0, 7670.29, 0.06, 0.02, "ASPIRATIONAL", 7849]
   ];
 
-  const commRates = {
-    "Mass": 0.025,
-    "Aspirational": 0.06,
-    "Premium": 0.075
-  };
+  // Try dynamic load from current directory if served via local web server
+  function tryFetchSheet(filename) {
+    fetch(filename)
+      .then(res => { if (!res.ok) throw new Error(); return res.arrayBuffer(); })
+      .then(buffer => parseExcelBuffer(buffer))
+      .catch(() => {});
+  }
+  tryFetchSheet('Lube Costing_2.xlsx');
+  tryFetchSheet('Lube Costing.xlsx');
 
+  function parseExcelBuffer(buffer) {
+    try {
+      const wb = XLSX.read(buffer, { type: 'array' });
+      const sheet = wb.Sheets[wb.SheetNames[0]];
+      const rawRows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+      const loaded = [];
+      for (let i = 1; i < rawRows.length; i++) {
+        const r = rawRows[i];
+        if (r && r[2] && r[3] !== undefined && r[4] !== undefined) {
+          loaded.push([
+            String(r[2]).trim(),
+            parseFloat(r[3]) || 0,
+            parseFloat(r[4]) || 0,
+            parseFloat(r[5]) || 0,
+            parseFloat(r[7]) || 0,
+            parseFloat(r[8]) || 0,
+            parseFloat(r[10]) || 0,
+            parseFloat(r[11]) || 0,
+            String(r[9] || 'MASS').trim().toUpperCase(),
+            parseInt(r[1]) || 0
+          ]);
+        }
+      }
+      if (loaded.length > 0) {
+        lubeData = loaded;
+        document.getElementById('productCountBadge').textContent = `${lubeData.length} Products Loaded`;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  // --- Security Passcode Protected Upload ---
+  const REQUIRED_CODE = "011100";
+  const authUploadBtn = document.getElementById('authUploadBtn');
+  const excelFileInput = document.getElementById('excelFileInput');
+
+  authUploadBtn.addEventListener('click', function() {
+    const userCode = prompt("Enter 6-digit authorization code to upload circular:");
+    if (userCode === null) return;
+
+    if (userCode.trim() === REQUIRED_CODE) {
+      excelFileInput.click();
+    } else {
+      alert("Access Denied: Incorrect authorization code.");
+    }
+  });
+
+  excelFileInput.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+      parseExcelBuffer(evt.target.result);
+      alert(`Verification Successful: Loaded ${lubeData.length} products.`);
+      document.getElementById('productInput').value = '';
+      document.getElementById('resultsCard').style.display = 'none';
+    };
+    reader.readAsArrayBuffer(file);
+    excelFileInput.value = '';
+  });
+
+  // --- Date & EB Slab Computation ---
   const today = new Date();
   const day = today.getDate();
-  let ebRatePerLitre = 0;
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const formattedDate = `${String(day).padStart(2, '0')}-${months[today.getMonth()]}-${today.getFullYear()}`;
+
+  let ebRate = 0;
   if (day <= 15) {
-    ebRatePerLitre = 1.5;
-  } else if (day <= 20) {
-    ebRatePerLitre = 1.0;
-  } else if (day <= 25) {
-    ebRatePerLitre = 0.5;
+    ebRate = 1.5;
+  } else if (day >= 16 && day <= 20) {
+    ebRate = 1.0;
+  } else if (day >= 21 && day <= 25) {
+    ebRate = 0.5;
   } else {
-    ebRatePerLitre = 0.0;
+    ebRate = 0.0;
   }
 
-  document.getElementById("currentDateDisplay").textContent = today.toLocaleDateString('en-IN', {
-    day: '2-digit', month: 'short', year: 'numeric'
-  });
-  document.getElementById("ebDisplay").textContent = `₹${ebRatePerLitre.toFixed(2)} / Litre`;
+  document.getElementById('currentDateDisplay').textContent = formattedDate;
+  document.getElementById('currentEbDisplay').textContent = `₹ ${ebRate.toFixed(1)} / L`;
 
-  const input = document.getElementById("productInput");
-  const list = document.getElementById("autocompleteList");
-  const clearBtn = document.getElementById("clearInputBtn");
-  const outputCard = document.getElementById("outputCard");
-  const plantBox = document.getElementById("plantLandingBox");
-  const schemeBox = document.getElementById("schemeBox");
+  // --- Search UI & Autocomplete ---
+  const input = document.getElementById('productInput');
+  const clearBtn = document.getElementById('clearBtn');
+  const suggestionsBox = document.getElementById('suggestionsBox');
+  const resultsCard = document.getElementById('resultsCard');
 
-  function resetCalculator() {
-    input.value = "";
-    clearBtn.style.display = "none";
-    list.innerHTML = "";
-    outputCard.style.display = "none";
-    plantBox.style.display = "none";
-    schemeBox.style.display = "none";
-    input.focus();
-  }
+  input.addEventListener('input', function() {
+    const val = this.value.trim().toLowerCase();
+    clearBtn.style.display = this.value.length > 0 ? 'flex' : 'none';
 
-  clearBtn.addEventListener("click", resetCalculator);
-
-  input.addEventListener("input", function() {
-    const val = this.value.trim().toUpperCase();
-    list.innerHTML = "";
-    
-    if (this.value.length > 0) {
-      clearBtn.style.display = "flex";
-    } else {
-      clearBtn.style.display = "none";
-      outputCard.style.display = "none";
-      plantBox.style.display = "none";
-      schemeBox.style.display = "none";
+    if (!val) {
+      suggestionsBox.style.display = 'none';
+      resultsCard.style.display = 'none';
       return;
     }
 
-    if (!val) return;
+    const matches = lubeData.filter(item => item[0].toLowerCase().includes(val));
 
-    const matches = products.filter(p => p.name.toUpperCase().includes(val));
-    matches.slice(0, 10).forEach(item => {
-      const row = document.createElement("div");
-      const startIndex = item.name.toUpperCase().indexOf(val);
-      const highlighted = item.name.substring(0, startIndex) +
-        "<strong>" + item.name.substring(startIndex, startIndex + val.length) + "</strong>" +
-        item.name.substring(startIndex + val.length);
-      
-      row.innerHTML = highlighted;
-      row.addEventListener("click", () => {
-        input.value = item.name;
-        clearBtn.style.display = "flex";
-        list.innerHTML = "";
-        calculateAndRender(item);
+    if (matches.length > 0) {
+      suggestionsBox.innerHTML = '';
+      matches.slice(0, 20).forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'suggestion-item';
+        div.textContent = item[0];
+        div.addEventListener('click', () => {
+          input.value = item[0];
+          suggestionsBox.style.display = 'none';
+          clearBtn.style.display = 'flex';
+          displayCalculation(item);
+        });
+        suggestionsBox.appendChild(div);
       });
-      list.appendChild(row);
-    });
-  });
-
-  document.addEventListener("click", function(e) {
-    if (e.target !== input && e.target !== clearBtn) {
-      list.innerHTML = "";
-    }
-  });
-
-  function calculateAndRender(item) {
-    const dlp = item.dlp;
-    const pack = item.pack;
-    const rsp = dlp / 1.18;
-    const hoDiscPerPack = item.hoDisc * pack;
-    const effDLP = (rsp - hoDiscPerPack) * 1.18;
-
-    // Normal Stockist Commission: % of DLP (Mass: 2.5%, Aspirational: 6%, Premium: 7.5%)
-    const rate = commRates[item.category] || 0.025;
-    const stockistComm = dlp * rate;
-
-    // EB = rate/L * pack size
-    const eb = ebRatePerLitre * pack;
-
-    // CD = 2% * (RSP - HO Discount - Stockist commission - EB)
-    const cd = 0.02 * (rsp - hoDiscPerPack - stockistComm - eb);
-
-    // Net Landing = (RSP - HO discount - Stockist commission - CD - EB) * 1.18
-    const netLanding = (rsp - hoDiscPerPack - stockistComm - cd - eb) * 1.18;
-
-    // Populate user-facing values
-    document.getElementById("resName").textContent = item.name;
-    document.getElementById("resCategory").textContent = item.category;
-    document.getElementById("resMRP").textContent = `₹${item.mrp.toFixed(2)}`;
-    document.getElementById("resDLP").textContent = `₹${dlp.toFixed(2)}`;
-    document.getElementById("resRSP").textContent = `₹${rsp.toFixed(2)}`;
-    document.getElementById("resHODisc").textContent = `₹${item.hoDisc.toFixed(2)} / Litre`;
-    document.getElementById("resEffDLP").textContent = `₹${effDLP.toFixed(2)}`;
-    document.getElementById("resStockistComm").textContent = `₹${stockistComm.toFixed(2)}`;
-    document.getElementById("resNetLanding").textContent = `₹${netLanding.toFixed(2)}`;
-
-    // Mass category: Direct Upliftment from Plant calculation (3.5% commission of DLP)
-    if (item.category === "Mass") {
-      const plantStockistComm = dlp * 0.035;
-      const plantCD = 0.02 * (rsp - hoDiscPerPack - plantStockistComm - eb);
-      const plantLanding = (rsp - hoDiscPerPack - plantStockistComm - plantCD - eb) * 1.18;
-      document.getElementById("resPlantLanding").textContent = `₹${plantLanding.toFixed(2)}`;
-      plantBox.style.display = "block";
+      suggestionsBox.style.display = 'block';
     } else {
-      plantBox.style.display = "none";
+      suggestionsBox.style.display = 'none';
     }
 
-    // Active Scheme Check
-    if (item.scheme) {
-      document.getElementById("schemeTitle").textContent = `🎁 ${item.scheme.title}`;
-      document.getElementById("schemeApplicable").textContent = item.scheme.applicable;
-      document.getElementById("schemeOffer").textContent = item.scheme.offer;
-      
-      const basketRow = document.getElementById("basketRow");
-      if (item.scheme.basket && item.scheme.basket !== "Same Product Free") {
-        document.getElementById("schemeBasket").textContent = item.scheme.basket;
-        basketRow.style.display = "block";
+    const exact = lubeData.find(item => item[0].toLowerCase() === val);
+    if (exact) {
+      displayCalculation(exact);
+    }
+  });
+
+  clearBtn.addEventListener('click', function() {
+    input.value = '';
+    clearBtn.style.display = 'none';
+    suggestionsBox.style.display = 'none';
+    resultsCard.style.display = 'none';
+    input.focus();
+  });
+
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.search-group')) {
+      suggestionsBox.style.display = 'none';
+    }
+  });
+
+  // --- Calculation & Scheme Engine ---
+  function displayCalculation(item) {
+    const [name, packSize, dlp, mrp, hoDiscPack, effDlp, sc, cd, category, prodCode] = item;
+
+    // Pricing Arithmetic
+    const scAmount = sc * dlp;
+    const ebPack = ebRate * packSize;
+    const baseBeforeTax = (effDlp / 1.18) - scAmount - ebPack;
+    const cd1 = cd * baseBeforeTax;
+    const netLanding = (baseBeforeTax - cd1) * 1.18;
+
+    // Fill Output Prices
+    document.getElementById('outProductName').textContent = name;
+    document.getElementById('outMRP').textContent = `₹ ${mrp.toFixed(2)}`;
+    document.getElementById('outDLP').textContent = `₹ ${dlp.toFixed(2)}`;
+    document.getElementById('outHODisc').textContent = `₹ ${hoDiscPack.toFixed(2)}`;
+    document.getElementById('outEffDLP').textContent = `₹ ${effDlp.toFixed(2)}`;
+    document.getElementById('outSC').textContent = `₹ ${scAmount.toFixed(2)} (${(sc * 100).toFixed(1)}%)`;
+    document.getElementById('outNetLanding').textContent = `₹ ${netLanding.toFixed(2)}`;
+
+    // Build Scheme Badges
+    const schemeBox = document.getElementById('schemeBadges');
+    schemeBox.innerHTML = '';
+    const upperName = name.toUpperCase();
+    const cat = (category || '').toUpperCase();
+
+    // 1. FREE SKU SCHEMES
+    // MCO Flagship Hypersport Free Scheme
+    const mcoCodes = [62123, 62124, 62144, 62135, 62224, 62225, 62235];
+    if (mcoCodes.includes(prodCode) || (upperName.includes('HYPERSPORT') && !upperName.includes('SCOOTER'))) {
+      schemeBox.innerHTML += `
+        <div class="scheme-card">
+          <div class="scheme-card-title">
+            <span>🎁 MCO Flagship Free SKU Offer (SDMS)</span>
+            <span class="scheme-highlight">1 CAN FREE / 20 CANS</span>
+          </div>
+          <div class="scheme-card-body">
+            Eligible on purchase of every 20 cans: <strong>One Can FREE of same grade & pack</strong>. Select under 'Free Scheme' tab in SDMS billing.
+          </div>
+        </div>`;
+    }
+
+    // PCMO Hypersport Free Scheme (3L and above)
+    const pcmoCodes = [65113, 65201, 65202, 66201, 66224, 66204];
+    if ((pcmoCodes.includes(prodCode) || upperName.includes('HYPERDRIVE')) && packSize >= 3.0) {
+      schemeBox.innerHTML += `
+        <div class="scheme-card">
+          <div class="scheme-card-title">
+            <span>🎁 PCMO Premium Free SKU Offer (SDMS)</span>
+            <span class="scheme-highlight">1 FREE CAN (0.5 L/KG)</span>
+          </div>
+          <div class="scheme-card-body">
+            Against purchase of every 1 can (3L & above): <strong>One Can of 0.5 Ltr/Kg FREE</strong> from eligible basket (Servo Kool Plus, Brake Fluid Super HD/DOT 4, Servo Grease MP 3, RR 3, or Long Life Grease).
+          </div>
+        </div>`;
+    }
+
+    // CVO Hypertorq Free Scheme
+    if (upperName.includes('HYPERTORQ')) {
+      let offerText = "";
+      if (packSize >= 5.0 && packSize < 7.5) {
+        offerText = "One Can of 0.5 Ltr (Kg) FREE against purchase of every 1 can.";
+      } else if (packSize >= 7.5 && packSize <= 10.0) {
+        offerText = "Two Cans of 0.5 Ltr (Kg) OR One Can of 1 Ltr (Kg) FREE against purchase of 1 bucket.";
+      } else if (packSize >= 15.0) {
+        offerText = "Two Cans of 1 Ltr (Kg) OR One Can of 2 Ltr (Kg) FREE against purchase of 1 bucket.";
       } else {
-        basketRow.style.display = "none";
+        offerText = "Eligible for Hypertorq secondary free basket schemes on qualifying pack sizes (5L+).";
       }
-      schemeBox.style.display = "block";
-    } else {
-      schemeBox.style.display = "none";
+
+      schemeBox.innerHTML += `
+        <div class="scheme-card">
+          <div class="scheme-card-title">
+            <span>🎁 CVO Premium Free SKU Offer (SDMS)</span>
+            <span class="scheme-highlight">FREE BASKET CAN(S)</span>
+          </div>
+          <div class="scheme-card-body">
+            ${offerText} Free basket: Brake Fluid, Servo Gem RR 3, Long Life Grease, Kool Plus, or MP 3.
+          </div>
+        </div>`;
     }
 
-    outputCard.style.display = "block";
+    // 2. CATEGORIZATION & REBATE SCHEMES
+    if (cat === 'MASS') {
+      schemeBox.innerHTML += `
+        <div class="scheme-card">
+          <div class="scheme-card-title">
+            <span>🏷️ Special Scheme on Mass Grades (Oct-Dec 2026)</span>
+            <span class="scheme-highlight">Up to 5.0% Rebate</span>
+          </div>
+          <div class="scheme-card-body">
+            Unlock additional rebate by driving Premium sales mix:
+            <ul style="margin: 4px 0 0 16px;">
+              <li>Premium Share &gt; 12%: <strong>5.00% Trade Disc</strong> (Cap 40 KL)</li>
+              <li>Premium Share &gt; 10% to 12%: <strong>4.50% Trade Disc</strong> (Cap 35 KL)</li>
+              <li>Premium Share &gt; 8% to 10%: <strong>3.50% Trade Disc</strong> (Cap 25 KL)</li>
+              <li>Baseline (&le; 8%): <strong>2.50% Trade Disc</strong></li>
+            </ul>
+            <em>Prerequisite: Stockist must achieve Primary Target for Q3. Settled via SAP rebate.</em>
+          </div>
+        </div>`;
+    }
+
+    if (cat === 'PREMIUM' || cat === 'ASPIRATIONAL') {
+      schemeBox.innerHTML += `
+        <div class="scheme-card">
+          <div class="scheme-card-title">
+            <span>⭐ Categorization of Stockists (Oct-Dec 2026)</span>
+            <span class="scheme-highlight">₹ 1.00 - ₹ 2.00 / L</span>
+          </div>
+          <div class="scheme-card-body">
+            Cash payout on primary sales of focus grades based on previous quarter qualification:
+            <ul style="margin: 4px 0 0 16px;">
+              <li><strong>Premium Stockist:</strong> ₹ 2.00 / Litre (Sales &gt; 10% or 60 KL)</li>
+              <li><strong>Aspirational Stockist:</strong> ₹ 1.00 / Litre (Sales &gt; 5% or 30 KL)</li>
+            </ul>
+          </div>
+        </div>`;
+    }
+
+    // 3. UNIVERSAL INCENTIVE PROGRAMMES (MPI, QPI, RPI, RO)
+    schemeBox.innerHTML += `
+      <div class="scheme-card">
+        <div class="scheme-card-title">
+          <span>🚀 Performance & Volume Incentives (Oct-Dec 2026)</span>
+          <span class="scheme-highlight">Stackable Earnings</span>
+        </div>
+        <div class="scheme-card-body">
+          <ul style="margin: 4px 0 0 16px;">
+            <li><strong>MPI (Monthly Target):</strong> ₹ 1.00 / L on Primary Volume (Hydrashakti 68 &lt; 30%).</li>
+            <li><strong>QPI (Quarterly Target):</strong> Up to ₹ 2.00 / L (₹ 1.00 Primary + ₹ 1.00 Secondary).</li>
+            <li><strong>Reseller Incentive (RPI):</strong> ₹ 3.00 to ₹ 3.50 / L for Bazaar counters (cap 3,000 L).</li>
+            <li><strong>RO Festival Bonanza:</strong> ₹ 2.00 to ₹ 3.00 / L on forecourt growth (Min 40L Premium + 40L Honda 4T).</li>
+          </ul>
+        </div>
+      </div>`;
+
+    resultsCard.style.display = 'block';
   }
 </script>
 
