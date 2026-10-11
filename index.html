@@ -43,7 +43,6 @@
       gap: 16px;
     }
 
-    /* Top EB Banner */
     .header-card {
       background: linear-gradient(135deg, var(--primary), var(--primary-light));
       color: #fff;
@@ -94,7 +93,6 @@
       border-radius: 6px;
     }
 
-    /* Search & Admin Controls */
     .card {
       background: var(--card-bg);
       border-radius: 14px;
@@ -199,7 +197,6 @@
       color: var(--primary);
     }
 
-    /* Admin Action Links */
     .admin-actions {
       margin-top: 14px;
       padding-top: 10px;
@@ -227,7 +224,6 @@
       color: var(--primary);
     }
 
-    /* Results Table */
     .results-card {
       display: none;
     }
@@ -284,7 +280,7 @@
       color: var(--success);
     }
 
-    /* Scheme Details Section */
+    /* Scheme Details Styling */
     .scheme-container {
       margin-top: 18px;
       padding-top: 16px;
@@ -333,7 +329,95 @@
       color: #c05621;
     }
 
-    /* Circular Document Viewer */
+    /* Free SKU Details Box */
+    .free-sku-box {
+      margin-top: 10px;
+      background: #ffffff;
+      border: 1.5px solid #86efac;
+      border-radius: 8px;
+      padding: 10px 14px;
+    }
+
+    .free-sku-title {
+      font-weight: 700;
+      font-size: 0.82rem;
+      color: #166534;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .free-sku-name {
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 8px;
+      font-size: 0.88rem;
+    }
+
+    .free-sku-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+    }
+
+    .free-sku-item {
+      background: #f8fafc;
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .free-sku-item .f-label {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .free-sku-item .f-val {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #1e293b;
+    }
+
+    .free-sku-item.f-highlight {
+      background: #ecfdf5;
+      border-color: #86efac;
+    }
+
+    .free-sku-item.f-highlight .f-val {
+      color: #15803d;
+    }
+
+    .exclusive-divider {
+      display: flex;
+      align-items: center;
+      margin: 6px 0;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: #b45309;
+      text-transform: uppercase;
+    }
+
+    .exclusive-divider::before,
+    .exclusive-divider::after {
+      content: "";
+      flex: 1;
+      border-bottom: 1.5px dashed #fbd38d;
+    }
+
+    .exclusive-divider span {
+      padding: 0 10px;
+      background: #fef3c7;
+      border: 1px solid #fde68a;
+      border-radius: 12px;
+    }
+
     .view-circular-box {
       margin-top: 12px;
       border: 1px solid var(--border);
@@ -371,7 +455,6 @@
       object-fit: contain;
     }
 
-    /* Footer Note */
     .footer-note {
       text-align: center;
       font-size: 0.85rem;
@@ -388,7 +471,6 @@
 
 <div class="container">
 
-  <!-- Top Banner: Date & Current EB Slab -->
   <div class="header-card">
     <h1>Lube Pricing & Net Landing Calculator</h1>
     <div class="status-row">
@@ -403,7 +485,6 @@
     </div>
   </div>
 
-  <!-- Search Card & Admin Section -->
   <div class="card">
     <div class="search-group">
       <div class="search-header">
@@ -417,19 +498,16 @@
       <div class="suggestions" id="suggestionsBox"></div>
     </div>
 
-    <!-- Admin Section with Protected Uploads -->
     <div class="admin-actions">
       <span>🔒 Admin Panel:</span>
       <button type="button" class="admin-btn" id="authPriceUploadBtn">Update Price Circular (.xlsx)</button>
       <button type="button" class="admin-btn" id="authSchemeUploadBtn">Update Scheme Circular (PDF/IMG)</button>
 
-      <!-- Hidden File Inputs -->
       <input type="file" id="excelFileInput" accept=".xlsx, .xls" style="display: none;">
       <input type="file" id="schemeFileInput" accept=".pdf, .png, .jpg, .jpeg" style="display: none;">
     </div>
   </div>
 
-  <!-- Pricing Details Card -->
   <div class="card results-card" id="resultsCard">
     <div class="product-title" id="outProductName">Product Name</div>
     
@@ -460,7 +538,6 @@
       </div>
     </div>
 
-    <!-- Applicable Scheme Details Section Below Net Landing -->
     <div class="scheme-container" id="schemeContainer">
       <div class="scheme-header">
         <span>🎁 Applicable Scheme Details & Direct Incentives:</span>
@@ -468,7 +545,6 @@
       
       <div class="scheme-badge-group" id="schemeBadges"></div>
 
-      <!-- Scheme Document Attachment Box -->
       <div class="view-circular-box" id="circularBox" style="display: none;">
         <div class="view-circular-header">
           <span id="circularFileName">📄 Current Scheme Circular</span>
@@ -482,18 +558,15 @@
     </div>
   </div>
 
-  <!-- Footer Warning -->
   <div class="footer-note">
     User to verify the prices from circular.
   </div>
 
 </div>
 
-<!-- SheetJS for processing spreadsheet circular uploads -->
 <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
 <script>
-  // Complete 350-item database
-  let lubeData = [
+  const defaultDatabase = [
     ["SERVO FLEET 40 - 1 HDPE", 1.0, 296.54, 418.0, 15.0, 278.84, 0.025, 0.02, "MASS", 21404],
     ["SERVO FLEET 40 - 5 HDPE", 5.0, 1466.39, 2064.0, 75.0, 1377.89, 0.025, 0.02, "MASS", 21404],
     ["SERVO FLEET 40 - 10 HDPE", 10.0, 2932.31, 4128.0, 150.0, 2755.31, 0.025, 0.02, "MASS", 21404],
@@ -508,51 +581,51 @@
     ["SERVO MOTOCARE 4T 20W-50 - 1 HDPE", 1.0, 295.0, 477.0, 0.0, 295.0, 0.025, 0.02, "MASS", 22875],
     ["SERVO MOTOCARE 4T 20W-50 - 1.2 HDPE", 1.2, 364.0, 559.0, 0.0, 364.0, 0.025, 0.02, "MASS", 22875],
     ["SERVO MOTOCARE SCOOTER 10W-30 - 0.8 HDPE", 0.8, 260.0, 389.0, 0.0, 260.0, 0.025, 0.02, "MASS", 22876],
-    ["SERVO SUPERMILE 5W-30 - 1 HDPE", 1.0, 323.25, 530.0, 20.0, 299.65, 0.025, 0.02, "MASS", 22894],
-    ["SERVO SUPERMILE 5W-30 - 3 HDPE", 3.0, 958.59, 1535.0, 60.0, 887.79, 0.025, 0.02, "MASS", 22894],
-    ["SERVO SUPERMILE 5W-30 - 3.5 HDPE", 3.5, 1118.93, 1749.0, 70.0, 1036.33, 0.025, 0.02, "MASS", 22894],
-    ["SERVO SUPERMILE 5W-30 - 5 HDPE", 5.0, 1587.97, 2549.0, 100.0, 1469.97, 0.025, 0.02, "MASS", 22894],
-    ["SERVO KISANPOWER SPSO - 3.5 HDPE", 3.5, 925.0, 1446.0, 87.5, 821.75, 0.025, 0.02, "MASS", 22915],
-    ["SERVO KISANPOWER OIB - 1 HDPE", 1.0, 288.08, 436.0, 20.0, 264.48, 0.025, 0.02, "MASS", 22934],
-    ["SERVO KISANPOWER OIB - 5 HDPE", 5.0, 1423.84, 2009.0, 100.0, 1305.84, 0.025, 0.02, "MASS", 22934],
-    ["SERVO KISANPOWER OIB - 20 HDPE", 20.0, 5552.6, 8083.0, 400.0, 5080.6, 0.025, 0.02, "MASS", 22934],
-    ["SERVO SUPERMILE GEO 20W-50 - 0.5 HDPE", 0.5, 146.91, 205.0, 5.0, 141.01, 0.025, 0.02, "MASS", 22960],
-    ["SERVO SUPERMILE GEO 20W-50 - 1 HDPE", 1.0, 267.91, 368.0, 15.0, 250.21, 0.025, 0.02, "MASS", 22960],
-    ["SERVO SUPERMILE GEO 20W-50 - 2.1 HDPE", 2.1, 558.76, 772.8, 21.0, 533.98, 0.025, 0.02, "MASS", 22960],
-    ["SERVO SUPERMILE GEO 20W-50 - 3 HDPE", 3.0, 800.0, 1104.0, 30.0, 764.6, 0.025, 0.02, "MASS", 22960],
-    ["SERVO SUPERMILE GEO 20W-50 - 20 HDPE", 20.0, 5243.73, 7323.0, 300.0, 4889.73, 0.025, 0.02, "MASS", 22960],
-    ["SERVO FLEET 15W-40 - 1 HDPE", 1.0, 287.69, 399.0, 20.0, 264.09, 0.025, 0.02, "MASS", 24404],
-    ["SERVO FLEET 15W-40 - 3 HDPE", 3.0, 855.38, 1159.0, 60.0, 784.58, 0.025, 0.02, "MASS", 24404],
-    ["SERVO FLEET 15W-40 - 5 HDPE", 5.0, 1421.8, 1930.0, 100.0, 1303.8, 0.025, 0.02, "MASS", 24404],
-    ["SERVO FLEET 15W-40 - 7.5 HDPE", 7.5, 2140.0, 2899.0, 150.0, 1963.0, 0.025, 0.02, "MASS", 24404],
-    ["SERVO FLEET 15W-40 - 10 HDPE", 10.0, 2843.6, 3860.0, 200.0, 2607.6, 0.025, 0.02, "MASS", 24404],
-    ["SERVO FLEET 15W-40 - 15 HDPE", 15.0, 4234.35, 5784.0, 300.0, 3880.35, 0.025, 0.02, "MASS", 24404],
-    ["SERVO FLEET 15W-40 - 20 HDPE", 20.0, 5639.5, 7710.0, 400.0, 5167.5, 0.025, 0.02, "MASS", 24404],
-    ["SERVO FLEET 20W-40 - 0.5 HDPE", 0.5, 153.58, 199.0, 10.0, 141.78, 0.025, 0.02, "MASS", 24424],
-    ["SERVO FLEET 20W-40 - 1 HDPE", 1.0, 285.34, 385.0, 20.0, 261.74, 0.025, 0.02, "MASS", 24424],
-    ["SERVO FLEET 20W-40 - 1.2 HDPE", 1.2, 350.0, 465.0, 24.0, 321.68, 0.025, 0.02, "MASS", 24424],
-    ["SERVO FLEET 20W-40 - 3 HDPE", 3.0, 830.64, 1125.0, 60.0, 759.84, 0.025, 0.02, "MASS", 24424],
-    ["SERVO FLEET 20W-40 - 5 HDPE", 5.0, 1381.03, 1854.0, 100.0, 1263.03, 0.025, 0.02, "MASS", 24424],
-    ["SERVO FLEET 20W-40 - 6 HDPE", 6.0, 1675.0, 2234.0, 120.0, 1533.4, 0.025, 0.02, "MASS", 24424],
-    ["SERVO FLEET 20W-40 - 7.5 HDPE", 7.5, 2100.0, 2795.0, 150.0, 1923.0, 0.025, 0.02, "MASS", 24424],
-    ["SERVO FLEET 20W-40 - 10 HDPE", 10.0, 2741.35, 3704.0, 200.0, 2505.35, 0.025, 0.02, "MASS", 24424],
-    ["SERVO FLEET 20W-40 - 15 HDPE", 15.0, 4080.98, 5548.0, 300.0, 3726.98, 0.025, 0.02, "MASS", 24424],
-    ["SERVO FLEET 20W-40 - 20 HDPE", 20.0, 5434.1, 7395.0, 400.0, 4962.1, 0.025, 0.02, "MASS", 24424],
-    ["SERVO ZOOM 4T - 0.9 HDPE", 0.9, 294.31, 474.0, 18.0, 273.07, 0.06, 0.02, "ASPIRATIONAL", 22274],
-    ["SERVO ZOOM 4T - 1 HDPE", 1.0, 319.36, 514.0, 14.0, 302.84, 0.06, 0.02, "ASPIRATIONAL", 22274],
-    ["SERVO ZOOM 4T 10W-30 - 0.9 HDPE", 0.9, 299.62, 482.0, 13.5, 283.69, 0.06, 0.02, "ASPIRATIONAL", 22283],
-    ["SERVO ZOOM 4T 10W-30 - 1 HDPE", 1.0, 319.42, 514.0, 15.0, 301.72, 0.06, 0.02, "ASPIRATIONAL", 22283],
-    ["SERVO PRIDE XL PLUS 15W-40. - 1 HDPE", 1.0, 329.69, 475.0, 20.0, 306.09, 0.06, 0.02, "ASPIRATIONAL", 24104],
-    ["SERVO PRIDE XL PLUS 15W-40. - 5 HDPE", 5.0, 1630.85, 2350.0, 100.0, 1512.85, 0.06, 0.02, "ASPIRATIONAL", 24104],
-    ["SERVO PRIDE XL PLUS 15W-40. - 7.5 HDPE", 7.5, 2445.86, 3525.0, 150.0, 2268.86, 0.06, 0.02, "ASPIRATIONAL", 24104],
-    ["SERVO PRIDE XL PLUS 15W-40. - 15 HDPE", 15.0, 4822.43, 7050.0, 300.0, 4468.43, 0.06, 0.02, "ASPIRATIONAL", 24104],
-    ["SERVO PRIDE XL PLUS 15W-40. - 20 HDPE", 20.0, 6366.1, 9400.0, 400.0, 5894.1, 0.06, 0.02, "ASPIRATIONAL", 24104],
-    ["SERVO PRIDE 15W-40 - 1 HDPE", 1.0, 304.78, 425.0, 10.0, 292.98, 0.06, 0.02, "ASPIRATIONAL", 24304],
-    ["SERVO PRIDE 15W-40 - 5 HDPE", 5.0, 1519.52, 2100.0, 75.0, 1431.02, 0.06, 0.02, "ASPIRATIONAL", 24304],
-    ["SERVO PRIDE 15W-40 - 7.5 HDPE", 7.5, 2283.2, 3150.0, 112.5, 2150.45, 0.06, 0.02, "ASPIRATIONAL", 24304],
-    ["SERVO PRIDE 15W-40 - 10 HDPE", 10.0, 3039.05, 4200.0, 150.0, 2862.05, 0.06, 0.02, "ASPIRATIONAL", 24304],
-    ["SERVO PRIDE 15W-40 - 15 HDPE", 15.0, 4562.43, 6300.0, 225.0, 4296.93, 0.06, 0.02, "ASPIRATIONAL", 24304],
-    ["SERVO PRIDE 15W-40 - 20 HDPE", 20.0, 6099.72, 8400.0, 300.0, 5745.72, 0.06, 0.02, "ASPIRATIONAL", 24304],
+    ["SERVO SUPERMILE 5W-30 - 1 HDPE", 1.0, 323.25, 530.0, 20.0, 299.65, 0.025, 0.02, "MASS", 22959],
+    ["SERVO SUPERMILE 5W-30 - 3 HDPE", 3.0, 958.59, 1535.0, 60.0, 887.79, 0.025, 0.02, "MASS", 22959],
+    ["SERVO SUPERMILE 5W-30 - 3.5 HDPE", 3.5, 1118.93, 1749.0, 70.0, 1036.33, 0.025, 0.02, "MASS", 22959],
+    ["SERVO SUPERMILE 5W-30 - 5 HDPE", 5.0, 1587.97, 2549.0, 100.0, 1469.97, 0.025, 0.02, "MASS", 22959],
+    ["SERVO KISANPOWER SPSO - 3.5 HDPE", 3.5, 925.0, 1446.0, 87.5, 821.75, 0.025, 0.02, "MASS", 23725],
+    ["SERVO KISANPOWER OIB - 1 HDPE", 1.0, 288.08, 436.0, 20.0, 264.48, 0.025, 0.02, "MASS", 24950],
+    ["SERVO KISANPOWER OIB - 5 HDPE", 5.0, 1423.84, 2009.0, 100.0, 1305.84, 0.025, 0.02, "MASS", 24950],
+    ["SERVO KISANPOWER OIB - 20 HDPE", 20.0, 5552.6, 8083.0, 400.0, 5080.6, 0.025, 0.02, "MASS", 24950],
+    ["SERVO SUPERMILE GEO 20W-50 - 0.5 HDPE", 0.5, 146.91, 205.0, 5.0, 141.01, 0.025, 0.02, "MASS", 25034],
+    ["SERVO SUPERMILE GEO 20W-50 - 1 HDPE", 1.0, 267.91, 368.0, 15.0, 250.21, 0.025, 0.02, "MASS", 25034],
+    ["SERVO SUPERMILE GEO 20W-50 - 2.1 HDPE", 2.1, 558.76, 772.8, 21.0, 533.98, 0.025, 0.02, "MASS", 25034],
+    ["SERVO SUPERMILE GEO 20W-50 - 3 HDPE", 3.0, 800.0, 1104.0, 30.0, 764.6, 0.025, 0.02, "MASS", 25034],
+    ["SERVO SUPERMILE GEO 20W-50 - 20 HDPE", 20.0, 5243.73, 7323.0, 300.0, 4889.73, 0.025, 0.02, "MASS", 25034],
+    ["SERVO FLEET 15W-40 - 1 HDPE", 1.0, 287.69, 399.0, 20.0, 264.09, 0.025, 0.02, "MASS", 27364],
+    ["SERVO FLEET 15W-40 - 3 HDPE", 3.0, 855.38, 1159.0, 60.0, 784.58, 0.025, 0.02, "MASS", 27364],
+    ["SERVO FLEET 15W-40 - 5 HDPE", 5.0, 1421.8, 1930.0, 100.0, 1303.8, 0.025, 0.02, "MASS", 27364],
+    ["SERVO FLEET 15W-40 - 7.5 HDPE", 7.5, 2140.0, 2899.0, 150.0, 1963.0, 0.025, 0.02, "MASS", 27364],
+    ["SERVO FLEET 15W-40 - 10 HDPE", 10.0, 2843.6, 3860.0, 200.0, 2607.6, 0.025, 0.02, "MASS", 27364],
+    ["SERVO FLEET 15W-40 - 15 HDPE", 15.0, 4234.35, 5784.0, 300.0, 3880.35, 0.025, 0.02, "MASS", 27364],
+    ["SERVO FLEET 15W-40 - 20 HDPE", 20.0, 5639.5, 7710.0, 400.0, 5167.5, 0.025, 0.02, "MASS", 27364],
+    ["SERVO FLEET 20W-40 - 0.5 HDPE", 0.5, 153.58, 199.0, 10.0, 141.78, 0.025, 0.02, "MASS", 27485],
+    ["SERVO FLEET 20W-40 - 1 HDPE", 1.0, 285.34, 385.0, 20.0, 261.74, 0.025, 0.02, "MASS", 27485],
+    ["SERVO FLEET 20W-40 - 1.2 HDPE", 1.2, 350.0, 465.0, 24.0, 321.68, 0.025, 0.02, "MASS", 27485],
+    ["SERVO FLEET 20W-40 - 3 HDPE", 3.0, 830.64, 1125.0, 60.0, 759.84, 0.025, 0.02, "MASS", 27485],
+    ["SERVO FLEET 20W-40 - 5 HDPE", 5.0, 1381.03, 1854.0, 100.0, 1263.03, 0.025, 0.02, "MASS", 27485],
+    ["SERVO FLEET 20W-40 - 6 HDPE", 6.0, 1675.0, 2234.0, 120.0, 1533.4, 0.025, 0.02, "MASS", 27485],
+    ["SERVO FLEET 20W-40 - 7.5 HDPE", 7.5, 2100.0, 2795.0, 150.0, 1923.0, 0.025, 0.02, "MASS", 27485],
+    ["SERVO FLEET 20W-40 - 10 HDPE", 10.0, 2741.35, 3704.0, 200.0, 2505.35, 0.025, 0.02, "MASS", 27485],
+    ["SERVO FLEET 20W-40 - 15 HDPE", 15.0, 4080.98, 5548.0, 300.0, 3726.98, 0.025, 0.02, "MASS", 27485],
+    ["SERVO FLEET 20W-40 - 20 HDPE", 20.0, 5434.1, 7395.0, 400.0, 4962.1, 0.025, 0.02, "MASS", 27485],
+    ["SERVO ZOOM 4T - 0.9 HDPE", 0.9, 294.31, 474.0, 18.0, 273.07, 0.06, 0.02, "ASPIRATIONAL", 42924],
+    ["SERVO ZOOM 4T - 1 HDPE", 1.0, 319.36, 514.0, 14.0, 302.84, 0.06, 0.02, "ASPIRATIONAL", 42924],
+    ["SERVO ZOOM 4T 10W-30 - 0.9 HDPE", 0.9, 299.62, 482.0, 13.5, 283.69, 0.06, 0.02, "ASPIRATIONAL", 42936],
+    ["SERVO ZOOM 4T 10W-30 - 1 HDPE", 1.0, 319.42, 514.0, 15.0, 301.72, 0.06, 0.02, "ASPIRATIONAL", 42936],
+    ["SERVO PRIDE XL PLUS 15W-40. - 1 HDPE", 1.0, 329.69, 475.0, 20.0, 306.09, 0.06, 0.02, "ASPIRATIONAL", 47375],
+    ["SERVO PRIDE XL PLUS 15W-40. - 5 HDPE", 5.0, 1630.85, 2350.0, 100.0, 1512.85, 0.06, 0.02, "ASPIRATIONAL", 47375],
+    ["SERVO PRIDE XL PLUS 15W-40. - 7.5 HDPE", 7.5, 2445.86, 3525.0, 150.0, 2268.86, 0.06, 0.02, "ASPIRATIONAL", 47375],
+    ["SERVO PRIDE XL PLUS 15W-40. - 15 HDPE", 15.0, 4822.43, 7050.0, 300.0, 4468.43, 0.06, 0.02, "ASPIRATIONAL", 47375],
+    ["SERVO PRIDE XL PLUS 15W-40. - 20 HDPE", 20.0, 6366.1, 9400.0, 400.0, 5894.1, 0.06, 0.02, "ASPIRATIONAL", 47375],
+    ["SERVO PRIDE 15W-40 - 1 HDPE", 1.0, 304.78, 425.0, 10.0, 292.98, 0.06, 0.02, "ASPIRATIONAL", 47577],
+    ["SERVO PRIDE 15W-40 - 5 HDPE", 5.0, 1519.52, 2100.0, 75.0, 1431.02, 0.06, 0.02, "ASPIRATIONAL", 47577],
+    ["SERVO PRIDE 15W-40 - 7.5 HDPE", 7.5, 2283.2, 3150.0, 112.5, 2150.45, 0.06, 0.02, "ASPIRATIONAL", 47577],
+    ["SERVO PRIDE 15W-40 - 10 HDPE", 10.0, 3039.05, 4200.0, 150.0, 2862.05, 0.06, 0.02, "ASPIRATIONAL", 47577],
+    ["SERVO PRIDE 15W-40 - 15 HDPE", 15.0, 4562.43, 6300.0, 225.0, 4296.93, 0.06, 0.02, "ASPIRATIONAL", 47577],
+    ["SERVO PRIDE 15W-40 - 20 HDPE", 20.0, 6099.72, 8400.0, 300.0, 5745.72, 0.06, 0.02, "ASPIRATIONAL", 47577],
     ["SERVO PRIDE TC 15W-40 - 1 HDPE", 1.0, 362.88, 560.0, 30.0, 327.48, 0.055, 0.02, "SILVER", 24804],
     ["SERVO PRIDE TC 15W-40 - 5 HDPE", 5.0, 1795.39, 2743.0, 150.0, 1618.39, 0.055, 0.02, "SILVER", 24804],
     ["SERVO PRIDE TC 15W-40 - 7.5 HDPE", 7.5, 2693.09, 4115.0, 225.0, 2427.59, 0.055, 0.02, "SILVER", 24804],
@@ -603,45 +676,206 @@
     ["SERVO HYPERDRIVE NXT 10W-40 - 3.5 HDPE", 3.5, 2698.0, 3977.0, 0.0, 2698.0, 0.075, 0.02, "PREMIUM", 66224],
     ["SERVO HYPERDRIVE NXT 10W-40 - 4 HDPE", 4.0, 3083.33, 4545.0, 0.0, 3083.33, 0.075, 0.02, "PREMIUM", 66224],
     ["SERVO HYPERDRIVE NXT 10W-40 - 5 HDPE", 5.0, 3854.1, 5682.0, 0.0, 3854.1, 0.075, 0.02, "PREMIUM", 66224],
-    ["SERVO HYPERTORQ 10W-30 - 1 HDPE", 1.0, 415.0, 530.0, 0.0, 415.0, 0.075, 0.02, "PREMIUM", 67103],
-    ["SERVO HYPERTORQ 10W-30 - 5 HDPE", 5.0, 2050.0, 2625.0, 0.0, 2050.0, 0.075, 0.02, "PREMIUM", 67103],
-    ["SERVO HYPERTORQ 10W-30 - 7.5 HDPE", 7.5, 3075.0, 3938.0, 0.0, 3075.0, 0.075, 0.02, "PREMIUM", 67103],
-    ["SERVO HYPERTORQ 10W-30 - 15 HDPE", 15.0, 6150.0, 7875.0, 0.0, 6150.0, 0.075, 0.02, "PREMIUM", 67103],
-    ["SERVO HYPERTORQ 10W-30 - 20 HDPE", 20.0, 8200.0, 10500.0, 0.0, 8200.0, 0.075, 0.02, "PREMIUM", 67103],
-    ["SERVO HYPERTORQ 15W-40 - 1 HDPE", 1.0, 430.0, 530.0, 0.0, 430.0, 0.075, 0.02, "PREMIUM", 67104],
-    ["SERVO HYPERTORQ 15W-40 - 3 HDPE", 3.0, 1260.0, 1575.0, 0.0, 1260.0, 0.075, 0.02, "PREMIUM", 67104],
-    ["SERVO HYPERTORQ 15W-40 - 5 HDPE", 5.0, 2075.0, 2600.0, 0.0, 2075.0, 0.075, 0.02, "PREMIUM", 67104],
-    ["SERVO HYPERTORQ 15W-40 - 7.5 HDPE", 7.5, 3037.5, 3788.0, 0.0, 3037.5, 0.075, 0.02, "PREMIUM", 67104],
-    ["SERVO HYPERTORQ 15W-40 - 10 HDPE", 10.0, 4050.0, 5050.0, 0.0, 4050.0, 0.075, 0.02, "PREMIUM", 67104],
-    ["SERVO HYPERTORQ 15W-40 - 15 HDPE", 15.0, 6075.0, 7575.0, 0.0, 6075.0, 0.075, 0.02, "PREMIUM", 67104],
-    ["SERVO HYPERTORQ 15W-40 - 18 HDPE", 18.0, 7290.0, 9090.0, 0.0, 7290.0, 0.075, 0.02, "PREMIUM", 67104],
-    ["SERVO HYPERTORQ 15W-40 - 20 HDPE", 20.0, 8100.0, 10100.0, 0.0, 8100.0, 0.075, 0.02, "PREMIUM", 67104],
-    ["SERVO HYPERTORQ NXT 15W-40 - 1 HDPE", 1.0, 460.0, 575.0, 0.0, 460.0, 0.075, 0.02, "PREMIUM", 67204],
-    ["SERVO HYPERTORQ NXT 15W-40 - 3 HDPE", 3.0, 1350.0, 1680.0, 0.0, 1350.0, 0.075, 0.02, "PREMIUM", 67204],
-    ["SERVO HYPERTORQ NXT 15W-40 - 5 HDPE", 5.0, 2175.0, 2800.0, 0.0, 2175.0, 0.075, 0.02, "PREMIUM", 67204],
-    ["SERVO HYPERTORQ NXT 15W-40 - 7.5 HDPE", 7.5, 3150.0, 4163.0, 0.0, 3150.0, 0.075, 0.02, "PREMIUM", 67204],
-    ["SERVO HYPERTORQ NXT 15W-40 - 10 HDPE", 10.0, 4200.0, 5550.0, 0.0, 4200.0, 0.075, 0.02, "PREMIUM", 67204],
-    ["SERVO HYPERTORQ NXT 15W-40 - 15 HDPE", 15.0, 6300.0, 8325.0, 0.0, 6300.0, 0.075, 0.02, "PREMIUM", 67204],
-    ["SERVO HYPERTORQ NXT 15W-40 - 18 HDPE", 18.0, 7560.0, 9900.0, 0.0, 7560.0, 0.075, 0.02, "PREMIUM", 67204],
-    ["SERVO HYPERTORQ NXT 15W-40 - 20 HDPE", 20.0, 8400.0, 11000.0, 0.0, 8400.0, 0.075, 0.02, "PREMIUM", 67204],
-    ["SERVOSYSTEM 68 - 20 HDPE", 20.0, 5240.0, 7300.0, 200.0, 5004.0, 0.06, 0.02, "INDUSTRIAL", 4124],
+    ["SERVO HYPERTORQ 10W-30 - 1 HDPE", 1.0, 415.0, 530.0, 0.0, 415.0, 0.075, 0.02, "PREMIUM", 67123],
+    ["SERVO HYPERTORQ 10W-30 - 5 HDPE", 5.0, 2050.0, 2625.0, 0.0, 2050.0, 0.075, 0.02, "PREMIUM", 67123],
+    ["SERVO HYPERTORQ 10W-30 - 7.5 HDPE", 7.5, 3075.0, 3938.0, 0.0, 3075.0, 0.075, 0.02, "PREMIUM", 67123],
+    ["SERVO HYPERTORQ 10W-30 - 15 HDPE", 15.0, 6150.0, 7875.0, 0.0, 6150.0, 0.075, 0.02, "PREMIUM", 67123],
+    ["SERVO HYPERTORQ 10W-30 - 20 HDPE", 20.0, 8200.0, 10500.0, 0.0, 8200.0, 0.075, 0.02, "PREMIUM", 67123],
+    ["SERVO HYPERTORQ 15W-40 - 1 HDPE", 1.0, 430.0, 530.0, 0.0, 430.0, 0.075, 0.02, "PREMIUM", 67134],
+    ["SERVO HYPERTORQ 15W-40 - 3 HDPE", 3.0, 1260.0, 1575.0, 0.0, 1260.0, 0.075, 0.02, "PREMIUM", 67134],
+    ["SERVO HYPERTORQ 15W-40 - 5 HDPE", 5.0, 2075.0, 2600.0, 0.0, 2075.0, 0.075, 0.02, "PREMIUM", 67134],
+    ["SERVO HYPERTORQ 15W-40 - 7.5 HDPE", 7.5, 3037.5, 3788.0, 0.0, 3037.5, 0.075, 0.02, "PREMIUM", 67134],
+    ["SERVO HYPERTORQ 15W-40 - 10 HDPE", 10.0, 4050.0, 5050.0, 0.0, 4050.0, 0.075, 0.02, "PREMIUM", 67134],
+    ["SERVO HYPERTORQ 15W-40 - 15 HDPE", 15.0, 6075.0, 7575.0, 0.0, 6075.0, 0.075, 0.02, "PREMIUM", 67134],
+    ["SERVO HYPERTORQ 15W-40 - 18 HDPE", 18.0, 7290.0, 9090.0, 0.0, 7290.0, 0.075, 0.02, "PREMIUM", 67134],
+    ["SERVO HYPERTORQ 15W-40 - 20 HDPE", 20.0, 8100.0, 10100.0, 0.0, 8100.0, 0.075, 0.02, "PREMIUM", 67134],
+    ["SERVO HYPERTORQ NXT 10W-30 - 1 HDPE", 1.0, 470.0, 580.0, 0.0, 470.0, 0.075, 0.02, "PREMIUM", 68123],
+    ["SERVO HYPERTORQ NXT 10W-30 - 5 HDPE", 5.0, 2300.0, 2875.0, 0.0, 2300.0, 0.075, 0.02, "PREMIUM", 68123],
+    ["SERVO HYPERTORQ NXT 10W-30 - 7.5 HDPE", 7.5, 3225.0, 4200.0, 0.0, 3225.0, 0.075, 0.02, "PREMIUM", 68123],
+    ["SERVO HYPERTORQ NXT 10W-30 - 15 HDPE", 15.0, 6450.0, 8400.0, 0.0, 6450.0, 0.075, 0.02, "PREMIUM", 68123],
+    ["SERVO HYPERTORQ NXT 10W-30 - 18 HDPE", 18.0, 7740.0, 10080.0, 0.0, 7740.0, 0.075, 0.02, "PREMIUM", 68123],
+    ["SERVO HYPERTORQ NXT 10W-30 - 20 HDPE", 20.0, 8600.0, 11200.0, 0.0, 8600.0, 0.075, 0.02, "PREMIUM", 68123],
+    ["SERVO HYPERTORQ NXT 10W-40 - 1 HDPE", 1.0, 510.0, 650.0, 0.0, 510.0, 0.075, 0.02, "PREMIUM", 68124],
+    ["SERVO HYPERTORQ NXT 10W-40 - 5 HDPE", 5.0, 2500.0, 3250.0, 0.0, 2500.0, 0.075, 0.02, "PREMIUM", 68124],
+    ["SERVO HYPERTORQ NXT 10W-40 - 7.5 HDPE", 7.5, 3675.0, 4725.0, 0.0, 3675.0, 0.075, 0.02, "PREMIUM", 68124],
+    ["SERVO HYPERTORQ NXT 10W-40 - 15 HDPE", 15.0, 7350.0, 9450.0, 0.0, 7350.0, 0.075, 0.02, "PREMIUM", 68124],
+    ["SERVO HYPERTORQ NXT 10W-40 - 18 HDPE", 18.0, 8820.0, 11340.0, 0.0, 8820.0, 0.075, 0.02, "PREMIUM", 68124],
+    ["SERVO HYPERTORQ NXT 10W-40 - 20 HDPE", 20.0, 9800.0, 12600.0, 0.0, 9800.0, 0.075, 0.02, "PREMIUM", 68124],
+    ["SERVO HYPERTORQ NXT 15W-40 - 1 HDPE", 1.0, 460.0, 575.0, 0.0, 460.0, 0.075, 0.02, "PREMIUM", 68134],
+    ["SERVO HYPERTORQ NXT 15W-40 - 3 HDPE", 3.0, 1350.0, 1680.0, 0.0, 1350.0, 0.075, 0.02, "PREMIUM", 68134],
+    ["SERVO HYPERTORQ NXT 15W-40 - 5 HDPE", 5.0, 2175.0, 2800.0, 0.0, 2175.0, 0.075, 0.02, "PREMIUM", 68134],
+    ["SERVO HYPERTORQ NXT 15W-40 - 7.5 HDPE", 7.5, 3150.0, 4163.0, 0.0, 3150.0, 0.075, 0.02, "PREMIUM", 68134],
+    ["SERVO HYPERTORQ NXT 15W-40 - 10 HDPE", 10.0, 4200.0, 5550.0, 0.0, 4200.0, 0.075, 0.02, "PREMIUM", 68134],
+    ["SERVO HYPERTORQ NXT 15W-40 - 15 HDPE", 15.0, 6300.0, 8325.0, 0.0, 6300.0, 0.075, 0.02, "PREMIUM", 68134],
+    ["SERVO HYPERTORQ NXT 15W-40 - 18 HDPE", 18.0, 7560.0, 9900.0, 0.0, 7560.0, 0.075, 0.02, "PREMIUM", 68134],
+    ["SERVO HYPERTORQ NXT 15W-40 - 20 HDPE", 20.0, 8400.0, 11000.0, 0.0, 8400.0, 0.075, 0.02, "PREMIUM", 68134],
+    ["MAHINDRA EM REAR AXLE OIL-18 L", 18.0, 7109.56, 7965.0, 720.0, 6259.96, 0.055, 0.02, "SILVER", 2485],
+    ["SERVO GEAR HP 90- 1/2L-HDPE", 0.5, 189.3, 250.0, 0.0, 189.3, 0.06, 0.02, "ASPIRATIONAL", 2502],
+    ["SERVO GEAR HP 90- 1L-HDPE", 1.0, 360.45, 466.0, 50.0, 301.45, 0.06, 0.02, "ASPIRATIONAL", 2502],
+    ["SERVO GEAR HP 90 - 5L - HDPE", 5.0, 1788.65, 2316.0, 250.0, 1493.65, 0.06, 0.02, "ASPIRATIONAL", 2502],
+    ["SERVO GEAR HP 90-20L BUC", 20.0, 7065.92, 9088.0, 1000.0, 5885.92, 0.06, 0.02, "ASPIRATIONAL", 2502],
+    ["SERVO GEAR HP 140 - 1L - HDPE", 1.0, 371.95, 484.0, 50.0, 312.95, 0.06, 0.02, "ASPIRATIONAL", 2503],
+    ["SERVO GEAR HP 140 - 5L - HDPE", 5.0, 1843.92, 2364.0, 250.0, 1548.92, 0.06, 0.02, "ASPIRATIONAL", 2503],
+    ["SERVO GEAR HP 140-20L BUC", 20.0, 7255.42, 9357.0, 1000.0, 6075.42, 0.06, 0.02, "ASPIRATIONAL", 2503],
+    ["MGGO 80W-90 - 2.1 L", 2.1, 725.85, 876.0, 0.0, 725.85, 0.055, 0.02, "SILVER", 2540],
+    ["HYUNDAI S.GEAR OIL 75W-85- 2.5L-HDPE", 2.5, 1340.09, 1488.0, 0.0, 1340.09, 0.055, 0.02, "SILVER", 2557],
+    ["SERVO BRAKE FLUID SUPER HD - 1/4L-HDP", 0.25, 99.75, 121.5, 0.0, 99.75, 0.075, 0.02, "PREMIUM", 2909],
+    ["SERVO BRAKE FLUID SUPER HD -1/2L-HDPE", 0.5, 193.66, 235.0, 0.0, 193.66, 0.075, 0.02, "PREMIUM", 2909],
+    ["SERVO BRAKE FLUID DOT 4- 1/4 L", 0.25, 124.65, 170.5, 0.0, 124.65, 0.075, 0.02, "PREMIUM", 2914],
+    ["SERVO BRAKE FLUID DOT 4- 1/2 L", 0.5, 239.88, 325.0, 0.0, 239.88, 0.075, 0.02, "PREMIUM", 2914],
+    ["SERVO HONDA JOSH- 0.9 L", 0.9, 405.92, 515.0, 22.5, 379.37, 0.055, 0.02, "SILVER", 2927],
+    ["SERVO HONDA JOSH- 1 L", 1.0, 450.98, 570.0, 25.0, 421.48, 0.055, 0.02, "SILVER", 2927],
+    ["MGDO 5W-30- 3.5 L", 3.5, 1168.29, 1904.0, 0.0, 1168.29, 0.055, 0.02, "SILVER", 2964],
+    ["HY.SERVO ENGINE OIL 5W-30- 3.5L", 3.5, 1425.17, 2090.0, 52.5, 1363.22, 0.055, 0.02, "SILVER", 2968],
+    ["SERVOSYSTEM 32-20L BUC", 20.0, 6839.66, 7603.0, 1660.0, 4880.86, 0.06, 0.02, "INDUSTRIAL", 3001],
+    ["SERVOSYSTEM 46 - 20L BUC", 20.0, 6846.99, 7612.0, 1700.0, 4840.99, 0.06, 0.02, "INDUSTRIAL", 3002],
+    ["SERVOSYSTEM 68- 5L - HDPE", 5.0, 1807.47, 2013.0, 490.0, 1229.27, 0.06, 0.02, "INDUSTRIAL", 3006],
+    ["SERVOSYSTEM 68-20L BUC", 20.0, 7000.87, 7790.0, 1960.0, 4688.07, 0.06, 0.02, "INDUSTRIAL", 3006],
+    ["SERVOHYDREX TH 46 PLUS-20 L", 20.0, 8268.52, 10419.0, 980.0, 7112.12, 0.06, 0.02, "INDUSTRIAL", 3059],
+    ["SERVOHYDREX TH 46-20L BUC", 20.0, 7603.72, 8474.0, 620.0, 6872.12, 0.06, 0.02, "INDUSTRIAL", 3064],
+    ["SERVOMESH SP 320-20 L", 20.0, 7363.68, 8201.0, 1420.0, 5688.08, 0.06, 0.02, "INDUSTRIAL", 3614],
+    ["SERVOMESH SP 220-20 L", 20.0, 7163.04, 7974.0, 1180.0, 5770.64, 0.06, 0.02, "INDUSTRIAL", 3617],
+    ["SERVOCUT S - 20L BUC", 20.0, 6528.94, 7374.0, 1060.0, 5278.14, 0.06, 0.02, "INDUSTRIAL", 4501],
+    ["SERVO TRANSFLUID A-40 X 1/2 L", 0.5, 204.57, 276.0, 7.5, 195.72, 0.06, 0.02, "ASPIRATIONAL", 4906],
+    ["SERVO TRANSFLUID A- 1/2 L", 0.5, 204.57, 276.0, 0.0, 204.57, 0.06, 0.02, "ASPIRATIONAL", 4906],
+    ["SERVO TRANSFLUID A- 1L-HDPE", 1.0, 385.6, 511.0, 35.0, 344.3, 0.06, 0.02, "ASPIRATIONAL", 4906],
+    ["SERVO TRANSFLUID A- 5L-HDPE", 5.0, 1906.22, 2459.0, 175.0, 1699.72, 0.06, 0.02, "ASPIRATIONAL", 4906],
+    ["SERVO TRANSFLUID A-10 L", 10.0, 3788.6, 4886.0, 350.0, 3375.6, 0.06, 0.02, "ASPIRATIONAL", 4906],
+    ["HYUNDAI SERVO SUPERIOR 0W30- 4 L", 4.0, 1947.42, 2632.0, 60.0, 1876.62, 0.055, 0.02, "SILVER", 7205],
+    ["HY SERVO SYNTH 0W-30 SP/C3- 3.5 L", 3.5, 3569.63, 4603.0, 52.5, 3507.68, 0.055, 0.02, "SILVER", 7209],
+    ["HYUNDAI SERVO COOLANT 50- 1 L", 1.0, 297.68, 351.0, 15.0, 279.98, 0.055, 0.02, "SILVER", 7232],
+    ["SERVO MG HECTOR PETROL EO- 4 L", 4.0, 1675.63, 2036.0, 32.0, 1637.87, 0.055, 0.02, "SILVER", 7264],
+    ["SERVO MG HECTOR DIESEL ENGINE OIL- 5 L", 5.0, 4413.07, 5370.0, 105.0, 4289.17, 0.055, 0.02, "SILVER", 7267],
+    ["HY SERVO PETROL EO SN PLUS- 3.5 L", 3.5, 1603.0, 2163.0, 52.5, 1541.05, 0.055, 0.02, "SILVER", 7420],
+    ["HY SERVO PETROL EO SN PLUS- 4 L", 4.0, 1831.5, 2472.0, 40.0, 1784.3, 0.055, 0.02, "SILVER", 7420],
+    ["HYUNDAI SERVO DEO ACEA C5- 5 L", 5.0, 2445.23, 3240.0, 50.0, 2386.23, 0.055, 0.02, "SILVER", 7421],
+    ["ECSTAR PETROL 0W-20- 3.5 L", 3.5, 1622.27, 1824.0, 70.0, 1539.67, 0.055, 0.02, "SILVER", 7427],
+    ["ECSTAR DIESEL 5W-30- 3.5 L", 3.5, 1914.67, 2377.0, 52.5, 1852.72, 0.055, 0.02, "SILVER", 7428],
+    ["SERVO GEAR SUPER 80W-90 - 1 L HDPE", 1.0, 379.44, 499.0, 65.0, 302.74, 0.06, 0.02, "ASPIRATIONAL", 7511],
+    ["SERVO GEAR SUPER 80W-90- 2.5 L", 2.5, 943.85, 1314.0, 162.5, 752.1, 0.06, 0.02, "ASPIRATIONAL", 7511],
+    ["SERVO GEAR SUPER 80W-90- 5 L", 5.0, 1877.76, 2445.0, 325.0, 1494.26, 0.06, 0.02, "ASPIRATIONAL", 7511],
+    ["SERVO GEAR SUPER 80W-90-7.5 L", 7.5, 2794.28, 3620.0, 487.5, 2219.03, 0.06, 0.02, "ASPIRATIONAL", 7511],
+    ["SERVO GEAR SUPER 80W-90 - 20 L BUC", 20.0, 7388.11, 9414.0, 1500.0, 5618.11, 0.06, 0.02, "ASPIRATIONAL", 7511],
+    ["SERVO GEAR SUPER 80W-90-20 L PROMO", 20.0, 7388.11, 9414.0, 1500.0, 5618.11, 0.06, 0.02, "ASPIRATIONAL", 7511],
+    ["SERVO GEAR SUPER 85W-140-12 L BUC", 12.0, 4717.0, 6352.0, 780.0, 3796.6, 0.06, 0.02, "ASPIRATIONAL", 7515],
+    ["SERVO GEAR SUPER 85W-140 - 1 L HDPE", 1.0, 405.65, 551.0, 65.0, 328.95, 0.06, 0.02, "ASPIRATIONAL", 7515],
+    ["SERVO GEAR SUPER 85W-140 - 5 L HDPE", 5.0, 2015.02, 2588.0, 325.0, 1631.52, 0.06, 0.02, "ASPIRATIONAL", 7515],
+    ["SERVO GEAR SUPER 85W-140-7.5 L", 7.5, 3011.25, 3871.0, 562.5, 2347.5, 0.06, 0.02, "ASPIRATIONAL", 7515],
+    ["SERVO GEAR SUPER 85W-140-20 L BUC", 20.0, 7805.44, 9975.0, 1600.0, 5917.44, 0.06, 0.02, "ASPIRATIONAL", 7515],
+    ["SERVO KOOL PLUS - 1/4L-HDPE", 0.25, 90.58, 115.5, 0.0, 90.58, 0.075, 0.02, "PREMIUM", 7584],
+    ["SERVO KOOL PLUS- 1/2L-HDPE", 0.5, 181.16, 226.0, 0.0, 181.16, 0.075, 0.02, "PREMIUM", 7584],
+    ["SERVO KOOL PLUS- 1L-HDPE", 1.0, 334.82, 415.0, 0.0, 334.82, 0.075, 0.02, "PREMIUM", 7584],
+    ["MGO 20W-40 - 1 L", 1.0, 332.01, 399.0, 0.0, 332.01, 0.055, 0.02, "SILVER", 7600],
+    ["MGO 20W-40 - 3 L", 3.0, 971.72, 1197.0, 30.0, 936.32, 0.055, 0.02, "SILVER", 7600],
+    ["SERVO KOOL READY- 1L-HDPE", 1.0, 254.84, 315.0, 0.0, 254.84, 0.075, 0.02, "PREMIUM", 7607],
+    ["HYUNDAI SERVO CRDi PREM.ENG.OIL 5L-HDP", 5.0, 1985.26, 2375.0, 45.0, 1932.16, 0.055, 0.02, "SILVER", 7638],
+    ["MGDO 15W-40 - 1 L", 1.0, 357.14, 407.0, 0.0, 357.14, 0.055, 0.02, "SILVER", 7670],
+    ["MGDO 15W-40 - 3.5 L", 3.5, 1186.17, 1425.0, 0.0, 1186.17, 0.055, 0.02, "SILVER", 7670],
+    ["MGDO 15W-40 -  5 L", 5.0, 1689.66, 2035.0, 50.0, 1630.66, 0.055, 0.02, "SILVER", 7670],
+    ["SERVO PRIDE ALT PLUS 15W-40 - 1 L", 1.0, 372.0, 465.0, 40.0, 324.8, 0.055, 0.02, "SILVER", 7677],
+    ["SERVO PRIDE ALT PLUS 15W-40 -10 L", 10.0, 3640.0, 4550.0, 500.0, 3050.0, 0.055, 0.02, "SILVER", 7677],
+    ["SERVO PRIDE ALT PLUS 15W-40-18 L", 18.0, 6408.0, 8010.0, 900.0, 5346.0, 0.055, 0.02, "SILVER", 7677],
+    ["SERVO PRIDE ALT PLUS 15W-40 -15 L", 15.0, 5400.0, 6750.0, 750.0, 4515.0, 0.055, 0.02, "SILVER", 7677],
+    ["MGO 5W-30- 3 L", 3.0, 1118.73, 1257.0, 30.0, 1083.33, 0.055, 0.02, "SILVER", 7688],
+    ["MGO 5W-30- 3.5L HDPE", 3.5, 1305.63, 1467.0, 35.0, 1264.33, 0.055, 0.02, "SILVER", 7688],
+    ["SERVO GREASE MP-20 KG BUC", 20.0, 8188.16, 9954.0, 1200.0, 6772.16, 0.06, 0.02, "ASPIRATIONAL", 7701],
+    ["SERVO GREASE MP 3 - 1/2 KG CTN", 0.5, 232.47, 310.0, 25.0, 202.97, 0.06, 0.02, "ASPIRATIONAL", 7705],
+    ["SERVOGREASE MP 3- 200 GM CAR", 0.2, 104.19, 138.0, 10.0, 92.39, 0.06, 0.02, "ASPIRATIONAL", 7705],
+    ["SERVO GREASE MP 3 - 1 KG CTN", 1.0, 458.28, 600.0, 55.0, 393.38, 0.06, 0.02, "ASPIRATIONAL", 7705],
+    ["SERVOGREASE MP 3- 2 KG", 2.0, 902.04, 1126.0, 120.0, 760.44, 0.06, 0.02, "ASPIRATIONAL", 7705],
+    ["SERVOGREASE MP 3- 3 KG", 3.0, 1336.39, 1656.0, 180.0, 1123.99, 0.06, 0.02, "ASPIRATIONAL", 7705],
+    ["SERVOGREASE MP 3 - 5 KG BUC", 5.0, 2186.98, 2731.0, 300.0, 1832.98, 0.06, 0.02, "ASPIRATIONAL", 7705],
+    ["SERVOGREASE MP 3 -20 KG BUC", 20.0, 8578.99, 10705.0, 1200.0, 7162.99, 0.06, 0.02, "ASPIRATIONAL", 7705],
+    ["SERVOGEM 2-20 KG BUC", 20.0, 8783.18, 9519.0, 1080.0, 7508.78, 0.06, 0.02, "INDUSTRIAL", 7722],
+    ["SERVOGEM 3-20 KG BUC", 20.0, 8819.04, 9670.0, 1300.0, 7285.04, 0.06, 0.02, "INDUSTRIAL", 7723],
+    ["SERVO GEM RR 3 - 1/2 KG CTN", 0.5, 251.67, 334.0, 27.5, 219.22, 0.06, 0.02, "INDUSTRIAL", 7727],
+    ["SERVO GEM RR 3 - 1 KG CTN", 1.0, 480.45, 614.0, 55.0, 415.56, 0.06, 0.02, "INDUSTRIAL", 7727],
+    ["SERVO GEM RR 3- 2 KG TUB", 2.0, 941.99, 1215.0, 110.0, 812.19, 0.06, 0.02, "INDUSTRIAL", 7727],
+    ["SERVO GEM RR 3- 3 KG", 3.0, 1380.96, 1804.0, 165.0, 1186.26, 0.06, 0.02, "INDUSTRIAL", 7727],
+    ["SERVO GEM RR 3 - 20 KG. BUC", 20.0, 9005.47, 10993.0, 1200.0, 7589.47, 0.06, 0.02, "INDUSTRIAL", 7727],
+    ["SERVO GEM RR 3-7 KG", 7.0, 3194.61, 3966.0, 385.0, 2740.31, 0.06, 0.02, "INDUSTRIAL", 7727],
+    ["SERVOGEM EP 2-20 KG BUC", 20.0, 8756.39, 11196.0, 1220.0, 7316.79, 0.06, 0.02, "INDUSTRIAL", 7742],
+    ["SERVOGEM HTXX-20 KG BUC", 20.0, 8782.9, 9581.0, 600.0, 8074.9, 0.06, 0.02, "INDUSTRIAL", 7744],
     ["SERVO LONG LIFE GREASE- 1/2 KG", 0.5, 249.03, 366.0, 27.5, 216.58, 0.06, 0.02, "ASPIRATIONAL", 7849],
     ["SERVO LONG LIFE GREASE- 1 KG TUB", 1.0, 486.58, 676.0, 55.0, 421.68, 0.06, 0.02, "ASPIRATIONAL", 7849],
     ["SERVO LONG LIFE GREASE- 2 KG TUB", 2.0, 955.49, 1376.0, 110.0, 825.69, 0.06, 0.02, "ASPIRATIONAL", 7849],
     ["SERVO LONG LIFE GREASE- 3 KG TUB", 3.0, 1419.78, 2030.0, 165.0, 1225.08, 0.06, 0.02, "ASPIRATIONAL", 7849],
-    ["SERVO LONG LIFE GREASE- 5 KG", 5.0, 2343.17, 3345.0, 275.0, 2018.67, 0.06, 0.02, "ASPIRATIONAL", 7849],
-    ["SERVO LONG LIFE GREASE- 20 KG", 20.0, 9086.29, 12841.0, 1200.0, 7670.29, 0.06, 0.02, "ASPIRATIONAL", 7849]
+    ["SERVO LONG LIFE GREASE-5 KG", 5.0, 2343.17, 3345.0, 275.0, 2018.67, 0.06, 0.02, "ASPIRATIONAL", 7849],
+    ["SERVO LONG LIFE GREASE-20 KG", 20.0, 9086.29, 12841.0, 1200.0, 7670.29, 0.06, 0.02, "ASPIRATIONAL", 7849],
+    ["SERVO LONG LIFE GREASE-7 KG", 7.0, 3246.92, 4618.0, 420.0, 2751.32, 0.06, 0.02, "ASPIRATIONAL", 7849],
+    ["SERVO LONG LIFE GREASE-10 KG BUC", 10.0, 4602.29, 6505.0, 550.0, 3953.29, 0.06, 0.02, "ASPIRATIONAL", 7849],
+    ["SERVOGREASE MIRACLE 3- 1 KG", 1.0, 448.0, 640.0, 50.0, 389.0, 0.06, 0.02, "INDUSTRIAL", 7903]
   ];
 
-  // Try dynamic fetch of sheet if hosted on a local webserver
-  function tryFetchSheet(filename) {
-    fetch(filename)
-      .then(res => { if (!res.ok) throw new Error(); return res.arrayBuffer(); })
-      .then(buffer => parseExcelBuffer(buffer))
-      .catch(() => {});
+  let lubeData = [...defaultDatabase];
+
+  const DB_NAME = "ServoPricingStorage";
+  const DB_VERSION = 1;
+  let dbInstance = null;
+
+  function initDB() {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open(DB_NAME, DB_VERSION);
+      request.onupgradeneeded = function(e) {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains("circulars")) {
+          db.createObjectStore("circulars");
+        }
+      };
+      request.onsuccess = function(e) {
+        dbInstance = e.target.result;
+        resolve(dbInstance);
+      };
+      request.onerror = function(e) {
+        reject(e);
+      };
+    });
   }
-  tryFetchSheet('Lube Costing_2.xlsx');
-  tryFetchSheet('Lube Costing.xlsx');
+
+  function saveToDB(key, val) {
+    return new Promise((resolve, reject) => {
+      if (!dbInstance) return resolve();
+      const tx = dbInstance.transaction("circulars", "readwrite");
+      const store = tx.objectStore("circulars");
+      const req = store.put(val, key);
+      req.onsuccess = () => resolve();
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  function getFromDB(key) {
+    return new Promise((resolve, reject) => {
+      if (!dbInstance) return resolve(null);
+      const tx = dbInstance.transaction("circulars", "readonly");
+      const store = tx.objectStore("circulars");
+      const req = store.get(key);
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  async function restoreSavedCirculars() {
+    try {
+      await initDB();
+      const savedProducts = await getFromDB("saved_lube_data");
+      if (savedProducts && Array.isArray(savedProducts) && savedProducts.length > 0) {
+        lubeData = savedProducts;
+        document.getElementById('productCountBadge').textContent = `${lubeData.length} Products Loaded (Saved Circular)`;
+      } else {
+        document.getElementById('productCountBadge').textContent = `${lubeData.length} Products Loaded`;
+      }
+
+      const savedDoc = await getFromDB("saved_scheme_file");
+      if (savedDoc && savedDoc.dataUrl) {
+        activeSchemeFileUrl = savedDoc.dataUrl;
+        activeSchemeFileName = savedDoc.fileName;
+        updateCircularViewer();
+      }
+    } catch (err) {
+      console.warn("Storage notice:", err);
+    }
+  }
+  restoreSavedCirculars();
 
   function parseExcelBuffer(buffer) {
     try {
@@ -668,14 +902,16 @@
       }
       if (loaded.length > 0) {
         lubeData = loaded;
-        document.getElementById('productCountBadge').textContent = `${lubeData.length} Products Loaded`;
+        saveToDB("saved_lube_data", lubeData);
+        document.getElementById('productCountBadge').textContent = `${lubeData.length} Products Loaded (Saved Circular)`;
+        return true;
       }
     } catch (e) {
       console.error(e);
     }
+    return false;
   }
 
-  // --- Password Protection (011100) ---
   const AUTH_KEY = "011100";
   const authPriceUploadBtn = document.getElementById('authPriceUploadBtn');
   const authSchemeUploadBtn = document.getElementById('authSchemeUploadBtn');
@@ -684,7 +920,7 @@
 
   function requestAuthorization(callback) {
     const entered = prompt("Enter Administrator Access Code:");
-    if (entered === null) return; // User pressed Cancel
+    if (entered === null) return;
     if (entered.trim() === AUTH_KEY) {
       callback();
     } else {
@@ -700,23 +936,25 @@
     requestAuthorization(() => schemeFileInput.click());
   });
 
-  // Handle Price Circular Upload
   excelFileInput.addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = function(evt) {
-      parseExcelBuffer(evt.target.result);
-      alert(`Verification Successful: Price circular updated with ${lubeData.length} items.`);
-      document.getElementById('productInput').value = '';
-      document.getElementById('resultsCard').style.display = 'none';
+    reader.onload = async function(evt) {
+      const ok = parseExcelBuffer(evt.target.result);
+      if (ok) {
+        alert(`Success: Price circular updated and saved permanently with ${lubeData.length} products!`);
+        document.getElementById('productInput').value = '';
+        document.getElementById('resultsCard').style.display = 'none';
+      } else {
+        alert("Error: File columns could not be processed.");
+      }
     };
     reader.readAsArrayBuffer(file);
     excelFileInput.value = '';
   });
 
-  // Handle Scheme Circular Upload (PDF / Image)
   let activeSchemeFileUrl = null;
   let activeSchemeFileName = null;
 
@@ -724,15 +962,15 @@
     const file = e.target.files[0];
     if (!file) return;
 
-    if (activeSchemeFileUrl) {
-      URL.revokeObjectURL(activeSchemeFileUrl);
-    }
-
-    activeSchemeFileUrl = URL.createObjectURL(file);
-    activeSchemeFileName = file.name;
-
-    alert(`Scheme Circular "${file.name}" uploaded successfully!`);
-    updateCircularViewer();
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+      activeSchemeFileUrl = evt.target.result;
+      activeSchemeFileName = file.name;
+      saveToDB("saved_scheme_file", { fileName: file.name, dataUrl: activeSchemeFileUrl });
+      alert(`Scheme Circular "${file.name}" uploaded and saved permanently!`);
+      updateCircularViewer();
+    };
+    reader.readAsDataURL(file);
     schemeFileInput.value = '';
   });
 
@@ -761,7 +999,6 @@
     }
   }
 
-  // Toggle Circular Preview Frame
   const toggleCircularViewBtn = document.getElementById('toggleCircularViewBtn');
   const circularFrameWrapper = document.getElementById('circularFrameWrapper');
   toggleCircularViewBtn.addEventListener('click', function() {
@@ -774,7 +1011,6 @@
     }
   });
 
-  // --- Date & EB Slab Computation ---
   const today = new Date();
   const day = today.getDate();
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -794,7 +1030,6 @@
   document.getElementById('currentDateDisplay').textContent = formattedDate;
   document.getElementById('currentEbDisplay').textContent = `₹ ${ebRate.toFixed(1)} / L`;
 
-  // --- Search UI & Autocomplete ---
   const input = document.getElementById('productInput');
   const clearBtn = document.getElementById('clearBtn');
   const suggestionsBox = document.getElementById('suggestionsBox');
@@ -851,35 +1086,88 @@
     }
   });
 
-  // --- Calculations & Scheme Rendering ---
-  function displayCalculation(item) {
-    const [name, packSize, dlp, mrp, hoDiscPack, effDlp, sc, cd, category, prodCode] = item;
-
-    // Pricing Arithmetic
+  // Calculate Net Landing for any given item at current EB rate
+  function getCalculatedValues(item) {
+    const [name, packSize, dlp, mrp, hoDiscPack, effDlp, sc, cd] = item;
     const scAmount = sc * dlp;
     const ebPack = ebRate * packSize;
     const baseBeforeTax = (effDlp / 1.18) - scAmount - ebPack;
     const cd1 = cd * baseBeforeTax;
     const netLanding = (baseBeforeTax - cd1) * 1.18;
+    return { name, packSize, dlp, mrp, scAmount, netLanding };
+  }
 
-    // Fill Output Prices
+  // Find the SKU with the maximum Net Landing from a list of candidates
+  function getBestFreeSku(candidates) {
+    if (!candidates || candidates.length === 0) return null;
+    let best = null;
+    let maxNL = -Infinity;
+    for (const c of candidates) {
+      const calc = getCalculatedValues(c);
+      if (calc.netLanding > maxNL) {
+        maxNL = calc.netLanding;
+        best = calc;
+      }
+    }
+    return best;
+  }
+
+  function renderFreeSkuBox(best, quantityText = "1 Can") {
+    if (!best) return "";
+    return `
+      <div class="free-sku-box">
+        <div class="free-sku-title">
+          <span>🎯 Highest Value Free SKU (${quantityText})</span>
+          <span>Max Net Landing</span>
+        </div>
+        <div class="free-sku-name">${best.name}</div>
+        <div class="free-sku-grid">
+          <div class="free-sku-item">
+            <div class="f-label">MRP</div>
+            <div class="f-val">₹ ${best.mrp.toFixed(2)}</div>
+          </div>
+          <div class="free-sku-item">
+            <div class="f-label">DLP</div>
+            <div class="f-val">₹ ${best.dlp.toFixed(2)}</div>
+          </div>
+          <div class="free-sku-item f-highlight">
+            <div class="f-label">Net Landing</div>
+            <div class="f-val">₹ ${best.netLanding.toFixed(2)}</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function displayCalculation(item) {
+    const [name, packSize, dlp, mrp, hoDiscPack, effDlp, sc, cd, category, prodCode] = item;
+    const currentValues = getCalculatedValues(item);
+
     document.getElementById('outProductName').textContent = name;
     document.getElementById('outMRP').textContent = `₹ ${mrp.toFixed(2)}`;
     document.getElementById('outDLP').textContent = `₹ ${dlp.toFixed(2)}`;
     document.getElementById('outHODisc').textContent = `₹ ${hoDiscPack.toFixed(2)}`;
     document.getElementById('outEffDLP').textContent = `₹ ${effDlp.toFixed(2)}`;
-    document.getElementById('outSC').textContent = `₹ ${scAmount.toFixed(2)} (${(sc * 100).toFixed(1)}%)`;
-    document.getElementById('outNetLanding').textContent = `₹ ${netLanding.toFixed(2)}`;
+    document.getElementById('outSC').textContent = `₹ ${currentValues.scAmount.toFixed(2)} (${(sc * 100).toFixed(1)}%)`;
+    document.getElementById('outNetLanding').textContent = `₹ ${currentValues.netLanding.toFixed(2)}`;
 
-    // Build Scheme Badges
     const schemeBox = document.getElementById('schemeBadges');
     schemeBox.innerHTML = '';
     const upperName = name.toUpperCase();
     const cat = (category || '').toUpperCase();
 
+    // Eligible promotional basket product codes:
+    // 2909 (Brake Fluid Super HD), 2914 (Brake Fluid DOT 4), 7584 (Kool Plus),
+    // 7705 (MP 3), 7727 (RR 3), 7849 (Long Life Grease)
+    const basketCodes = [2909, 2914, 7584, 7705, 7727, 7849];
+
+    // Helper to filter basket by pack size
+    const getBasketByPack = (size) => lubeData.filter(x => basketCodes.includes(x[9]) && Math.abs(x[1] - size) < 0.05);
+
     // 1. FREE SKU SCHEMES
     const mcoCodes = [62123, 62124, 62144, 62135, 62224, 62225, 62235];
     if (mcoCodes.includes(prodCode) || (upperName.includes('HYPERSPORT') && !upperName.includes('SCOOTER'))) {
+      const freeBoxHtml = renderFreeSkuBox(currentValues, "1 Can Free per 20 Cans");
       schemeBox.innerHTML += `
         <div class="scheme-card">
           <div class="scheme-card-title">
@@ -887,13 +1175,16 @@
             <span class="scheme-highlight">1 CAN FREE / 20 CANS</span>
           </div>
           <div class="scheme-card-body">
-            Eligible on purchase of every 20 cans: <strong>One Can FREE of same grade & pack</strong>. Select under 'Free Scheme' tab in SDMS billing.
+            Eligible on billing of every 20 cans: <strong>One Can FREE of same grade & pack</strong>. Select under 'Free Scheme' tab in SDMS billing.
+            ${freeBoxHtml}
           </div>
         </div>`;
     }
 
     const pcmoCodes = [65113, 65201, 65202, 66201, 66224, 66204];
     if ((pcmoCodes.includes(prodCode) || upperName.includes('HYPERDRIVE')) && packSize >= 3.0) {
+      const best05 = getBestFreeSku(getBasketByPack(0.5));
+      const freeBoxHtml = renderFreeSkuBox(best05, "1 Can Free per Can");
       schemeBox.innerHTML += `
         <div class="scheme-card">
           <div class="scheme-card-title">
@@ -902,18 +1193,43 @@
           </div>
           <div class="scheme-card-body">
             Against purchase of every 1 can (3L & above): <strong>One Can of 0.5 Ltr/Kg FREE</strong> from eligible basket (Servo Kool Plus, Brake Fluid Super HD/DOT 4, Servo Grease MP 3, RR 3, or Long Life Grease).
+            ${freeBoxHtml}
           </div>
         </div>`;
     }
 
     if (upperName.includes('HYPERTORQ')) {
       let offerText = "";
+      let freeBoxHtml = "";
+
       if (packSize >= 5.0 && packSize < 7.5) {
         offerText = "One Can of 0.5 Ltr (Kg) FREE against purchase of every 1 can.";
+        const best05 = getBestFreeSku(getBasketByPack(0.5));
+        freeBoxHtml = renderFreeSkuBox(best05, "1 Can (0.5 L/Kg)");
       } else if (packSize >= 7.5 && packSize <= 10.0) {
         offerText = "Two Cans of 0.5 Ltr (Kg) OR One Can of 1 Ltr (Kg) FREE against purchase of 1 bucket.";
+        const best05 = getBestFreeSku(getBasketByPack(0.5));
+        const best10 = getBestFreeSku(getBasketByPack(1.0));
+        const val05Total = best05 ? best05.netLanding * 2 : 0;
+        const val10Total = best10 ? best10.netLanding : 0;
+
+        if (val05Total >= val10Total && best05) {
+          freeBoxHtml = renderFreeSkuBox(best05, "2 Cans of 0.5 L/Kg");
+        } else if (best10) {
+          freeBoxHtml = renderFreeSkuBox(best10, "1 Can of 1 L/Kg");
+        }
       } else if (packSize >= 15.0) {
         offerText = "Two Cans of 1 Ltr (Kg) OR One Can of 2 Ltr (Kg) FREE against purchase of 1 bucket.";
+        const best10 = getBestFreeSku(getBasketByPack(1.0));
+        const best20 = getBestFreeSku(getBasketByPack(2.0));
+        const val10Total = best10 ? best10.netLanding * 2 : 0;
+        const val20Total = best20 ? best20.netLanding : 0;
+
+        if (val10Total >= val20Total && best10) {
+          freeBoxHtml = renderFreeSkuBox(best10, "2 Cans of 1 L/Kg");
+        } else if (best20) {
+          freeBoxHtml = renderFreeSkuBox(best20, "1 Can of 2 L/Kg");
+        }
       } else {
         offerText = "Eligible for Hypertorq secondary free basket schemes on qualifying pack sizes (5L+).";
       }
@@ -925,7 +1241,8 @@
             <span class="scheme-highlight">FREE BASKET CAN(S)</span>
           </div>
           <div class="scheme-card-body">
-            ${offerText} Free basket: Brake Fluid, Servo Gem RR 3, Long Life Grease, Kool Plus, or MP 3.
+            ${offerText} Eligible Basket: Brake Fluid Super HD/DOT 4, Servo Gem RR 3, Long Life Grease, Kool Plus, or MP 3.
+            ${freeBoxHtml}
           </div>
         </div>`;
     }
@@ -968,20 +1285,42 @@
         </div>`;
     }
 
-    // 3. UNIVERSAL INCENTIVE PROGRAMMES (MPI, QPI, RPI, RO)
+    // 3. INCENTIVES WITH EXCLUSIVE 'OR' SEPARATOR
     schemeBox.innerHTML += `
       <div class="scheme-card">
         <div class="scheme-card-title">
-          <span>🚀 Performance & Volume Incentives (Oct-Dec 2026)</span>
-          <span class="scheme-highlight">Stackable Earnings</span>
+          <span>🚀 Primary Volume Incentives (Stockist Targets)</span>
+          <span class="scheme-highlight">Stackable</span>
         </div>
         <div class="scheme-card-body">
           <ul style="margin: 4px 0 0 16px;">
-            <li><strong>MPI (Monthly Target):</strong> ₹ 1.00 / L on Primary Volume (Hydrashakti 68 &lt; 30%).</li>
-            <li><strong>QPI (Quarterly Target):</strong> Up to ₹ 2.00 / L (₹ 1.00 Primary + ₹ 1.00 Secondary).</li>
-            <li><strong>Reseller Incentive (RPI):</strong> ₹ 3.00 to ₹ 3.50 / L for Bazaar counters (cap 3,000 L).</li>
-            <li><strong>RO Festival Bonanza:</strong> ₹ 2.00 to ₹ 3.00 / L on forecourt growth (Min 40L Premium + 40L Honda 4T).</li>
+            <li><strong>MPI (Monthly Primary Target):</strong> ₹ 1.00 / L on Primary Volume (Hydrashakti 68 &lt; 30%).</li>
+            <li><strong>QPI (Quarterly Consistency Target):</strong> Up to ₹ 2.00 / L (₹ 1.00 Primary + ₹ 1.00 Secondary Target).</li>
           </ul>
+        </div>
+      </div>
+
+      <div class="scheme-card" style="border-left: 3.5px solid var(--accent);">
+        <div class="scheme-card-title">
+          <span>🏪 Channel A: Reseller Performance Incentive (RPI)</span>
+          <span class="scheme-highlight">₹ 3.00 - ₹ 3.50 / L</span>
+        </div>
+        <div class="scheme-card-body">
+          <strong>Applicable exclusively for Bazaar Retailers:</strong> Volume/growth linked reward on Bazaar counters (cap: 3,000 Litres/quarter; excludes Hydrashakti 68). Settled via SDMS.
+        </div>
+      </div>
+
+      <div class="exclusive-divider">
+        <span>— OR (Mutually Exclusive Channel Scheme) —</span>
+      </div>
+
+      <div class="scheme-card" style="border-left: 3.5px solid var(--primary-light);">
+        <div class="scheme-card-title">
+          <span>⛽ Channel B: RO Festival Bonanza</span>
+          <span class="scheme-highlight">₹ 2.00 - ₹ 3.00 / L</span>
+        </div>
+        <div class="scheme-card-body">
+          <strong>Applicable exclusively for Retail Outlet (Petrol Pump) Forecourts:</strong> Growth-linked incentive on RO sales volume (&gt;10% to 15%: ₹2.00/L; &gt;15%: ₹3.00/L). Mandatory: Min 40L Premium + Min 40L Honda 4T.
         </div>
       </div>`;
 
