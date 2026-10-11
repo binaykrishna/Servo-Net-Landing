@@ -565,16 +565,16 @@
 <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
 <script>
   // ==========================================
-  // GITHUB REPOSITORY CONFIGURATION
+  // CONFIGURATION: GITHUB REPOSITORY DETAILS
   // ==========================================
   const GITHUB_REPO_OWNER = "binaykrishna"; 
   const GITHUB_REPO_NAME = "Servo-Net-Landing";
   const GITHUB_BRANCH = "main";
-  const CIRCULAR_FILENAME = circular_data.json;
+  const CIRCULAR_FILENAME = "circular_data.json";
 
   let lubeData = [];
 
-  // Fetch the latest central circular from GitHub directly
+  // 1. Fetch live circular from GitHub repository
   async function loadCentralCircular() {
     try {
       const response = await fetch(`./${CIRCULAR_FILENAME}?nocache=${Date.now()}`);
@@ -587,12 +587,82 @@
         }
       }
     } catch (e) {
-      console.warn("Could not fetch remote circular. Loading local dataset.", e);
+      console.warn("Could not fetch remote circular_data.json.", e);
     }
-    
-    // Fallback if circular_data.json has not yet been fetched
-    document.getElementById('productCountBadge').textContent = `${lubeData.length} Products Loaded`;
+
+    // Try offline persistent storage if available
+    try {
+      await initDB();
+      const saved = await getFromDB("saved_lube_data");
+      if (saved && Array.isArray(saved) && saved.length > 0) {
+        lubeData = saved;
+        document.getElementById('productCountBadge').textContent = `${lubeData.length} Products Loaded (Local Cache)`;
+        return;
+      }
+    } catch (err) {}
+
+    document.getElementById('productCountBadge').textContent = "Upload Price Circular";
   }
+
+  // --- IndexedDB Local Fallback Storage ---
+  const DB_NAME = "ServoPricingStorage";
+  const DB_VERSION = 1;
+  let dbInstance = null;
+
+  function initDB() {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open(DB_NAME, DB_VERSION);
+      request.onupgradeneeded = function(e) {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains("circulars")) {
+          db.createObjectStore("circulars");
+        }
+      };
+      request.onsuccess = function(e) {
+        dbInstance = e.target.result;
+        resolve(dbInstance);
+      };
+      request.onerror = function(e) {
+        reject(e);
+      };
+    });
+  }
+
+  function saveToDB(key, val) {
+    return new Promise((resolve, reject) => {
+      if (!dbInstance) return resolve();
+      const tx = dbInstance.transaction("circulars", "readwrite");
+      const store = tx.objectStore("circulars");
+      const req = store.put(val, key);
+      req.onsuccess = () => resolve();
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  function getFromDB(key) {
+    return new Promise((resolve, reject) => {
+      if (!dbInstance) return resolve(null);
+      const tx = dbInstance.transaction("circulars", "readonly");
+      const store = tx.objectStore("circulars");
+      const req = store.get(key);
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  // Restore session scheme attachments
+  async function restoreSavedDoc() {
+    try {
+      await initDB();
+      const savedDoc = await getFromDB("saved_scheme_file");
+      if (savedDoc && savedDoc.dataUrl) {
+        activeSchemeFileUrl = savedDoc.dataUrl;
+        activeSchemeFileName = savedDoc.fileName;
+        updateCircularViewer();
+      }
+    } catch (e) {}
+  }
+  restoreSavedDoc();
   loadCentralCircular();
 
   function parseExcelBuffer(buffer) {
@@ -625,79 +695,33 @@
     }
   }
 
-  // Commit updated circular file to GitHub API so all devices see it
-async function pushCircularToGitHub(parsedData, token) {
-  const cleanToken = token.trim();
-  const url = `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/contents/${CIRCULAR_FILENAME}`;
-  
-  // Headers compliant with GitHub REST API specs
-  const headers = {
-    "Accept": "application/vnd.github+json",
-    "Authorization": `Bearer ${cleanToken}`,
-    "X-GitHub-Api-Version": "2022-11-28"
-  };
+  // Push updated circular dataset to GitHub repository
+  async function pushCircularToGitHub(parsedData, token) {
+    const cleanToken = token.trim();
+    const url = `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/contents/${CIRCULAR_FILENAME}`;
+    
+    const headers = {
+      "Accept": "application/vnd.github+json",
+      "Authorization": `Bearer ${cleanToken}`,
+      "X-GitHub-Api-Version": "2022-11-28"
+    };
 
-  // 1. Get existing SHA if file exists
-  let sha = null;
-  try {
-    const res = await fetch(url, { headers });
-    if (res.ok) {
-      const json = await res.json();
-      sha = json.sha;
-    } else if (res.status === 401) {
-      alert("Error 401 (Bad Credentials): The Personal Access Token is invalid or expired.");
-      return false;
-    } else if (res.status === 404) {
-      // 404 on GET either means circular_data.json doesn't exist yet, or repo path is wrong
-      console.log("File not found yet, creating as a new file.");
+    let sha = null;
+    try {
+      const res = await fetch(url, { headers });
+      if (res.ok) {
+        const json = await res.json();
+        sha = json.sha;
+      } else if (res.status === 401) {
+        alert("Authentication Error (401 Bad Credentials): The Personal Access Token is invalid or expired.");
+        return false;
+      }
+    } catch (e) {
+      console.warn("Status check notice:", e);
     }
-  } catch (e) {
-    console.warn("Could not check existing file status:", e);
-  }
 
-  // 2. Encode UTF-8 JSON safely to base64
-  const jsonStr = JSON.stringify(parsedData);
-  const contentBase64 = btoa(unescape(encodeURIComponent(jsonStr)));
-
-  const bodyData = {
-    message: `Update price circular [${new Date().toISOString()}]`,
-    content: contentBase64,
-    branch: GITHUB_BRANCH
-  };
-  if (sha) bodyData.sha = sha;
-
-  // 3. Commit/Push to GitHub
-  try {
-    const putRes = await fetch(url, {
-      method: "PUT",
-      headers: {
-        ...headers,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(bodyData)
-    });
-
-    if (putRes.ok) {
-      return true;
-    } else {
-      const errDetails = await putRes.json().catch(() => ({}));
-      const message = errDetails.message || putRes.statusText;
-      alert(`GitHub API Error (${putRes.status}): ${message}\n\nHint: ${
-        putRes.status === 404 
-          ? "Check if GITHUB_REPO_OWNER and GITHUB_REPO_NAME are spelled correctly, or if the token lacks repo access."
-          : putRes.status === 403 
-          ? "Permission Denied. Make sure your token has 'repo' (or Contents: Read & Write) scope."
-          : "Please check branch name and token validity."
-      }`);
-      return false;
-    }
-  } catch (netErr) {
-    alert("Network error communicating with GitHub: " + netErr.message);
-    return false;
-  }
-}
-
-    const contentBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(parsedData))));
+    const jsonStr = JSON.stringify(parsedData);
+    const contentBase64 = btoa(unescape(encodeURIComponent(jsonStr)));
 
     const bodyData = {
       message: `Update price circular [${new Date().toISOString()}]`,
@@ -706,16 +730,28 @@ async function pushCircularToGitHub(parsedData, token) {
     };
     if (sha) bodyData.sha = sha;
 
-    const putRes = await fetch(url, {
-      method: "PUT",
-      headers: {
-        "Authorization": `token ${token}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(bodyData)
-    });
+    try {
+      const putRes = await fetch(url, {
+        method: "PUT",
+        headers: {
+          ...headers,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(bodyData)
+      });
 
-    return putRes.ok;
+      if (putRes.ok) {
+        return true;
+      } else {
+        const errDetails = await putRes.json().catch(() => ({}));
+        const message = errDetails.message || putRes.statusText;
+        alert(`GitHub Error (${putRes.status}): ${message}\n\nPlease verify that your token has "repo" (or Contents: Read & Write) permissions for repository: ${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}.`);
+        return false;
+      }
+    } catch (netErr) {
+      alert("Network error communicating with GitHub: " + netErr.message);
+      return false;
+    }
   }
 
   // --- Password Gate ---
@@ -743,14 +779,13 @@ async function pushCircularToGitHub(parsedData, token) {
     requestAuthorization(() => schemeFileInput.click());
   });
 
-  // Handle Admin Price Upload & Broadcast to GitHub
   excelFileInput.addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (!file) return;
 
     const token = prompt("Enter your GitHub Personal Access Token to publish updates across all devices:");
     if (!token) {
-      alert("Upload cancelled: Token is required to sync across all devices.");
+      alert("Upload cancelled: Token is required to synchronize with all devices.");
       excelFileInput.value = '';
       return;
     }
@@ -763,12 +798,12 @@ async function pushCircularToGitHub(parsedData, token) {
         const ok = await pushCircularToGitHub(parsed, token.trim());
         if (ok) {
           lubeData = parsed;
+          saveToDB("saved_lube_data", lubeData);
           document.getElementById('productCountBadge').textContent = `${lubeData.length} Products Loaded (Live Circular)`;
-          alert(`Success! Updated circular published to GitHub. All devices will now see the new ${lubeData.length} products.`);
+          alert(`Success: Updated price circular published to GitHub! All users across all devices will now see the latest ${lubeData.length} items.`);
           document.getElementById('productInput').value = '';
           document.getElementById('resultsCard').style.display = 'none';
         } else {
-          alert("GitHub Sync Failed. Please verify your Personal Access Token, repository name, and permissions.");
           document.getElementById('productCountBadge').textContent = `${lubeData.length} Products Loaded`;
         }
       } else {
@@ -779,7 +814,6 @@ async function pushCircularToGitHub(parsedData, token) {
     excelFileInput.value = '';
   });
 
-  // Handle Scheme Document Upload
   let activeSchemeFileUrl = null;
   let activeSchemeFileName = null;
 
@@ -791,7 +825,8 @@ async function pushCircularToGitHub(parsedData, token) {
     reader.onload = function(evt) {
       activeSchemeFileUrl = evt.target.result;
       activeSchemeFileName = file.name;
-      alert(`Scheme Circular "${file.name}" loaded for this session.`);
+      saveToDB("saved_scheme_file", { fileName: file.name, dataUrl: activeSchemeFileUrl });
+      alert(`Scheme Circular "${file.name}" uploaded for this session.`);
       updateCircularViewer();
     };
     reader.readAsDataURL(file);
@@ -835,7 +870,7 @@ async function pushCircularToGitHub(parsedData, token) {
     }
   });
 
-  // --- Date & EB Slab Computation ---
+  // --- Date & EB Slab Calculation ---
   const today = new Date();
   const day = today.getDate();
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -855,7 +890,7 @@ async function pushCircularToGitHub(parsedData, token) {
   document.getElementById('currentDateDisplay').textContent = formattedDate;
   document.getElementById('currentEbDisplay').textContent = `₹ ${ebRate.toFixed(1)} / L`;
 
-  // --- Search UI & Autocomplete ---
+  // --- Search Autocomplete UI ---
   const input = document.getElementById('productInput');
   const clearBtn = document.getElementById('clearBtn');
   const suggestionsBox = document.getElementById('suggestionsBox');
@@ -994,7 +1029,7 @@ async function pushCircularToGitHub(parsedData, token) {
             <span class="scheme-highlight">1 CAN FREE / 20 CANS</span>
           </div>
           <div class="scheme-card-body">
-            Eligible on billing of every 20 cans: <strong>One Can FREE of same grade & pack</strong>. Select under 'Free Scheme' tab in SDMS billing.
+            Eligible on billing of every 20 cans: <strong>One Can FREE of same grade & pack</strong>[cite: 10]. Select under 'Free Scheme' tab in SDMS billing[cite: 10].
             ${freeBoxHtml}
           </div>
         </div>`;
@@ -1011,7 +1046,7 @@ async function pushCircularToGitHub(parsedData, token) {
             <span class="scheme-highlight">1 FREE CAN (0.5 L/KG)</span>
           </div>
           <div class="scheme-card-body">
-            Against purchase of every 1 can (3L & above): <strong>One Can of 0.5 Ltr/Kg FREE</strong> from eligible basket (Servo Kool Plus, Brake Fluid Super HD/DOT 4, Servo Grease MP 3, RR 3, or Long Life Grease).
+            Against purchase of every 1 can (3L & above): <strong>One Can of 0.5 Ltr/Kg FREE</strong> from eligible basket (Servo Kool Plus, Brake Fluid Super HD/DOT 4, Servo Grease MP 3, RR 3, or Long Life Grease)[cite: 11].
             ${freeBoxHtml}
           </div>
         </div>`;
@@ -1075,14 +1110,14 @@ async function pushCircularToGitHub(parsedData, token) {
             <span class="scheme-highlight">Up to 5.0% Rebate</span>
           </div>
           <div class="scheme-card-body">
-            Unlock additional rebate by driving Premium sales mix:
+            Unlock additional rebate by driving Premium sales mix[cite: 3]:
             <ul style="margin: 4px 0 0 16px;">
-              <li>Premium Share &gt; 12%: <strong>5.00% Trade Disc</strong> (Cap 40 KL)</li>
-              <li>Premium Share &gt; 10% to 12%: <strong>4.50% Trade Disc</strong> (Cap 35 KL)</li>
-              <li>Premium Share &gt; 8% to 10%: <strong>3.50% Trade Disc</strong> (Cap 25 KL)</li>
-              <li>Baseline (&le; 8%): <strong>2.50% Trade Disc</strong></li>
+              <li>Premium Share &gt; 12%: <strong>5.00% Trade Disc</strong> (Cap 40 KL)[cite: 3]</li>
+              <li>Premium Share &gt; 10% to 12%: <strong>4.50% Trade Disc</strong> (Cap 35 KL)[cite: 3]</li>
+              <li>Premium Share &gt; 8% to 10%: <strong>3.50% Trade Disc</strong> (Cap 25 KL)[cite: 3]</li>
+              <li>Baseline (&le; 8%): <strong>2.50% Trade Disc</strong>[cite: 3]</li>
             </ul>
-            <em>Prerequisite: Stockist must achieve Primary Target for Q3. Settled via SAP rebate.</em>
+            <em>Prerequisite: Stockist must achieve Primary Target for Q3[cite: 3]. Settled via SAP rebate[cite: 3].</em>
           </div>
         </div>`;
     }
@@ -1095,10 +1130,10 @@ async function pushCircularToGitHub(parsedData, token) {
             <span class="scheme-highlight">₹ 1.00 - ₹ 2.00 / L</span>
           </div>
           <div class="scheme-card-body">
-            Cash payout on primary sales of focus grades based on previous quarter qualification:
+            Cash payout on primary sales of focus grades based on previous quarter qualification[cite: 4]:
             <ul style="margin: 4px 0 0 16px;">
-              <li><strong>Premium Stockist:</strong> ₹ 2.00 / Litre (Sales &gt; 10% or 60 KL)</li>
-              <li><strong>Aspirational Stockist:</strong> ₹ 1.00 / Litre (Sales &gt; 5% or 30 KL)</li>
+              <li><strong>Premium Stockist:</strong> ₹ 2.00 / Litre (Sales &gt; 10% or 60 KL)[cite: 4]</li>
+              <li><strong>Aspirational Stockist:</strong> ₹ 1.00 / Litre (Sales &gt; 5% or 30 KL)[cite: 4]</li>
             </ul>
           </div>
         </div>`;
@@ -1113,8 +1148,8 @@ async function pushCircularToGitHub(parsedData, token) {
         </div>
         <div class="scheme-card-body">
           <ul style="margin: 4px 0 0 16px;">
-            <li><strong>MPI (Monthly Primary Target):</strong> ₹ 1.00 / L on Primary Volume (Hydrashakti 68 &lt; 30%).</li>
-            <li><strong>QPI (Quarterly Consistency Target):</strong> Up to ₹ 2.00 / L (₹ 1.00 Primary + ₹ 1.00 Secondary Target).</li>
+            <li><strong>MPI (Monthly Primary Target):</strong> ₹ 1.00 / L on Primary Volume (Hydrashakti 68 &lt; 30%)[cite: 5].</li>
+            <li><strong>QPI (Quarterly Consistency Target):</strong> Up to ₹ 2.00 / L (₹ 1.00 Primary + ₹ 1.00 Secondary Target)[cite: 6].</li>
           </ul>
         </div>
       </div>
@@ -1125,7 +1160,7 @@ async function pushCircularToGitHub(parsedData, token) {
           <span class="scheme-highlight">₹ 3.00 - ₹ 3.50 / L</span>
         </div>
         <div class="scheme-card-body">
-          <strong>Applicable exclusively for Bazaar Retailers:</strong> Volume/growth linked reward on Bazaar counters (cap: 3,000 Litres/quarter; excludes Hydrashakti 68). Settled via SDMS.
+          <strong>Applicable exclusively for Bazaar Retailers:</strong> Volume/growth linked reward on Bazaar counters (cap: 3,000 Litres/quarter; excludes Hydrashakti 68)[cite: 8]. Settled via SDMS[cite: 8].
         </div>
       </div>
 
@@ -1139,7 +1174,7 @@ async function pushCircularToGitHub(parsedData, token) {
           <span class="scheme-highlight">₹ 2.00 - ₹ 3.00 / L</span>
         </div>
         <div class="scheme-card-body">
-          <strong>Applicable exclusively for Retail Outlet (Petrol Pump) Forecourts:</strong> Growth-linked incentive on RO sales volume (&gt;10% to 15%: ₹2.00/L; &gt;15%: ₹3.00/L). Mandatory: Min 40L Premium + Min 40L Honda 4T.
+          <strong>Applicable exclusively for Retail Outlet (Petrol Pump) Forecourts:</strong> Growth-linked incentive on RO sales volume (&gt;10% to 15%: ₹2.00/L; &gt;15%: ₹3.00/L)[cite: 9]. Mandatory: Min 40L Premium + Min 40L Honda 4T[cite: 9].
         </div>
       </div>`;
 
