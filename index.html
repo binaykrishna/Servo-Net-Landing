@@ -564,17 +564,20 @@
 
 <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
 <script>
-  // ==========================================
-  // CONFIGURATION: GITHUB REPOSITORY DETAILS
-  // ==========================================
+  // =========================================================================
+  // GITHUB REPO CONFIGURATION & AUTO-TOKEN
+  // =========================================================================
   const GITHUB_REPO_OWNER = "binaykrishna"; 
   const GITHUB_REPO_NAME = "Servo-Net-Landing";
   const GITHUB_BRANCH = "main";
   const CIRCULAR_FILENAME = "circular_data.json";
 
+  // PASTE YOUR TOKEN HERE ONCE (ENCLOSED IN DOUBLE QUOTES):
+  // You will never have to type or paste it in the browser interface again.
+  const CONFIGURED_TOKEN = "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";
+
   let lubeData = [];
 
-  // 1. Fetch live circular from GitHub repository
   async function loadCentralCircular() {
     try {
       const response = await fetch(`./${CIRCULAR_FILENAME}?nocache=${Date.now()}`);
@@ -590,7 +593,6 @@
       console.warn("Could not fetch remote circular_data.json.", e);
     }
 
-    // Try offline persistent storage if available
     try {
       await initDB();
       const saved = await getFromDB("saved_lube_data");
@@ -604,7 +606,7 @@
     document.getElementById('productCountBadge').textContent = "Upload Price Circular";
   }
 
-  // --- IndexedDB Local Fallback Storage ---
+  // --- IndexedDB Storage ---
   const DB_NAME = "ServoPricingStorage";
   const DB_VERSION = 1;
   let dbInstance = null;
@@ -650,7 +652,6 @@
     });
   }
 
-  // Restore session scheme attachments
   async function restoreSavedDoc() {
     try {
       await initDB();
@@ -695,7 +696,6 @@
     }
   }
 
-  // Push updated circular dataset to GitHub repository
   async function pushCircularToGitHub(parsedData, token) {
     const cleanToken = token.trim();
     const url = `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/contents/${CIRCULAR_FILENAME}`;
@@ -712,13 +712,8 @@
       if (res.ok) {
         const json = await res.json();
         sha = json.sha;
-      } else if (res.status === 401) {
-        alert("Authentication Error (401 Bad Credentials): The Personal Access Token is invalid or expired.");
-        return false;
       }
-    } catch (e) {
-      console.warn("Status check notice:", e);
-    }
+    } catch (e) {}
 
     const jsonStr = JSON.stringify(parsedData);
     const contentBase64 = btoa(unescape(encodeURIComponent(jsonStr)));
@@ -740,16 +735,8 @@
         body: JSON.stringify(bodyData)
       });
 
-      if (putRes.ok) {
-        return true;
-      } else {
-        const errDetails = await putRes.json().catch(() => ({}));
-        const message = errDetails.message || putRes.statusText;
-        alert(`GitHub Error (${putRes.status}): ${message}\n\nPlease verify that your token has "repo" (or Contents: Read & Write) permissions for repository: ${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}.`);
-        return false;
-      }
+      return putRes.ok;
     } catch (netErr) {
-      alert("Network error communicating with GitHub: " + netErr.message);
       return false;
     }
   }
@@ -779,15 +766,19 @@
     requestAuthorization(() => schemeFileInput.click());
   });
 
+  // Upload handler with automatic token usage (No token prompt)
   excelFileInput.addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (!file) return;
 
-    const token = prompt("Enter your GitHub Personal Access Token to publish updates across all devices:");
-    if (!token) {
-      alert("Upload cancelled: Token is required to synchronize with all devices.");
-      excelFileInput.value = '';
-      return;
+    let token = CONFIGURED_TOKEN.trim();
+    if (!token || token === "PASTE_YOUR_GHP_TOKEN_HERE") {
+      token = prompt("Enter your GitHub Personal Access Token to publish updates across all devices:");
+      if (!token) {
+        alert("Upload cancelled.");
+        excelFileInput.value = '';
+        return;
+      }
     }
 
     const reader = new FileReader();
@@ -795,7 +786,7 @@
       const parsed = parseExcelBuffer(evt.target.result);
       if (parsed && parsed.length > 0) {
         document.getElementById('productCountBadge').textContent = "Syncing with GitHub...";
-        const ok = await pushCircularToGitHub(parsed, token.trim());
+        const ok = await pushCircularToGitHub(parsed, token);
         if (ok) {
           lubeData = parsed;
           saveToDB("saved_lube_data", lubeData);
@@ -804,6 +795,7 @@
           document.getElementById('productInput').value = '';
           document.getElementById('resultsCard').style.display = 'none';
         } else {
+          alert("GitHub Sync Failed. Please verify your token permissions or repository settings.");
           document.getElementById('productCountBadge').textContent = `${lubeData.length} Products Loaded`;
         }
       } else {
@@ -814,6 +806,7 @@
     excelFileInput.value = '';
   });
 
+  // Scheme Document Upload
   let activeSchemeFileUrl = null;
   let activeSchemeFileName = null;
 
@@ -890,7 +883,7 @@
   document.getElementById('currentDateDisplay').textContent = formattedDate;
   document.getElementById('currentEbDisplay').textContent = `₹ ${ebRate.toFixed(1)} / L`;
 
-  // --- Search Autocomplete UI ---
+  // --- Search UI & Autocomplete ---
   const input = document.getElementById('productInput');
   const clearBtn = document.getElementById('clearBtn');
   const suggestionsBox = document.getElementById('suggestionsBox');
