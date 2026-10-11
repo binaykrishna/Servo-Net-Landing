@@ -499,7 +499,7 @@
     <div class="admin-actions">
       <span>🔒 Admin Panel:</span>
       <button type="button" class="admin-btn" id="authPriceUploadBtn">Update Price Circular for All Devices (.xlsx)</button>
-      <button type="button" class="admin-btn" id="authSchemeUploadBtn">Update Scheme Circular (PDF/IMG)</button>
+      <button type="button" class="admin-btn" id="authSchemeUploadBtn">Update Scheme Circular for All Devices (PDF/IMG)</button>
 
       <input type="file" id="excelFileInput" accept=".xlsx, .xls" style="display: none;">
       <input type="file" id="schemeFileInput" accept=".pdf, .png, .jpg, .jpeg" style="display: none;">
@@ -571,10 +571,13 @@
   const GITHUB_REPO_NAME = "Servo-Net-Landing";
   const GITHUB_BRANCH = "main";
   const CIRCULAR_FILENAME = "circular_data.json";
+  const SCHEME_FILENAME = "scheme_circular.pdf";
 
   let lubeData = [];
+  let activeSchemeFileUrl = null;
+  let activeSchemeFileName = null;
 
-  // 1. Fetch live circular from GitHub repository
+  // 1. Fetch live Price Circular from GitHub
   async function loadCentralCircular() {
     try {
       const response = await fetch(`./${CIRCULAR_FILENAME}?nocache=${Date.now()}`);
@@ -590,7 +593,6 @@
       console.warn("Could not fetch remote circular_data.json.", e);
     }
 
-    // Try offline persistent storage if available
     try {
       await initDB();
       const saved = await getFromDB("saved_lube_data");
@@ -604,7 +606,33 @@
     document.getElementById('productCountBadge').textContent = "Upload Price Circular";
   }
 
-  // --- IndexedDB Local Fallback Storage ---
+  // 2. Fetch live Scheme Document from GitHub repository
+  async function loadCentralScheme() {
+    try {
+      const checkRes = await fetch(`./${SCHEME_FILENAME}?nocache=${Date.now()}`, { method: 'HEAD' });
+      if (checkRes.ok) {
+        activeSchemeFileUrl = `./${SCHEME_FILENAME}?nocache=${Date.now()}`;
+        activeSchemeFileName = SCHEME_FILENAME;
+        updateCircularViewer();
+        return;
+      }
+    } catch (e) {
+      console.warn("Could not load central scheme circular document.", e);
+    }
+
+    // Local fallback check
+    try {
+      await initDB();
+      const savedDoc = await getFromDB("saved_scheme_file");
+      if (savedDoc && savedDoc.dataUrl) {
+        activeSchemeFileUrl = savedDoc.dataUrl;
+        activeSchemeFileName = savedDoc.fileName;
+        updateCircularViewer();
+      }
+    } catch (e) {}
+  }
+
+  // --- IndexedDB Fallback Storage ---
   const DB_NAME = "ServoPricingStorage";
   const DB_VERSION = 1;
   let dbInstance = null;
@@ -650,20 +678,8 @@
     });
   }
 
-  // Restore session scheme attachments
-  async function restoreSavedDoc() {
-    try {
-      await initDB();
-      const savedDoc = await getFromDB("saved_scheme_file");
-      if (savedDoc && savedDoc.dataUrl) {
-        activeSchemeFileUrl = savedDoc.dataUrl;
-        activeSchemeFileName = savedDoc.fileName;
-        updateCircularViewer();
-      }
-    } catch (e) {}
-  }
-  restoreSavedDoc();
   loadCentralCircular();
+  loadCentralScheme();
 
   function parseExcelBuffer(buffer) {
     try {
@@ -695,11 +711,11 @@
     }
   }
 
-  // Push updated circular dataset to GitHub repository
-  async function pushCircularToGitHub(parsedData, token) {
+  // Generic GitHub file commit helper
+  async function pushFileToGitHub(fileName, contentBase64, commitMessage, token) {
     const cleanToken = token.trim();
-    const url = `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/contents/${CIRCULAR_FILENAME}`;
-    
+    const url = `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/contents/${fileName}`;
+
     const headers = {
       "Accept": "application/vnd.github+json",
       "Authorization": `Bearer ${cleanToken}`,
@@ -716,15 +732,10 @@
         alert("Authentication Error (401 Bad Credentials): The Personal Access Token is invalid or expired.");
         return false;
       }
-    } catch (e) {
-      console.warn("Status check notice:", e);
-    }
-
-    const jsonStr = JSON.stringify(parsedData);
-    const contentBase64 = btoa(unescape(encodeURIComponent(jsonStr)));
+    } catch (e) {}
 
     const bodyData = {
-      message: `Update price circular [${new Date().toISOString()}]`,
+      message: commitMessage,
       content: contentBase64,
       branch: GITHUB_BRANCH
     };
@@ -745,7 +756,7 @@
       } else {
         const errDetails = await putRes.json().catch(() => ({}));
         const message = errDetails.message || putRes.statusText;
-        alert(`GitHub Error (${putRes.status}): ${message}\n\nPlease verify that your token has "repo" (or Contents: Read & Write) permissions for repository: ${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}.`);
+        alert(`GitHub API Error (${putRes.status}): ${message}\n\nPlease check token permissions for ${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}.`);
         return false;
       }
     } catch (netErr) {
@@ -779,11 +790,12 @@
     requestAuthorization(() => schemeFileInput.click());
   });
 
+  // Price Circular Upload
   excelFileInput.addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (!file) return;
 
-    const token = prompt("Enter your GitHub Personal Access Token to publish updates across all devices:");
+    const token = prompt("Enter your GitHub Personal Access Token to publish price updates across all devices:");
     if (!token) {
       alert("Upload cancelled: Token is required to synchronize with all devices.");
       excelFileInput.value = '';
@@ -795,7 +807,8 @@
       const parsed = parseExcelBuffer(evt.target.result);
       if (parsed && parsed.length > 0) {
         document.getElementById('productCountBadge').textContent = "Syncing with GitHub...";
-        const ok = await pushCircularToGitHub(parsed, token.trim());
+        const base64Data = btoa(unescape(encodeURIComponent(JSON.stringify(parsed))));
+        const ok = await pushFileToGitHub(CIRCULAR_FILENAME, base64Data, `Update price circular [${new Date().toISOString()}]`, token);
         if (ok) {
           lubeData = parsed;
           saveToDB("saved_lube_data", lubeData);
@@ -814,20 +827,31 @@
     excelFileInput.value = '';
   });
 
-  let activeSchemeFileUrl = null;
-  let activeSchemeFileName = null;
-
+  // Scheme Document Upload & GitHub Synchronization
   schemeFileInput.addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (!file) return;
 
+    const token = prompt("Enter your GitHub Personal Access Token to publish scheme circular across all devices:");
+    if (!token) {
+      alert("Upload cancelled: Token is required to synchronize with all devices.");
+      schemeFileInput.value = '';
+      return;
+    }
+
     const reader = new FileReader();
-    reader.onload = function(evt) {
-      activeSchemeFileUrl = evt.target.result;
-      activeSchemeFileName = file.name;
-      saveToDB("saved_scheme_file", { fileName: file.name, dataUrl: activeSchemeFileUrl });
-      alert(`Scheme Circular "${file.name}" uploaded for this session.`);
-      updateCircularViewer();
+    reader.onload = async function(evt) {
+      const rawBase64 = evt.target.result.split(',')[1];
+      const targetFileName = file.name.toLowerCase().endsWith('.pdf') ? SCHEME_FILENAME : file.name;
+
+      const ok = await pushFileToGitHub(targetFileName, rawBase64, `Update scheme circular [${new Date().toISOString()}]`, token);
+      if (ok) {
+        activeSchemeFileUrl = evt.target.result;
+        activeSchemeFileName = targetFileName;
+        saveToDB("saved_scheme_file", { fileName: targetFileName, dataUrl: activeSchemeFileUrl });
+        alert(`Success: Scheme Circular "${targetFileName}" published to GitHub! All devices will now view this document.`);
+        updateCircularViewer();
+      }
     };
     reader.readAsDataURL(file);
     schemeFileInput.value = '';
@@ -845,9 +869,9 @@
     }
 
     box.style.display = 'flex';
-    nameLabel.textContent = `📄 ${activeSchemeFileName}`;
+    nameLabel.textContent = `📄 ${activeSchemeFileName || 'Scheme Circular'}`;
 
-    if (activeSchemeFileName.toLowerCase().endsWith('.pdf')) {
+    if ((activeSchemeFileName && activeSchemeFileName.toLowerCase().endsWith('.pdf')) || (typeof activeSchemeFileUrl === 'string' && activeSchemeFileUrl.includes('.pdf'))) {
       iframe.src = activeSchemeFileUrl;
       iframe.style.display = 'block';
       img.style.display = 'none';
@@ -1139,7 +1163,7 @@
         </div>`;
     }
 
-    // Incentives with Exclusive 'OR' Separator
+    // Performance & Volume Incentives with Exclusive 'OR' Separator
     schemeBox.innerHTML += `
       <div class="scheme-card">
         <div class="scheme-card-title">
