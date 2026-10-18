@@ -116,16 +116,16 @@
                     <i data-lucide="key" class="w-5 h-5 text-blue-600"></i>
                 </div>
                 <div>
-                    <h3 class="text-base font-bold text-slate-900">GitHub Sync Token</h3>
+                    <h3 class="text-base font-bold text-slate-900">Cloud Sync Token</h3>
                     <p class="text-xs text-slate-500">Stored safely on this device only</p>
                 </div>
             </div>
             <p class="text-xs text-slate-600 leading-relaxed">
-                Paste your GitHub Personal Access Token (PAT) below. It is kept securely inside your device's browser memory (<code class="bg-slate-100 text-blue-600 px-1 py-0.5 rounded font-mono">localStorage</code>) and is never committed to GitHub, preventing revocation.
+                Paste your Access Token below. It is kept securely inside your device's browser memory (<code class="bg-slate-100 text-blue-600 px-1 py-0.5 rounded font-mono">localStorage</code>) and will never be committed into any public source.
             </p>
             <div>
-                <label class="block text-xs font-semibold text-slate-700 mb-1">GitHub Personal Access Token (starts with ghp_)</label>
-                <input type="password" id="modalTokenInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" 
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Access Token</label>
+                <input type="password" id="modalTokenInput" placeholder="Enter token..." 
                     class="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 text-xs font-mono">
             </div>
             <div class="flex justify-end gap-2 pt-2 border-t">
@@ -144,15 +144,15 @@
                 </div>
                 <div>
                     <h1 class="text-xl font-bold text-slate-900 leading-none">Stock & Indent Portal</h1>
-                    <span class="text-xs text-slate-500">Repository: <strong>binaykrishna/Indent-STO</strong></span>
+                    <span class="text-xs text-slate-500">Plant-wise Live Inventory, Indent and urgent requirement placement</span>
                 </div>
             </div>
             
             <div class="flex items-center gap-3">
-                <!-- Direct GitHub Cloud Status Indicator -->
+                <!-- Direct Cloud Status Indicator -->
                 <button id="cloudSyncBadge" onclick="handleCloudSyncClick()" class="flex items-center gap-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 px-3 py-1.5 rounded-full text-xs font-medium transition-colors" title="Click to refresh latest data or configure token">
                     <i data-lucide="cloud" class="w-3.5 h-3.5 text-blue-600"></i>
-                    <span id="cloudSyncText">GitHub: Live</span>
+                    <span id="cloudSyncText">Cloud: Live</span>
                 </button>
 
                 <button onclick="openRoleModal()" class="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 border border-slate-300 px-3 py-1.5 rounded-full text-xs transition-colors">
@@ -172,19 +172,22 @@
 
     <!-- Navigation Tabs -->
     <nav class="bg-white border-b sticky top-16 z-30 shadow-xs">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex space-x-8 text-sm">
-            <button onclick="switchTab('searchTab')" id="btn-searchTab" class="tab-active py-4 px-1 flex items-center gap-2">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex space-x-8 text-sm overflow-x-auto">
+            <button onclick="switchTab('searchTab')" id="btn-searchTab" class="tab-active py-4 px-1 flex items-center gap-2 whitespace-nowrap">
                 <i data-lucide="search" class="w-4 h-4"></i> Search SKU & Place Indent / STO
             </button>
-            <button onclick="switchTab('wbsoTab')" id="btn-wbsoTab" class="text-slate-500 hover:text-slate-700 py-4 px-1 flex items-center gap-2">
+            <button onclick="switchTab('wbsoTab')" id="btn-wbsoTab" class="text-slate-500 hover:text-slate-700 py-4 px-1 flex items-center gap-2 whitespace-nowrap">
                 <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-600"></i> Min Stock & Sourcing (WBSO)
                 <span id="wbsoAlertBadge" class="bg-rose-600 text-white rounded-full px-2 py-0.5 text-xs font-bold inline-block leading-tight shadow-xs">0</span>
             </button>
-            <button onclick="switchTab('ordersTab')" id="btn-ordersTab" class="text-slate-500 hover:text-slate-700 py-4 px-1 flex items-center gap-2">
+            <button onclick="switchTab('ordersTab')" id="btn-ordersTab" class="text-slate-500 hover:text-slate-700 py-4 px-1 flex items-center gap-2 whitespace-nowrap">
                 <i data-lucide="clipboard-list" class="w-4 h-4"></i> Requisitions & STO 
                 <span id="orderCountBadge" class="bg-blue-600 text-white rounded-full px-2 py-0.5 text-xs font-bold inline-block leading-tight shadow-xs">0</span>
             </button>
-            <button onclick="switchTab('adminTab')" id="btn-adminTab" class="text-slate-500 hover:text-slate-700 py-4 px-1 flex items-center gap-2">
+            <button onclick="switchTab('helpTab')" id="btn-helpTab" class="text-slate-500 hover:text-slate-700 py-4 px-1 flex items-center gap-2 whitespace-nowrap">
+                <i data-lucide="help-circle" class="w-4 h-4 text-indigo-600"></i> Help (Old vs New Series)
+            </button>
+            <button onclick="switchTab('adminTab')" id="btn-adminTab" class="text-slate-500 hover:text-slate-700 py-4 px-1 flex items-center gap-2 whitespace-nowrap">
                 <i data-lucide="upload-cloud" class="w-4 h-4"></i> Upload & Catalog
             </button>
         </div>
@@ -401,12 +404,47 @@
             </div>
         </section>
 
-        <!-- ================= TAB 3: ADMIN UPLOAD ================= -->
+        <!-- ================= TAB 3: HELP (OLD VS NEW PRODUCT SERIES) ================= -->
+        <section id="helpTab" class="space-y-6 hidden">
+            <div class="bg-white p-5 rounded-xl shadow-xs border border-slate-200 space-y-4">
+                <div class="border-b pb-4">
+                    <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                        <i data-lucide="help-circle" class="w-5 h-5 text-indigo-600"></i>
+                        Old vs New Product Series Mapping Guide
+                    </h2>
+                    <p class="text-xs text-slate-500">
+                        Type any old or discontinued product name to get real-time suggestion for the new replacement grade and view live stock availability.
+                    </p>
+                </div>
+
+                <!-- Live Auto-Search Box with Typeahead Suggestions & Instant Clear Button -->
+                <div class="relative max-w-xl">
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Search Old Product Grade / Description</label>
+                    <div class="relative">
+                        <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-slate-400"></i>
+                        <input type="text" id="helpSearchInput" oninput="onHelpSearchInput()" onfocus="showHelpSuggestions()" autocomplete="off" placeholder="Type old grade (e.g. SERVO 4T, ECO, SUPER, 2T, PRIDE)..." 
+                            class="w-full pl-9 pr-9 py-2.5 border rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm bg-slate-50 focus:bg-white transition-all">
+                        <button id="clearHelpSearchBtn" onclick="clearHelpSearch()" class="hidden absolute right-3 top-3 text-slate-400 hover:text-slate-600 p-0.5 rounded-full hover:bg-slate-100" title="Clear search">
+                            <i data-lucide="x" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                    <!-- Typeahead Autopopulate Dropdown Menu -->
+                    <div id="helpSuggestionsBox" class="hidden absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded-xl shadow-xl z-50 max-h-60 overflow-y-auto divide-y divide-slate-100 text-sm">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dynamic Search Results & Stock Matching Container -->
+            <div id="helpResultsContainer" class="space-y-4">
+            </div>
+        </section>
+
+        <!-- ================= TAB 4: ADMIN UPLOAD ================= -->
         <section id="adminTab" class="space-y-6 hidden">
             <!-- Local Device Token Setting Banner -->
             <div class="bg-slate-900 border border-slate-700 p-4 rounded-xl text-white flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                 <div class="space-y-1">
-                    <span class="text-xs font-semibold text-slate-400 block">Device GitHub Token Status</span>
+                    <span class="text-xs font-semibold text-slate-400 block">Device Cloud Token Status</span>
                     <span class="font-mono text-xs text-blue-400 bg-slate-800 px-2 py-1 rounded border border-slate-700" id="tokenConfigStatusLabel">Checking Device Token...</span>
                 </div>
                 <button type="button" onclick="openTokenModal()" class="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs">
@@ -436,7 +474,7 @@
                             class="absolute inset-0 opacity-0 cursor-pointer w-full h-full">
                         <i data-lucide="upload" class="w-8 h-8 text-slate-400 mx-auto mb-2"></i>
                         <p class="text-sm font-medium text-slate-700">Click to upload Daily Stock file (.xls/.xlsx)</p>
-                        <p class="text-xs text-slate-400 mt-1">Auto-commits to GitHub repo to sync all devices immediately.</p>
+                        <p class="text-xs text-slate-400 mt-1">Syncs all devices immediately.</p>
                     </div>
 
                     <div id="stockUploadStatus" class="text-xs font-medium text-slate-600 hidden"></div>
@@ -804,7 +842,7 @@
 
     <!-- Complete Unified JavaScript Logic -->
     <script>
-        // ================= GITHUB CONFIGURATION =================
+        // ================= CLOUD PERSISTENCE CONFIGURATION =================
         const GITHUB_REPO_OWNER = "binaykrishna";
         const GITHUB_REPO_NAME = "Indent-STO";
         const GITHUB_DATA_PATH = "data/portal_data.json";
@@ -814,6 +852,342 @@
         function getActiveToken() {
             return localStorage.getItem(STORAGE_TOKEN_KEY) || "";
         }
+
+        // ================= COMPARATIVE OLD VS NEW PRODUCT DATABASE =================
+        const OLD_VS_NEW_CATALOG = [
+            { oldName: "SERVO CHAKKADA ENG OIL-20 X 1.2 L", newName: "SERVO FLEET 20W-40", pack: "1.2 L", category: "MASS" },
+            { oldName: "SERVO ECO 4T", newName: "SERVO MOTOCARE 4T", pack: "0.9 L", category: "MASS" },
+            { oldName: "SERVO ECO 4T", newName: "SERVO MOTOCARE 4T", pack: "1 L", category: "MASS" },
+            { oldName: "SERVO ECO CF-4 15W-40", newName: "SERVO FLEET 15W40", pack: "1 L", category: "MASS" },
+            { oldName: "SERVO ECO CF-4 15W-40", newName: "SERVO FLEET 15W40", pack: "3 L", category: "MASS" },
+            { oldName: "SERVO ECO CF-4 15W-40", newName: "SERVO FLEET 15W40", pack: "5 L", category: "MASS" },
+            { oldName: "SERVO ECO CF-4 15W-40", newName: "SERVO FLEET 15W40", pack: "7.5 L", category: "MASS" },
+            { oldName: "SERVO ECO CF-4 15W-40", newName: "SERVO FLEET 15W40", pack: "10 L", category: "MASS" },
+            { oldName: "SERVO ECO CF-4 15W-40", newName: "SERVO FLEET 15W40", pack: "15 L", category: "MASS" },
+            { oldName: "SERVO ECO CF-4 15W-40", newName: "SERVO FLEET 15W40", pack: "20 L", category: "MASS" },
+            { oldName: "SERVO ECO CI4 PLUS 15W-40", newName: "SERVO FLEET XL 15W40", pack: "1 L", category: "MASS" },
+            { oldName: "SERVO ECO CI4 PLUS 15W-40", newName: "SERVO FLEET XL 15W40", pack: "5 L", category: "MASS" },
+            { oldName: "SERVO ECO CI4 PLUS 15W-40", newName: "SERVO FLEET XL 15W40", pack: "7.5 L", category: "MASS" },
+            { oldName: "SERVO ECO CI4 PLUS 15W-40", newName: "SERVO FLEET XL 15W40", pack: "10 L", category: "MASS" },
+            { oldName: "SERVO ECO CI4 PLUS 15W-40", newName: "SERVO FLEET XL 15W40", pack: "15 L", category: "MASS" },
+            { oldName: "SERVO ECO TRACTOR OIL", newName: "SERVO KISANPOWER TRACTOR OIL", pack: "1 L", category: "MASS" },
+            { oldName: "SERVO ECO TRACTOR OIL", newName: "SERVO KISANPOWER TRACTOR OIL", pack: "7.5 L", category: "MASS" },
+            { oldName: "SERVO ECO TRACTOR OIL", newName: "SERVO KISANPOWER TRACTOR OIL", pack: "8.5 L", category: "MASS" },
+            { oldName: "SERVO OIB OIL -20L PROMO", newName: "SERVO KISANPOWER OIB", pack: "20 L", category: "MASS" },
+            { oldName: "SERVO OIB OIL-20 X 1 L", newName: "SERVO KISANPOWER OIB", pack: "1 L", category: "MASS" },
+            { oldName: "SERVO OIB OIL-26 L", newName: "SERVO KISANPOWER OIB", pack: "26 L", category: "MASS" },
+            { oldName: "SERVO OIB OIL-4 X 5 L PROMO", newName: "SERVO KISANPOWER OIB", pack: "5 L", category: "MASS" },
+            { oldName: "SERVO SUPER 20W-40 MG-10 L", newName: "SERVO FLEET 20W-40", pack: "10 L", category: "MASS" },
+            { oldName: "SERVO SUPER 20W-40 MG-20 L", newName: "SERVO FLEET 20W-40", pack: "20 L", category: "MASS" },
+            { oldName: "SERVO SUPER 20W-40 MG-20 X 1 L", newName: "SERVO FLEET 20W-40", pack: "1 L", category: "MASS" },
+            { oldName: "SERVO SUPER 20W-40 MG-210 L BRL", newName: "SERVO FLEET 20W-40", pack: "210 L", category: "MASS" },
+            { oldName: "SERVO SUPER 20W-40 MG-26 L", newName: "SERVO FLEET 20W-40", pack: "26 L", category: "MASS" },
+            { oldName: "SERVO SUPER 20W-40 MG-40X1/2L", newName: "SERVO FLEET 20W-40", pack: "0.5 L", category: "MASS" },
+            { oldName: "SERVO SUPER 20W-40 MG-4x5L - HDPE", newName: "SERVO FLEET 20W-40", pack: "5 L", category: "MASS" },
+            { oldName: "SERVO SUPER 20W-40 MG-50 L", newName: "SERVO FLEET 20W-40", pack: "50 L", category: "MASS" },
+            { oldName: "SERVO SUPER 20W-40 MG-7.5 L", newName: "SERVO FLEET 20W-40", pack: "7.5 L", category: "MASS" },
+            { oldName: "SERVO 2T SUPREME (JFC) - 200X60ML - POU", newName: "SERVO ZOOM 2T SUPREME", pack: "60 ML", category: "ASPIRATIONAL" },
+            { oldName: "SERVO 2T SUPREME(JFC)-300x40ML - POU", newName: "SERVO ZOOM 2T SUPREME", pack: "40 ML", category: "ASPIRATIONAL" },
+            { oldName: "SERVO 2T SUPREME-20 X1L", newName: "SERVO ZOOM 2T SUPREME", pack: "1 L", category: "ASPIRATIONAL" },
+            { oldName: "SERVO 2T SUPREME-20X1/2 L", newName: "SERVO ZOOM 2T SUPREME", pack: "0.5 L", category: "ASPIRATIONAL" },
+            { oldName: "SERVO 2T SUPREME-20X1/4 L", newName: "SERVO ZOOM 2T SUPREME", pack: "0.25 L", category: "ASPIRATIONAL" },
+            { oldName: "SERVO 2T SUPREME-210 L BRL", newName: "SERVO ZOOM 2T SUPREME", pack: "210 L", category: "ASPIRATIONAL" },
+            { oldName: "SERVO 2T SUPREME-210 L HD", newName: "SERVO ZOOM 2T SUPREME", pack: "210 L", category: "ASPIRATIONAL" },
+            { oldName: "SERVO 2T SUPREME-4x5L - HDPE", newName: "SERVO ZOOM 2T SUPREME", pack: "5 L", category: "ASPIRATIONAL" },
+            { oldName: "SERVO 2T SUPREME-50 L", newName: "SERVO ZOOM 2T SUPREME", pack: "50 L", category: "ASPIRATIONAL" },
+            { oldName: "SERVO 2T SUPREME-600 X 20 ML", newName: "SERVO ZOOM 2T SUPREME", pack: "20 ML", category: "ASPIRATIONAL" },
+            { oldName: "SERVO 4T-20 X 0.9 L HDPE PROMO", newName: "SERVO ZOOM 4T", pack: "0.9 L P", category: "ASPIRATIONAL" },
+            { oldName: "SERVO 4T-20 X 1 L HDPE PROMO", newName: "SERVO ZOOM 4T", pack: "1 L P", category: "ASPIRATIONAL" },
+            { oldName: "SERVO 4T 20W-50-210 L BRL", newName: "SERVO ZOOM 4T 20W-50", pack: "210 L", category: "ASPIRATIONAL" },
+            { oldName: "SERVO 4T 20W-50-20 X 1L", newName: "SERVO ZOOM 4T 20W-50", pack: "1 L", category: "ASPIRATIONAL" },
+            { oldName: "SERVO 4T 20W-50-20 X 1 L PROMO", newName: "SERVO ZOOM 4T 20W-50", pack: "1 L", category: "ASPIRATIONAL" },
+            { oldName: "SERVO 4T 20W-50-20 X 1.2 L", newName: "SERVO ZOOM 4T 20W-50", pack: "1.2 L", category: "ASPIRATIONAL" },
+            { oldName: "SERVO 4T-50L HDPE DRUM", newName: "SERVO ZOOM 4T", pack: "50 L", category: "ASPIRATIONAL" },
+            { oldName: "SERVO 4T ZOOM 10W-30-210 L BRL", newName: "SERVO ZOOM 4T 10W-30", pack: "210 L", category: "ASPIRATIONAL" },
+            { oldName: "SERVO 4T-20x0.9 L CAR", newName: "SERVO ZOOM 4T", pack: "0.9 L", category: "ASPIRATIONAL" },
+            { oldName: "SERVO 4T-20X1L-HDPE", newName: "SERVO ZOOM 4T", pack: "1 L", category: "ASPIRATIONAL" },
+            { oldName: "SERVO 4T-210L BRL", newName: "SERVO ZOOM 4T", pack: "210 L", category: "ASPIRATIONAL" },
+            { oldName: "SERVO 4T-26 L", newName: "SERVO ZOOM 4T", pack: "26 L", category: "ASPIRATIONAL" },
+            { oldName: "SERVO GAS ENGINE OIL-20x1L-HDPE", newName: "Servo FUTURA GEO 20W-50", pack: "1 L", category: "ASPIRATIONAL" },
+            { oldName: "SERVO GAS ENGINE OIL-4 X 2.1 L", newName: "Servo FUTURA GEO 20W-50", pack: "2.1 L", category: "ASPIRATIONAL" },
+            { oldName: "SERVO GAS ENGINE OIL-40X1/2L-HDPE", newName: "Servo FUTURA GEO 20W-50", pack: "0.5 L", category: "ASPIRATIONAL" },
+            { oldName: "SERVO GAS ENGINE OIL-4X3L-HDPE", newName: "Servo FUTURA GEO 20W-50", pack: "3 L", category: "ASPIRATIONAL" },
+            { oldName: "SERVO PREMIUM CF 4 15W 40-20L BUC", newName: "SERVO PRIDE 15W-40", pack: "20 L", category: "ASPIRATIONAL" },
+            { oldName: "SERVO PREMIUM CF-4 15W-40-10L BUC", newName: "SERVO PRIDE 15W-40", pack: "10 L", category: "ASPIRATIONAL" },
+            { oldName: "SERVO PREMIUM CF-4 15W-40-15 L", newName: "SERVO PRIDE 15W-40", pack: "15 L", category: "ASPIRATIONAL" },
+            { oldName: "SERVO PREMIUM CF-4 15W-40-20X1L-HDPE", newName: "SERVO PRIDE 15W-40", pack: "1 L", category: "ASPIRATIONAL" },
+            { oldName: "SERVO PREMIUM CF-4 15W-40-4X5L-HDPE", newName: "SERVO PRIDE 15W-40", pack: "5 L", category: "ASPIRATIONAL" },
+            { oldName: "SERVO PREMIUM CF-4 15W-40-7.5 L", newName: "SERVO PRIDE 15W-40", pack: "7.5 L", category: "ASPIRATIONAL" },
+            { oldName: "SERVO PRIDE TC 15W40-20L BUC", newName: "SERVO PRIDE TC 15W-40", pack: "20 L", category: "ASPIRATIONAL" },
+            { oldName: "SERVO PRIDE TC 15W40-20X1L-HDPE", newName: "SERVO PRIDE TC 15W-40", pack: "1 L", category: "ASPIRATIONAL" },
+            { oldName: "SERVO PRIDE TC 15W-40-4 X 5L", newName: "SERVO PRIDE TC 15W-40", pack: "5 L", category: "ASPIRATIONAL" },
+            { oldName: "SERVO PRIDE TC 15W40-10L PROMO", newName: "SERVO PRIDE TC 15W-40", pack: "10 L", category: "ASPIRATIONAL" },
+            { oldName: "SERVO PRIDE TC 15W40-15L PROMO", newName: "SERVO PRIDE TC 15W-40", pack: "15 L", category: "ASPIRATIONAL" },
+            { oldName: "SERVO PRIDE TC 15W40-4X3 L PROMO", newName: "SERVO PRIDE TC 15W-40", pack: "3 L", category: "ASPIRATIONAL" },
+            { oldName: "SERVO PRIDE TC 15W40-7.5L PROMO", newName: "SERVO PRIDE TC 15W-40", pack: "7.5 L", category: "ASPIRATIONAL" },
+            { oldName: "SERVO TRACTOR OIL MG 20W-40-7.5L PROMO", newName: "SERVO KISANPRO 20W-40", pack: "7.5 L", category: "ASPIRATIONAL" },
+            { oldName: "SERVO 4T HD-20 X 1.2 L", newName: "SERVO HYPERSPORT 4T 15W-50", pack: "1.2 L", category: "PREMIUM" },
+            { oldName: "SERVO 4T HD-4 X 2.5 L", newName: "SERVO HYPERSPORT 4T 15W-50", pack: "2.5 L", category: "PREMIUM" },
+            { oldName: "SERVO 4T HD-4 X 2.5 L-PROMO", newName: "SERVO HYPERSPORT 4T 15W-50", pack: "2.5 L", category: "PREMIUM" },
+            { oldName: "SERVO 4T XTRA 10W-30-20 X 0.9 L PROMO", newName: "SERVO HYPERSPORT 4T 10W-30", pack: "0.9 L", category: "PREMIUM" },
+            { oldName: "SERVO 4T XTRA 10W-30-20 X 1 L PROMO", newName: "SERVO HYPERSPORT 4T 10W-30", pack: "1 L", category: "PREMIUM" },
+            { oldName: "SERVO 4T XTRA 20W-50-20 X 0.9 L PROMO", newName: "SERVO HYPERSPORT 4T 20W-50", pack: "0.9 L", category: "PREMIUM" },
+            { oldName: "SERVO 4T XTRA 20W-50-20 X 1 L PROMO", newName: "SERVO HYPERSPORT 4T 20W-50", pack: "1 L", category: "PREMIUM" },
+            { oldName: "SERVO 4T XTRA-20 X 0.9 L PROMO", newName: "SERVO HYPERSPORT 4T", pack: "0.9 L", category: "PREMIUM" },
+            { oldName: "SERVO 4T XTRA-20 X 1 L PROMO", newName: "SERVO HYPERSPORT 4T", pack: "1 L", category: "PREMIUM" },
+            { oldName: "SERVO FUTURA G PLUS 5W-30-4 X 3 L PROMO", newName: "SERVO HYPERDRIVE 5W-30", pack: "3 L", category: "PREMIUM" },
+            { oldName: "SERVO FUTURA G PLUS 5W-30-4X3.5 L PROMO", newName: "SERVO HYPERDRIVE 5W-30", pack: "3.5 L", category: "PREMIUM" },
+            { oldName: "SERVO PRIDE NXT CK4 10W-30-15 L PROMO", newName: "SERVO HYPERTORQ NXT 10W-30", pack: "15 L", category: "PREMIUM" },
+            { oldName: "SERVO PRIDE NXT CK4 10W-30-20X1L", newName: "SERVO HYPERTORQ NXT 10W-30", pack: "1 L", category: "PREMIUM" },
+            { oldName: "SERVO PRIDE NXT CK4 10W30-210 L BRL", newName: "SERVO HYPERTORQ NXT 10W-30", pack: "210 L", category: "PREMIUM" },
+            { oldName: "SERVO PRIDE NXT CK4 15W-40-15 L PROMO", newName: "SERVO HYPERTORQ NXT 15W-40", pack: "15 L", category: "PREMIUM" },
+            { oldName: "SERVO PRIDE NXT CK4 15W-40-20 X 1L", newName: "SERVO HYPERTORQ NXT 15W-40", pack: "1 L", category: "PREMIUM" },
+            { oldName: "SERVO PRIDE NXT CK4 15W40-210 L BRL", newName: "SERVO HYPERTORQ NXT 15W-40", pack: "210 L", category: "PREMIUM" },
+            { oldName: "SERVO PRIDE NXT CK4 15W-40-4 X 3L", newName: "SERVO HYPERTORQ NXT 15W-40", pack: "3 L", category: "PREMIUM" },
+            { oldName: "SERVO PRIDE NXT CK4 15W-40-4 X 5L", newName: "SERVO HYPERTORQ NXT 15W-40", pack: "5 L", category: "PREMIUM" },
+            { oldName: "SERVO PRIDE NXT CK4 15W-40-7.5 L PROMO", newName: "SERVO HYPERTORQ NXT 15W-40", pack: "7.5 L", category: "PREMIUM" },
+            { oldName: "SERVO PRIDE XL PLUS 15W40-10L PROMO", newName: "SERVO HYPERTORQ 15W-40", pack: "10 L", category: "PREMIUM" },
+            { oldName: "SERVO PRIDE XL PLUS 15W40-15L PROMO", newName: "SERVO HYPERTORQ 15W-40", pack: "15 L", category: "PREMIUM" },
+            { oldName: "SERVO PRIDE XL PLUS 15W40-20 L", newName: "SERVO HYPERTORQ 15W-40", pack: "20 L", category: "PREMIUM" },
+            { oldName: "SERVO PRIDE XL PLUS 15W40-20 X 1L", newName: "SERVO HYPERTORQ 15W-40", pack: "1 L", category: "PREMIUM" },
+            { oldName: "SERVO PRIDE XL PLUS 15W40-4 X 3 L PROMO", newName: "SERVO HYPERTORQ 15W-40", pack: "3 L", category: "PREMIUM" },
+            { oldName: "SERVO PRIDE XL PLUS 15W40-4 X 5 L PROMO", newName: "SERVO HYPERTORQ 15W-40", pack: "5 L", category: "PREMIUM" },
+            { oldName: "SERVO PRIDE XL PLUS 15W40-50 L", newName: "SERVO HYPERTORQ 15W-40", pack: "50 L", category: "PREMIUM" },
+            { oldName: "SERVO PRIDE XL PLUS 15W40-7.5L PROMO", newName: "SERVO HYPERTORQ 15W-40", pack: "7.5 L", category: "PREMIUM" },
+            { oldName: "SERVO PRIDENXT 15W40-20 X 1 L PROMO", newName: "SERVO HYPERTORQ NXT 15W-40", pack: "1 L", category: "PREMIUM" },
+            { oldName: "SERVO SCOOTOMATIC 4ST 10W-30-20 X 0.8 L", newName: "SERVO HYPERSPORT SCOOTER 10W-30", pack: "0.8 L", category: "PREMIUM" },
+            { oldName: "SERVO SCOOTOMATIC XTRA 5W-30-20 X 600 ML", newName: "SERVO HYPERSPORT SCOOTER 5W-30", pack: "0.6 L", category: "PREMIUM" }
+        ];
+
+        // Typeahead suggestions for Help search
+        function showHelpSuggestions() {
+            const input = document.getElementById("helpSearchInput");
+            const val = (input ? input.value : "").trim().toLowerCase();
+            const box = document.getElementById("helpSuggestionsBox");
+            if (!box) return;
+
+            if (!val || val.length < 1) {
+                box.classList.add("hidden");
+                return;
+            }
+
+            const seen = new Set();
+            const matches = [];
+
+            for (const item of OLD_VS_NEW_CATALOG) {
+                const name = item.oldName;
+                if (!seen.has(name) && name.toLowerCase().includes(val)) {
+                    seen.add(name);
+                    matches.push(item);
+                    if (matches.length >= 8) break;
+                }
+            }
+
+            if (matches.length === 0) {
+                box.classList.add("hidden");
+                return;
+            }
+
+            box.innerHTML = matches.map(m => `
+                <div onclick="selectHelpSuggestion('${escapeQuotes(m.oldName)}')" class="px-3.5 py-2.5 hover:bg-indigo-50 cursor-pointer flex justify-between items-center transition-colors">
+                    <span class="font-medium text-slate-800 text-xs truncate mr-2">${escapeHtml(m.oldName)}</span>
+                    <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-700 shrink-0">&rarr; ${escapeHtml(m.newName)}</span>
+                </div>
+            `).join('');
+
+            box.classList.remove("hidden");
+        }
+
+        function hideHelpSuggestions() {
+            const box = document.getElementById("helpSuggestionsBox");
+            if (box) box.classList.add("hidden");
+        }
+
+        function selectHelpSuggestion(oldName) {
+            const input = document.getElementById("helpSearchInput");
+            if (input) {
+                input.value = oldName;
+            }
+            hideHelpSuggestions();
+            onHelpSearchInput();
+        }
+
+        function onHelpSearchInput() {
+            const input = document.getElementById("helpSearchInput");
+            const clearBtn = document.getElementById("clearHelpSearchBtn");
+            const q = (input ? input.value : "").trim().toLowerCase();
+
+            if (clearBtn) {
+                if (q.length > 0) clearBtn.classList.remove("hidden");
+                else clearBtn.classList.add("hidden");
+            }
+
+            showHelpSuggestions();
+            renderHelpResults(q);
+        }
+
+        function clearHelpSearch() {
+            const input = document.getElementById("helpSearchInput");
+            if (input) {
+                input.value = "";
+                input.focus();
+            }
+            const clearBtn = document.getElementById("clearHelpSearchBtn");
+            if (clearBtn) clearBtn.classList.add("hidden");
+            hideHelpSuggestions();
+            renderHelpResults("");
+        }
+
+        function renderHelpResults(query) {
+            const container = document.getElementById("helpResultsContainer");
+            if (!container) return;
+
+            // Only show results if user has typed a search query
+            if (!query || query.trim().length === 0) {
+                container.innerHTML = `
+                    <div class="bg-white p-10 rounded-xl border border-slate-200 text-center text-slate-400">
+                        <i data-lucide="search" class="w-8 h-8 mx-auto mb-2 opacity-40 text-indigo-500"></i>
+                        <p class="text-sm font-medium text-slate-600">Enter an old product name in the search box above to view replacement suggestions.</p>
+                        <p class="text-xs text-slate-400 mt-1">Suggestions and live in-stock availability will appear automatically as you type.</p>
+                    </div>
+                `;
+                lucide.createIcons();
+                return;
+            }
+
+            const cleanQuery = query.trim().toLowerCase();
+            const matches = OLD_VS_NEW_CATALOG.filter(item => 
+                item.oldName.toLowerCase().includes(cleanQuery) ||
+                item.newName.toLowerCase().includes(cleanQuery) ||
+                item.category.toLowerCase().includes(cleanQuery) ||
+                item.pack.toLowerCase().includes(cleanQuery)
+            );
+
+            if (matches.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-white p-8 rounded-xl border border-slate-200 text-center text-slate-400">
+                        <i data-lucide="search-x" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>
+                        No matching old product grade found for "${escapeHtml(query)}".
+                    </div>
+                `;
+                lucide.createIcons();
+                return;
+            }
+
+            const firstMatch = matches[0];
+            const headerBannerTitle = matches.length === 1 
+                ? `Replacement Suggestion(s) for "${escapeHtml(firstMatch.oldName)}" is "${escapeHtml(firstMatch.newName)}"`
+                : `Replacement Suggestion(s) for "${escapeHtml(query)}"`;
+
+            let html = `
+                <div class="bg-white rounded-xl shadow-xs border border-slate-200 overflow-hidden">
+                    <div class="px-5 py-3 border-b bg-slate-50 flex justify-between items-center">
+                        <span class="text-xs font-semibold text-slate-800">${headerBannerTitle}</span>
+                        <span class="text-[11px] text-emerald-700 font-medium flex items-center gap-1">
+                            <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> Displaying Only Locations with Live In-Stock
+                        </span>
+                    </div>
+                    <div class="divide-y divide-slate-200">
+            `;
+
+            matches.slice(0, 30).forEach(item => {
+                // Find matching live stock items for the new product with strict pack matching
+                const cleanNewWords = item.newName.toLowerCase().replace(/[^a-z0-9]/g, ' ').split(/\s+/).filter(w => w.length > 2 && w !== 'servo');
+                const packClean = item.pack.toLowerCase().replace(/[^a-z0-9]/g, '');
+                
+                // FILTER: Only show locations that actually have stock (Available + Transit > 0 and Qty > 0)
+                const inStockMatches = stockDatabase.filter(stk => {
+                    const desc = (stk.description || '').toLowerCase();
+                    const code = (stk.code || '').toLowerCase();
+                    if (isExcludedProduct(code, desc)) return false;
+                    
+                    const isNameMatch = cleanNewWords.every(w => desc.includes(w));
+                    
+                    // Strict Pack Matching: ensures 20W-50, 0.9L, 2.5L etc don't cross-match
+                    const descClean = desc.replace(/[^a-z0-9]/g, '');
+                    const isPackMatch = descClean.includes(packClean);
+
+                    const hasStock = (stk.qty > 0) || ((stk.transitQty || 0) > 0);
+                    return isNameMatch && isPackMatch && hasStock;
+                });
+
+                let stockBreakdownHtml = '';
+                if (inStockMatches.length > 0) {
+                    stockBreakdownHtml = `
+                        <div class="mt-3 p-3 bg-emerald-50/70 rounded-xl border border-emerald-200 space-y-2">
+                            <span class="text-xs font-bold text-emerald-950 flex items-center gap-1.5">
+                                <i data-lucide="package-check" class="w-4 h-4 text-emerald-600"></i> In-Stock Available Locations:
+                            </span>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                    `;
+                    inStockMatches.forEach(stk => {
+                        const totalEff = (stk.qty || 0) + (stk.transitQty || 0);
+                        stockBreakdownHtml += `
+                            <div class="p-3 bg-white rounded-lg border border-emerald-200 flex justify-between items-center text-xs shadow-2xs">
+                                <div class="pr-3 flex-1 min-w-0">
+                                    <span class="font-mono font-bold text-slate-900 block">${stk.code}</span>
+                                    <span class="text-xs text-slate-700 font-medium block leading-snug break-words">${stk.description}</span>
+                                    <span class="text-[11px] text-blue-700 font-semibold flex items-center gap-1 mt-1">
+                                        <i data-lucide="building-2" class="w-3.5 h-3.5 text-blue-600 shrink-0"></i> ${stk.plant}
+                                    </span>
+                                </div>
+                                <div class="text-right shrink-0">
+                                    <span class="font-mono font-bold text-emerald-700 text-sm block">${stk.qty} ${stk.uom}</span>
+                                    ${stk.transitQty > 0 ? `<span class="block text-[10px] text-amber-700 font-semibold">+${stk.transitQty} tr</span>` : ''}
+                                    <button onclick="openIndentModal('${stk.code}', '${escapeQuotes(stk.plant)}', '${totalEff > 0 ? 'INDENT' : 'URGENT'}')"
+                                        class="mt-1.5 px-3 py-1 rounded bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-xs transition-colors">
+                                        Order
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    stockBreakdownHtml += `</div></div>`;
+                } else {
+                    stockBreakdownHtml = `
+                        <div class="mt-2.5 text-xs text-rose-600 font-medium flex items-center gap-1.5 bg-rose-50/60 p-2 rounded-lg border border-rose-100">
+                            <i data-lucide="alert-circle" class="w-3.5 h-3.5 text-rose-500 shrink-0"></i>
+                            <span>No plant currently has in-stock inventory for this grade. Place an <strong>Urgent</strong> order in the Search tab to request supply.</span>
+                        </div>
+                    `;
+                }
+
+                html += `
+                    <div class="p-4 sm:p-5 hover:bg-slate-50/70 transition-colors">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                            <div class="space-y-1">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-200 text-slate-700">${item.category}</span>
+                                    <span class="text-[11px] font-semibold text-slate-500">Pack: ${item.pack}</span>
+                                </div>
+                                <div class="text-xs text-slate-500">Old Discontinued Series:</div>
+                                <h3 class="text-sm font-semibold text-rose-800 line-through decoration-rose-400">
+                                    ${item.oldName}
+                                </h3>
+                            </div>
+                            <div class="w-full sm:w-auto p-3 bg-blue-50 border border-blue-200 rounded-xl flex flex-col justify-center">
+                                <span class="text-[10px] uppercase font-bold text-blue-600 block">Suggested Replacement Grade:</span>
+                                <span class="text-sm font-bold text-blue-950 block mt-0.5">${item.newName}</span>
+                            </div>
+                        </div>
+                        ${stockBreakdownHtml}
+                    </div>
+                `;
+            });
+
+            html += `</div></div>`;
+            container.innerHTML = html;
+            lucide.createIcons();
+        }
+
+        // Close suggestions dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            const helpWrapper = document.getElementById('helpSearchInput')?.parentElement;
+            const helpBox = document.getElementById('helpSuggestionsBox');
+            if (helpWrapper && helpBox && !helpWrapper.contains(e.target) && !helpBox.contains(e.target)) {
+                hideHelpSuggestions();
+            }
+        });
 
         // Helper to check if a product name or SKU starts with disallowed prefixes
         function isExcludedProduct(skuCode, description) {
@@ -874,7 +1248,7 @@
             const input = document.getElementById("modalTokenInput");
             const val = input ? input.value.trim() : "";
             if (!val) {
-                alert("Please enter a valid GitHub token (starts with ghp_ or github_pat_).");
+                alert("Please enter a valid token (starts with ghp_ or github_pat_).");
                 return;
             }
             localStorage.setItem(STORAGE_TOKEN_KEY, val);
@@ -935,10 +1309,10 @@
             });
         }
 
-        // ================= ZERO-CACHE GITHUB REST API =================
+        // ================= ZERO-CACHE REST API =================
         async function fetchCloudData(manualTrigger = false) {
             const syncText = document.getElementById('cloudSyncText');
-            if (syncText) syncText.innerText = "GitHub: Syncing...";
+            if (syncText) syncText.innerText = "Cloud: Syncing...";
 
             const token = getActiveToken();
             const headers = { 'Accept': 'application/vnd.github.v3.raw' };
@@ -974,16 +1348,17 @@
                         renderTable();
                         renderWbsoTable();
                         updateStats();
+                        renderHelpResults(document.getElementById("helpSearchInput")?.value || "");
 
-                        if (syncText) syncText.innerText = "GitHub: Live";
-                        if (manualTrigger) showNotification("✓ Loaded latest live data from GitHub cloud!", "emerald");
+                        if (syncText) syncText.innerText = "Cloud: Live";
+                        if (manualTrigger) showNotification("✓ Loaded latest live data from cloud!", "emerald");
                         return;
                     }
                 } else if (apiRes.status === 404) {
-                    if (syncText) syncText.innerText = "GitHub: Ready for 1st Upload";
+                    if (syncText) syncText.innerText = "Cloud: Ready for 1st Upload";
                 }
             } catch (err) {
-                console.warn("GitHub API network notice:", err);
+                console.warn("API network notice:", err);
             }
 
             loadFromStorage();
@@ -992,8 +1367,9 @@
             renderTable();
             renderWbsoTable();
             updateStats();
+            renderHelpResults(document.getElementById("helpSearchInput")?.value || "");
             if (syncText && syncText.innerText.includes("Syncing")) {
-                syncText.innerText = "GitHub: Cached";
+                syncText.innerText = "Cloud: Cached";
             }
         }
 
@@ -1003,7 +1379,7 @@
 
             if (!token) {
                 openTokenModal();
-                alert("Please set your GitHub Personal Access Token once on this device to commit uploads.");
+                alert("Please set your Personal Access Token once on this device to commit uploads.");
                 return;
             }
 
@@ -1021,8 +1397,8 @@
             saveToLocalStorageOnly();
 
             try {
-                if (syncText) syncText.innerText = "GitHub: Uploading...";
-                showNotification("Syncing uploads to GitHub repository...", "blue");
+                if (syncText) syncText.innerText = "Cloud: Uploading...";
+                showNotification("Syncing uploads to central repository...", "blue");
 
                 let sha = null;
                 const getRes = await fetch(`${GITHUB_API_URL}?ref=main&_t=${Date.now()}`, {
@@ -1039,7 +1415,7 @@
                     currentFileSha = sha;
                 } else if (getRes.status === 401 || getRes.status === 403) {
                     openTokenModal();
-                    alert("Authentication Error (401/403): The GitHub token on this device is invalid or expired. Please re-enter a valid token.");
+                    alert("Authentication Error (401/403): The token on this device is invalid or expired. Please re-enter a valid token.");
                     return;
                 }
 
@@ -1066,22 +1442,22 @@
                 if (putRes.ok) {
                     const putJson = await putRes.json();
                     currentFileSha = putJson.content.sha;
-                    if (syncText) syncText.innerText = "GitHub: Live";
-                    showNotification("✓ Committed to GitHub! All users across all devices now have this data.", "emerald");
+                    if (syncText) syncText.innerText = "Cloud: Live";
+                    showNotification("✓ Committed! All users across all devices now have this data.", "emerald");
                 } else {
                     const errJson = await putRes.json().catch(() => ({}));
-                    console.error("GitHub commit failed:", putRes.status, errJson);
+                    console.error("Commit failed:", putRes.status, errJson);
                     if (putRes.status === 401 || putRes.status === 403) {
                         openTokenModal();
-                        alert("GitHub Auth Error (401): Token rejected. Please enter a fresh token.");
+                        alert("Auth Error (401): Token rejected. Please enter a fresh token.");
                     } else {
-                        alert(`GitHub Sync Notice (${putRes.status}): ${errJson.message || 'Error pushing to repository.'}`);
+                        alert(`Sync Notice (${putRes.status}): ${errJson.message || 'Error pushing to repository.'}`);
                     }
-                    if (syncText) syncText.innerText = `GitHub: Err ${putRes.status}`;
+                    if (syncText) syncText.innerText = `Cloud: Err ${putRes.status}`;
                 }
             } catch (netErr) {
                 console.error("Cloud push failed:", netErr);
-                if (syncText) syncText.innerText = "GitHub: Err Network";
+                if (syncText) syncText.innerText = "Cloud: Err Network";
             }
         }
 
@@ -1473,7 +1849,7 @@
         }
 
         function switchTab(tabId) {
-            ['searchTab', 'wbsoTab', 'ordersTab', 'adminTab'].forEach(id => {
+            ['searchTab', 'wbsoTab', 'ordersTab', 'helpTab', 'adminTab'].forEach(id => {
                 const el = document.getElementById(id);
                 const btn = document.getElementById('btn-' + id);
                 if (el) el.classList.add('hidden');
@@ -1488,6 +1864,9 @@
             if (activeBtn) {
                 activeBtn.classList.add('tab-active');
                 activeBtn.classList.remove('text-slate-500');
+            }
+            if (tabId === 'helpTab') {
+                renderHelpResults(document.getElementById("helpSearchInput")?.value || "");
             }
             lucide.createIcons();
         }
@@ -1622,7 +2001,7 @@
                     { label: "Monitored SKUs", value: count.toLocaleString() },
                     { label: "Target Plants", value: Object.keys(colMap.plantCols).join(', ') },
                     { label: "Deficit Evaluation", value: "Active across Live Stock" },
-                    { label: "Multi-Device Sync", value: "Pushed to GitHub Repository" }
+                    { label: "Multi-Device Sync", value: "Pushed to Repository" }
                 ]
             });
         }
@@ -1948,12 +2327,13 @@
 
             rawStockRows = items;
             
-            // Push updated consolidated data to GitHub cloud automatically
+            // Push updated consolidated data to cloud automatically
             pushDataToGitHubCloud();
             rebuildConsolidatedDatabase();
             populatePlantDropdown();
             updateStats();
             renderTable();
+            renderHelpResults(document.getElementById("helpSearchInput")?.value || "");
 
             const statusEl = document.getElementById('stockUploadStatus');
             if (statusEl) {
@@ -1972,7 +2352,7 @@
                     { label: "Upload Time (System)", value: stockUploadTime },
                     { label: "Raw Records Parsed", value: items.length.toLocaleString() },
                     { label: "Unique Plants Identified", value: detectedPlants.length.toString() },
-                    { label: "Multi-Device Sync", value: "Pushed to GitHub Repository" }
+                    { label: "Multi-Device Sync", value: "Pushed to Repository" }
                 ]
             });
         }
@@ -2051,12 +2431,13 @@
                             });
                         });
 
-                        // Push updated master data to GitHub cloud automatically
+                        // Push updated master data to cloud automatically
                         pushDataToGitHubCloud();
                         rebuildConsolidatedDatabase();
                         populatePlantDropdown();
                         updateStats();
                         renderTable();
+                        renderHelpResults(document.getElementById("helpSearchInput")?.value || "");
 
                         const packCodeCount = Object.keys(packMasterVolumeMap).length;
                         const skuCount = Object.keys(masterDatabase).length;
@@ -2077,7 +2458,7 @@
                                 { label: "Total SKUs Indexed", value: skuCount.toLocaleString() },
                                 { label: "Pack Code Volumes Mapped", value: packCodeCount.toLocaleString() },
                                 { label: "Urgent Grades Enriched", value: "Active" },
-                                { label: "Multi-Device Sync", value: "Pushed to GitHub Repository" }
+                                { label: "Multi-Device Sync", value: "Pushed to Repository" }
                             ]
                         });
                     } catch (parseErr) {
@@ -2502,7 +2883,7 @@
                 if (destPlantSelect) destPlantSelect.required = false;
 
                 safeSetText('modalTitle', 'Create Indent Requisition');
-                safeSetText('modalSub', 'Normal replenishment pipeline indent against plant stock');
+                safeSetText('modalSub', 'Normal indent against plant stock');
             }
         }
 
@@ -2850,7 +3231,7 @@
                     <tfoot>
                         <tr style="font-weight: bold; background-color: #f2f2f2; border: 1.5px solid #000000;">
                             <td colspan="5" style="border: 1.5px solid #000000; padding: 6px 12px; text-align: right;">TOTAL VOLUME (KL):</td>
-                            <td style="border: 1.5px solid #000000; padding: 5px 10px; text-align: right;">${totalKL.toFixed(3)}</td>
+                            <td style="border: 1.5px solid #000000; padding: 6px 10px; text-align: right;">${totalKL.toFixed(3)}</td>
                         </tr>
                     </tfoot>
                 </table>
