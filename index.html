@@ -152,7 +152,7 @@
                 <!-- Direct GitHub Cloud Status Indicator -->
                 <button id="cloudSyncBadge" onclick="handleCloudSyncClick()" class="flex items-center gap-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 px-3 py-1.5 rounded-full text-xs font-medium transition-colors" title="Click to refresh latest data or configure token">
                     <i data-lucide="cloud" class="w-3.5 h-3.5 text-blue-600"></i>
-                    <span id="cloudSyncText">Go Live</span>
+                    <span id="cloudSyncText">GitHub: Live</span>
                 </button>
 
                 <button onclick="openRoleModal()" class="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 border border-slate-300 px-3 py-1.5 rounded-full text-xs transition-colors">
@@ -673,7 +673,6 @@
 
             <!-- Spreadsheet Table Container -->
             <div class="overflow-y-auto flex-1 p-4 bg-white border border-slate-200 rounded-xl" id="richTableContainer">
-                <!-- Injected Formatted HTML Table -->
             </div>
 
             <div class="pt-2 flex flex-col sm:flex-row gap-2 border-t justify-end">
@@ -976,7 +975,7 @@
                         renderWbsoTable();
                         updateStats();
 
-                        if (syncText) syncText.innerText = "Go Live";
+                        if (syncText) syncText.innerText = "GitHub: Live";
                         if (manualTrigger) showNotification("✓ Loaded latest live data from GitHub cloud!", "emerald");
                         return;
                     }
@@ -1067,8 +1066,7 @@
                 if (putRes.ok) {
                     const putJson = await putRes.json();
                     currentFileSha = putJson.content.sha;
-                    if (syncText) syncText.innerText = "Go
-                        Live";
+                    if (syncText) syncText.innerText = "GitHub: Live";
                     showNotification("✓ Committed to GitHub! All users across all devices now have this data.", "emerald");
                 } else {
                     const errJson = await putRes.json().catch(() => ({}));
@@ -2504,7 +2502,7 @@
                 if (destPlantSelect) destPlantSelect.required = false;
 
                 safeSetText('modalTitle', 'Create Indent Requisition');
-                safeSetText('modalSub', 'Normal indent against plant stock');
+                safeSetText('modalSub', 'Normal replenishment pipeline indent against plant stock');
             }
         }
 
@@ -2534,6 +2532,19 @@
             if (isExcludedProduct(skuCode, description)) {
                 alert('Cannot submit requisition for excluded products (HERO, TRU4, TMGO).');
                 return;
+            }
+
+            // Indent validation: Qty cannot exceed Available + Transit Qty
+            if (type === 'INDENT') {
+                const availQty = item ? (item.qty || 0) : 0;
+                const transitQty = item ? (item.transitQty || 0) : 0;
+                const totalAllowed = availQty + transitQty;
+                
+                if (qty > totalAllowed) {
+                    alert(`Error: Indent Quantity (${qty}) cannot exceed Available + Transit Quantity (${totalAllowed}).\n\nAvailable: ${availQty}\nIn-Transit: ${transitQty}\n\nPlease enter a quantity less than or equal to ${totalAllowed}, or choose "Urgent" requisition.`);
+                    document.getElementById('formQty').focus();
+                    return;
+                }
             }
 
             const volKL = calculateVolumeKL(skuCode, description, qty);
@@ -2839,7 +2850,7 @@
                     <tfoot>
                         <tr style="font-weight: bold; background-color: #f2f2f2; border: 1.5px solid #000000;">
                             <td colspan="5" style="border: 1.5px solid #000000; padding: 6px 12px; text-align: right;">TOTAL VOLUME (KL):</td>
-                            <td style="border: 1.5px solid #000000; padding: 6px 10px; text-align: right;">${totalKL.toFixed(3)}</td>
+                            <td style="border: 1.5px solid #000000; padding: 5px 10px; text-align: right;">${totalKL.toFixed(3)}</td>
                         </tr>
                     </tfoot>
                 </table>
