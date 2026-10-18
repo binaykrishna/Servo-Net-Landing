@@ -1067,7 +1067,8 @@
                 if (putRes.ok) {
                     const putJson = await putRes.json();
                     currentFileSha = putJson.content.sha;
-                    if (syncText) syncText.innerText = "GitHub: Live";
+                    if (syncText) syncText.innerText = "Go
+                        Live";
                     showNotification("✓ Committed to GitHub! All users across all devices now have this data.", "emerald");
                 } else {
                     const errJson = await putRes.json().catch(() => ({}));
