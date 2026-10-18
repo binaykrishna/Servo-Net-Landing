@@ -152,7 +152,7 @@
                 <!-- Direct GitHub Cloud Status Indicator -->
                 <button id="cloudSyncBadge" onclick="handleCloudSyncClick()" class="flex items-center gap-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 px-3 py-1.5 rounded-full text-xs font-medium transition-colors" title="Click to refresh latest data or configure token">
                     <i data-lucide="cloud" class="w-3.5 h-3.5 text-blue-600"></i>
-                    <span id="cloudSyncText">Go Live</span>
+                    <span id="cloudSyncText">Github: Live</span>
                 </button>
 
                 <button onclick="openRoleModal()" class="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 border border-slate-300 px-3 py-1.5 rounded-full text-xs transition-colors">
@@ -976,7 +976,7 @@
                         renderWbsoTable();
                         updateStats();
 
-                        if (syncText) syncText.innerText = "GitHub: Live";
+                        if (syncText) syncText.innerText = "Go Live";
                         if (manualTrigger) showNotification("✓ Loaded latest live data from GitHub cloud!", "emerald");
                         return;
                     }
