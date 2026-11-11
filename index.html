@@ -391,31 +391,6 @@
       color: #15803d;
     }
 
-    .exclusive-divider {
-      display: flex;
-      align-items: center;
-      margin: 6px 0;
-      font-size: 0.72rem;
-      font-weight: 800;
-      letter-spacing: 1px;
-      color: #b45309;
-      text-transform: uppercase;
-    }
-
-    .exclusive-divider::before,
-    .exclusive-divider::after {
-      content: "";
-      flex: 1;
-      border-bottom: 1.5px dashed #fbd38d;
-    }
-
-    .exclusive-divider span {
-      padding: 0 10px;
-      background: #fef3c7;
-      border: 1px solid #fde68a;
-      border-radius: 12px;
-    }
-
     .view-circular-box {
       margin-top: 12px;
       border: 1px solid var(--border);
@@ -564,9 +539,6 @@
 
 <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
 <script>
-  // ==========================================
-  // CONFIGURATION: GITHUB REPOSITORY DETAILS
-  // ==========================================
   const GITHUB_REPO_OWNER = "binaykrishna"; 
   const GITHUB_REPO_NAME = "Servo-Net-Landing";
   const GITHUB_BRANCH = "main";
@@ -574,7 +546,6 @@
 
   let lubeData = [];
 
-  // 1. Fetch live circular from GitHub repository
   async function loadCentralCircular() {
     try {
       const response = await fetch(`./${CIRCULAR_FILENAME}?nocache=${Date.now()}`);
@@ -590,7 +561,6 @@
       console.warn("Could not fetch remote circular_data.json.", e);
     }
 
-    // Try offline persistent storage if available
     try {
       await initDB();
       const saved = await getFromDB("saved_lube_data");
@@ -604,7 +574,6 @@
     document.getElementById('productCountBadge').textContent = "Upload Price Circular";
   }
 
-  // --- IndexedDB Local Fallback Storage ---
   const DB_NAME = "ServoPricingStorage";
   const DB_VERSION = 1;
   let dbInstance = null;
@@ -650,7 +619,6 @@
     });
   }
 
-  // Restore session scheme attachments
   async function restoreSavedDoc() {
     try {
       await initDB();
@@ -695,7 +663,6 @@
     }
   }
 
-  // Push updated circular dataset to GitHub repository
   async function pushCircularToGitHub(parsedData, token) {
     const cleanToken = token.trim();
     const url = `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/contents/${CIRCULAR_FILENAME}`;
@@ -745,7 +712,7 @@
       } else {
         const errDetails = await putRes.json().catch(() => ({}));
         const message = errDetails.message || putRes.statusText;
-        alert(`GitHub Error (${putRes.status}): ${message}\n\nPlease verify that your token has "repo" (or Contents: Read & Write) permissions for repository: ${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}.`);
+        alert(`GitHub Error (${putRes.status}): ${message}\n\nPlease verify that your token has "repo" permissions for repository: ${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}.`);
         return false;
       }
     } catch (netErr) {
@@ -754,7 +721,6 @@
     }
   }
 
-  // --- Password Gate ---
   const AUTH_KEY = "011100";
   const authPriceUploadBtn = document.getElementById('authPriceUploadBtn');
   const authSchemeUploadBtn = document.getElementById('authSchemeUploadBtn');
@@ -870,7 +836,6 @@
     }
   });
 
-  // --- Date & EB Slab Calculation ---
   const today = new Date();
   const day = today.getDate();
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -890,7 +855,6 @@
   document.getElementById('currentDateDisplay').textContent = formattedDate;
   document.getElementById('currentEbDisplay').textContent = `₹ ${ebRate.toFixed(1)} / L`;
 
-  // --- Search Autocomplete UI ---
   const input = document.getElementById('productInput');
   const clearBtn = document.getElementById('clearBtn');
   const suggestionsBox = document.getElementById('suggestionsBox');
@@ -1029,7 +993,7 @@
             <span class="scheme-highlight">1 CAN FREE / 20 CANS</span>
           </div>
           <div class="scheme-card-body">
-            Eligible on billing of every 20 cans: <strong>One Can FREE of same grade & pack</strong>[cite: 10]. Select under 'Free Scheme' tab in SDMS billing[cite: 10].
+            Eligible on billing of every 20 cans: <strong>One Can FREE of same grade & pack</strong>. Select under 'Free Scheme' tab in SDMS billing.
             ${freeBoxHtml}
           </div>
         </div>`;
@@ -1046,7 +1010,7 @@
             <span class="scheme-highlight">1 FREE CAN (0.5 L/KG)</span>
           </div>
           <div class="scheme-card-body">
-            Against purchase of every 1 can (3L & above): <strong>One Can of 0.5 Ltr/Kg FREE</strong> from eligible basket (Servo Kool Plus, Brake Fluid Super HD/DOT 4, Servo Grease MP 3, RR 3, or Long Life Grease)[cite: 11].
+            Against purchase of every 1 can (3L & above): <strong>One Can of 0.5 Ltr/Kg FREE</strong> from eligible basket (Servo Kool Plus, Brake Fluid Super HD/DOT 4, Servo Grease MP 3, RR 3, or Long Life Grease).
             ${freeBoxHtml}
           </div>
         </div>`;
@@ -1110,14 +1074,14 @@
             <span class="scheme-highlight">Up to 5.0% Rebate</span>
           </div>
           <div class="scheme-card-body">
-            Unlock additional rebate by driving Premium sales mix[cite: 3]:
+            Unlock additional rebate by driving Premium sales mix:
             <ul style="margin: 4px 0 0 16px;">
-              <li>Premium Share &gt; 12%: <strong>5.00% Trade Disc</strong> (Cap 40 KL)[cite: 3]</li>
-              <li>Premium Share &gt; 10% to 12%: <strong>4.50% Trade Disc</strong> (Cap 35 KL)[cite: 3]</li>
-              <li>Premium Share &gt; 8% to 10%: <strong>3.50% Trade Disc</strong> (Cap 25 KL)[cite: 3]</li>
-              <li>Baseline (&le; 8%): <strong>2.50% Trade Disc</strong>[cite: 3]</li>
+              <li>Premium Share &gt; 12%: <strong>5.00% Trade Disc</strong> (Cap 40 KL)</li>
+              <li>Premium Share &gt; 10% to 12%: <strong>4.50% Trade Disc</strong> (Cap 35 KL)</li>
+              <li>Premium Share &gt; 8% to 10%: <strong>3.50% Trade Disc</strong> (Cap 25 KL)</li>
+              <li>Baseline (&le; 8%): <strong>2.50% Trade Disc</strong></li>
             </ul>
-            <em>Prerequisite: Stockist must achieve Primary Target for Q3[cite: 3]. Settled via SAP rebate[cite: 3].</em>
+            <em>Prerequisite: Stockist must achieve Primary Target for Q3. Settled via SAP rebate.</em>
           </div>
         </div>`;
     }
@@ -1130,16 +1094,16 @@
             <span class="scheme-highlight">₹ 1.00 - ₹ 2.00 / L</span>
           </div>
           <div class="scheme-card-body">
-            Cash payout on primary sales of focus grades based on previous quarter qualification[cite: 4]:
+            Cash payout on primary sales of focus grades based on previous quarter qualification:
             <ul style="margin: 4px 0 0 16px;">
-              <li><strong>Premium Stockist:</strong> ₹ 2.00 / Litre (Sales &gt; 10% or 60 KL)[cite: 4]</li>
-              <li><strong>Aspirational Stockist:</strong> ₹ 1.00 / Litre (Sales &gt; 5% or 30 KL)[cite: 4]</li>
+              <li><strong>Premium Stockist:</strong> ₹ 2.00 / Litre (Sales &gt; 10% or 60 KL)</li>
+              <li><strong>Aspirational Stockist:</strong> ₹ 1.00 / Litre (Sales &gt; 5% or 30 KL)</li>
             </ul>
           </div>
         </div>`;
     }
 
-    // Incentives with Exclusive 'OR' Separator
+    // Volume & Reseller Performance Incentives
     schemeBox.innerHTML += `
       <div class="scheme-card">
         <div class="scheme-card-title">
@@ -1148,33 +1112,19 @@
         </div>
         <div class="scheme-card-body">
           <ul style="margin: 4px 0 0 16px;">
-            <li><strong>MPI (Monthly Primary Target):</strong> ₹ 1.00 / L on Primary Volume (Hydrashakti 68 &lt; 30%)[cite: 5].</li>
-            <li><strong>QPI (Quarterly Consistency Target):</strong> Up to ₹ 2.00 / L (₹ 1.00 Primary + ₹ 1.00 Secondary Target)[cite: 6].</li>
+            <li><strong>MPI (Monthly Primary Target):</strong> ₹ 1.00 / L on Primary Volume (Hydrashakti 68 &lt; 30%).</li>
+            <li><strong>QPI (Quarterly Consistency Target):</strong> Up to ₹ 2.00 / L (₹ 1.00 Primary + ₹ 1.00 Secondary Target).</li>
           </ul>
         </div>
       </div>
 
       <div class="scheme-card" style="border-left: 3.5px solid var(--accent);">
         <div class="scheme-card-title">
-          <span>🏪 Channel A: Reseller Performance Incentive (RPI)</span>
+          <span>🏪 Reseller Performance Incentive (RPI)</span>
           <span class="scheme-highlight">₹ 3.00 - ₹ 3.50 / L</span>
         </div>
         <div class="scheme-card-body">
-          <strong>Applicable exclusively for Bazaar Retailers:</strong> Volume/growth linked reward on Bazaar counters (cap: 3,000 Litres/quarter; excludes Hydrashakti 68)[cite: 8]. Settled via SDMS[cite: 8].
-        </div>
-      </div>
-
-      <div class="exclusive-divider">
-        <span>— OR (Mutually Exclusive Channel Scheme) —</span>
-      </div>
-
-      <div class="scheme-card" style="border-left: 3.5px solid var(--primary-light);">
-        <div class="scheme-card-title">
-          <span>⛽ Channel B: RO Festival Bonanza</span>
-          <span class="scheme-highlight">₹ 2.00 - ₹ 3.00 / L</span>
-        </div>
-        <div class="scheme-card-body">
-          <strong>Applicable exclusively for Retail Outlet (Petrol Pump) Forecourts:</strong> Growth-linked incentive on RO sales volume (&gt;10% to 15%: ₹2.00/L; &gt;15%: ₹3.00/L)[cite: 9]. Mandatory: Min 40L Premium + Min 40L Honda 4T[cite: 9].
+          <strong>Applicable for Bazaar Retailers:</strong> Volume/growth linked reward on Bazaar counters (cap: 3,000 Litres/quarter; excludes Hydrashakti 68). Settled via SDMS.
         </div>
       </div>`;
 
